@@ -1,4 +1,4 @@
-# FFT
+# Fast Fourier Transform (FFT) - Group 20
 
 [![OpenMP](https://img.shields.io/badge/OpenMP-5.2-blue.svg)](https://www.openmp.org/)
 
