@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 # add C++20 and OpenMP flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 
+include_directories(external)
+
 # If you are a 'Politecnico di Milano' student, you can use the following lines to include the MK library
 # Otherwise, you can remove them...
 # The MOX department provides a MK library:
