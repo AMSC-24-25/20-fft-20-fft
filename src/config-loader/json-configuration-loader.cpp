@@ -28,6 +28,20 @@ int JSONConfigurationLoader::getSignalLength() const {
     return configurationData.at("signal_length");
 }
 
+int JSONConfigurationLoader::getLowerBound() const {
+    if (configurationData.at("lower_bound").is_null()) {
+        throw std::runtime_error("Lower bound is null.");
+    }
+    return configurationData.at("lower_bound");
+}
+
+int JSONConfigurationLoader::getUpperBound() const {
+    if (configurationData.at("upper_bound").is_null()) {
+        throw std::runtime_error("Upper bound is null.");
+    }
+    return configurationData.at("upper_bound");
+}
+
 int JSONConfigurationLoader::getSeed() const {
     if (configurationData.at("seed").is_null()) {
         throw std::runtime_error("Seed is null.");

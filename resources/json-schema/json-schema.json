@@ -14,12 +14,20 @@
       "type": "string",
       "enum": ["time", "space"]
     },
+    "lower_bound": {
+      "description": "The lower bound of the signal (vector) to generate.",
+      "type": "number"
+    },
+    "upper_bound": {
+      "description": "The upper bound of the signal (vector) to generate.",
+      "type": "number"
+    },
     "seed": {
       "description": "The optional seed to use for the generation of the signal (vector). If not provided, a random seed will be used. It can be used to reproduce the same signal (vector) multiple times.",
       "type": "integer",
       "minimum": 0
     }
   },
-  "required": ["signal_length", "signal_domain"],
+  "required": ["signal_length", "signal_domain", "lower_bound", "upper_bound"],
   "additionalProperties": false
 }

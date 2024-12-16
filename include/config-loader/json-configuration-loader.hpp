@@ -33,6 +33,18 @@ public:
     [[nodiscard]] int getSignalLength() const;
 
     /**
+     * The lower bound for the uniform distribution.
+     * @return The lower bound for the uniform distribution.
+     */
+    [[nodiscard]] int getLowerBound() const;
+
+    /**
+     * The upper bound for the uniform distribution.
+     * @return The upper bound for the uniform distribution.
+     */
+    [[nodiscard]] int getUpperBound() const;
+
+    /**
      * Get the seed from the configuration data.
      * @return The seed.
      * @throw std::runtime_error If the seed is null.
