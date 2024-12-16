@@ -61,6 +61,6 @@ void JSONConfigurationLoader::loadConfigurationFromFile(const std::string &fileP
         throw std::runtime_error("Failed to parse JSON file: " + filePath + "; Parse error: " + e.what());
     }
     // print the actual configuration data
-    printf("The configuration data has been loaded from the file: %s;\n%s",
+    printf("The configuration data has been loaded from the file: %s.\n%s\n\n",
         filePath.c_str(), configurationData.dump(4).c_str());
 }
