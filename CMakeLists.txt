@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 
 include_directories(external)
+include_directories(include)
 
 # If you are a 'Politecnico di Milano' student, you can use the following lines to include the MK library
 # Otherwise, you can remove them...
@@ -22,4 +23,8 @@ include_directories(
         # /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/lis/2.0.30/include
 )
 
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp
+        include/config-loader/abstract-configuration-loader.hpp
+        include/config-loader/json-configuration-loader.hpp
+        src/config-loader/json-configuration-loader.cpp
+)
