@@ -11,9 +11,6 @@
   - [3. Compile and Run the Code](#3-compile-and-run-the-code)
 - [Development Notes (to be removed)](#development-notes-to-be-removed)
   - [TODO](#todo)
-  - [Utils](#utils)
-    - [Generating a Random Time Domain Signal](#generating-a-random-time-domain-signal)
-    - [Generating a Random Space Domain Signal](#generating-a-random-space-domain-signal)
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -39,6 +36,9 @@ To configure the simulation, you need to:
 1. Create a JSON file with the following parameters:
     - Number of elements in the vector (length of the signal);
     - The domain of the signal (time or space);
+    - The range of the signal:
+      - Lower bound: minimum value of the signal;
+      - Upper bound: maximum value of the signal;
     - Seed for the random number generator (optional, if you want to make the simulation reproducible).
 2. Set the environment variable to point to the JSON file.
    The name of the environment variable is `CONFIG_FILE_PATH_FFT`.
@@ -154,13 +154,14 @@ However, here is a list of available programs:
 - Environment variables or, better, a configuration file to set the following parameters
   ([json](https://github.com/nlohmann/json?tab=readme-ov-file)): 
   - [x] Number of elements in the vector
-  - [ ] Real or complex values simulation
   - [x] Seed for the random number generator (optional, if we want to make it reproducible)
 
-- [ ] Generate a vector: real values (complex?) as input.
+- [x] Generate a vector: real values (complex?) as input.
   Can we use a seed for the random number generator to make it reproducible
 
-- [ ] Implement the FFT algorithm (how?)
+- [ ] Implement the sequential FFT algorithm (how?)
+
+- [ ] Implement the parallel FFT algorithm (how?)
 
 - [ ] Implement the inverse FFT algorithm (how?)
 
@@ -169,79 +170,6 @@ However, here is a list of available programs:
 - [ ] Output the results:
   - [ ] (optional) Plot the input signal and the output signal (https://github.com/lava/matplotlib-cpp)
   - [ ] Save the input signal and the output signal to a file
-
-
-### Utils
-
-#### Generating a Random Time Domain Signal
-
-```cpp
-#include <iostream>
-#include <vector>
-#include <random>
-#include <ctime>
-
-int main() {
-    // Default random engine
-    std::default_random_engine engine;
-    
-    // Seed the engine (if necessary hardcoded seed)
-    engine.seed(123);
-    
-    // Otherwise if we want a random seed
-    std::random_device rd;
-    std::default_random_engine eng(rd());
-    
-    // Create a uniform distribution between 0 and 1
-    std::uniform_real_distribution<> distr(0, 1);
-
-    // Create a signal with 100 random values
-    std::vector<double> signal(100);
-    for (auto& value : signal) {
-        value = distr(eng);
-    }
-
-    // Print
-    for (const auto& value : signal) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
-```
-
-#### Generating a Random Space Domain Signal
-
-```cpp
-#include <iostream>
-#include <vector>
-#include <random>
-#include <ctime>
-
-int main() {
-    // Random generation: ...
-    // Same as before
-
-    // Generate a random space domain signal
-    std::vector<std::vector<double>> signal(10, std::vector<double>(10));
-    for (auto& row : signal) {
-        for (auto& value : row) {
-            value = distr(eng);
-        }
-    }
-
-    // Print
-    for (const auto& row : signal) {
-        for (const auto& value : row) {
-            std::cout << value << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    return 0;
-}
-```
 
 
 [OpenMP]: https://www.openmp.org/
