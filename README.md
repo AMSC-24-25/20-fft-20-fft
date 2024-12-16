@@ -6,6 +6,8 @@
 
 - [Description](#description)
 - [How to run the code](#how-to-run-the-code)
+  - [1. Write a JSON Configuration File](#1-write-a-json-configuration-file)
+  - [2. Compile and Run the Code](#2-compile-and-run-the-code)
 - [Development Notes (to be removed)](#development-notes-to-be-removed)
   - [TODO](#todo)
   - [Utils](#utils)
@@ -48,6 +50,11 @@ you can find the JSON schema that you can use to easily validate/write the JSON 
 
 Unfortunately, the JSON schema is not used in the code yet because
 we should install external libraries to validate the JSON file (not necessary at the moment).
+
+If you are not familiar with JSON Schema, you can use the following website validator to validate your JSON file:
+[JSON Schema Validator][JSONSchemaValidator].
+You need to copy the [contents of the JSON schema file](resources/json-schema/json-schema.json) on the left
+and the contents of your JSON file on the right (the validation is done automatically).
 
 ### 2. Compile and Run the Code
 
@@ -223,3 +230,4 @@ int main() {
 [CK-FFT]: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
 [MOX Laboratory]: https://mox.polimi.it/
 [MK library]: https://github.com/pcafrica/mk
+[JSONSchemaValidator]: https://www.jsonschemavalidator.net/
