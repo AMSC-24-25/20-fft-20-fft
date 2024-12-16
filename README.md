@@ -7,7 +7,8 @@
 - [Description](#description)
 - [How to run the code](#how-to-run-the-code)
   - [1. Write a JSON Configuration File](#1-write-a-json-configuration-file)
-  - [2. Compile and Run the Code](#2-compile-and-run-the-code)
+  - [2. Set the Environment Variable](#2-set-the-environment-variable)
+  - [3. Compile and Run the Code](#3-compile-and-run-the-code)
 - [Development Notes (to be removed)](#development-notes-to-be-removed)
   - [TODO](#todo)
   - [Utils](#utils)
@@ -56,7 +57,26 @@ If you are not familiar with JSON Schema, you can use the following website vali
 You need to copy the [contents of the JSON schema file](resources/json-schema/json-schema.json) on the left
 and the contents of your JSON file on the right (the validation is done automatically).
 
-### 2. Compile and Run the Code
+### 2. Set the Environment Variable
+
+The simulation uses the environment variable `CONFIG_FILE_PATH_FFT` to read the JSON configuration file.
+
+If it is not set, the simulation will use a sample configuration file:
+[sample-config.json](resources/sample-config.json).
+
+However, to set the environment variable, you can use the following command:
+- On Linux:
+  ```bash
+  export CONFIG_FILE_PATH_FFT=/path/to/your/json/file.json
+  ```
+- On Windows:
+  ```cmd
+  set CONFIG_FILE_PATH_FFT=\path\to\your\json\file.json
+  ```
+
+The path to the JSON file can be absolute or relative to current working directory.
+
+### 3. Compile and Run the Code
 
 To run the code, you need to compile the code using the provided [CMakeLists.txt](CMakeLists.txt) file.
 
