@@ -12,9 +12,9 @@ int main() {
         std::cerr << "Warning: Environment variable " << ENV_FILE_PATH << " is not set. "
                                                                           "Using default configuration file path.\n";
         // if the environment variable is not set, use the default configuration file path
-        setenv("CONFIG_FILE_PATH_FFT", "resources/sample-config.json", 0);
+        setenv(ENV_FILE_PATH, "resources/sample-config.json", 0);
     }
-    const std::string filePath = getenv("CONFIG_FILE_PATH_FFT");
+    const std::string filePath = getenv(ENV_FILE_PATH);
     // load the configuration from the file
     JSONConfigurationLoader loader;
     loader.loadConfigurationFromFile(filePath);
