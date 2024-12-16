@@ -27,4 +27,9 @@ add_executable(main src/main.cpp
         include/config-loader/abstract-configuration-loader.hpp
         include/config-loader/json-configuration-loader.hpp
         src/config-loader/json-configuration-loader.cpp
+        include/signal-generator/abstract-signal-generator.hpp
+        include/signal-generator/time-domain-signal-generator.hpp
+        include/signal-generator/space-domain-signal-generator.hpp
+        src/signal-generator/time-domain-signal-generator.cpp
+        src/signal-generator/space-domain-signal-generator.cpp
 )
