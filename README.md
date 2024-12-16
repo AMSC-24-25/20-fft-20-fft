@@ -29,6 +29,28 @@ The main purpose of this repository is to provide:
 
 ## How to run the code
 
+### 1. Write a JSON Configuration File
+
+To configure the simulation, you need to:
+
+1. Create a JSON file with the following parameters:
+    - Number of elements in the vector (length of the signal);
+    - The domain of the signal (time or space);
+    - Seed for the random number generator (optional, if you want to make the simulation reproducible).
+2. Set the environment variable to point to the JSON file.
+   The name of the environment variable is `CONFIG_FILE_PATH_FFT`.
+   If you don't set the environment variable,
+   the simulation will use a sample configuration file: [sample-config.json](resources/sample-config.json);
+   and the program will print a warning message.
+
+In the [resources/json-schema](resources/json-schema) folder,
+you can find the JSON schema that you can use to easily validate/write the JSON configuration file.
+
+Unfortunately, the JSON schema is not used in the code yet because
+we should install external libraries to validate the JSON file (not necessary at the moment).
+
+### 2. Compile and Run the Code
+
 To run the code, you need to compile the code using the provided [CMakeLists.txt](CMakeLists.txt) file.
 
 If you are a student at the [Politecnico di Milano][POLIMI],
@@ -104,9 +126,9 @@ However, here is a list of available programs:
 
 - Environment variables or, better, a configuration file to set the following parameters
   ([json](https://github.com/nlohmann/json?tab=readme-ov-file)): 
-  - [ ] Number of elements in the vector
+  - [x] Number of elements in the vector
   - [ ] Real or complex values simulation
-  - [ ] Seed for the random number generator (optional, if we want to make it reproducible)
+  - [x] Seed for the random number generator (optional, if we want to make it reproducible)
 
 - [ ] Generate a vector: real values (complex?) as input.
   Can we use a seed for the random number generator to make it reproducible
