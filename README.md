@@ -50,9 +50,9 @@ To configure the simulation, you need to:
                The mean ($\mu$) is 0, so the noise is centered around zero and does not distort the signal.
                The standard deviation ($\sigma$) is equal to the noise because it determines
                how the noise values are spread around the mean. \
-               Approximately $68\%$ of the noise values will fall within $\pm \sigma$ of the mean,
-               $95\%$ will fall within $\pm 2 \sigma$,
-               and $99.7\%$ will fall within $\pm 3 \sigma$.
+               Approximately 68% of the noise values will fall within $\pm \sigma$ of the mean,
+               95% will fall within $\pm 2 \sigma$,
+               and 99.7% will fall within $\pm 3 \sigma$.
     - `seed`. Seed for the random number generator (optional, if you want to make the simulation reproducible).
 2. Set the environment variable to point to the JSON file.
    The name of the environment variable is `CONFIG_FILE_PATH_FFT`.
