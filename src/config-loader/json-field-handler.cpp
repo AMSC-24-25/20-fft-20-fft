@@ -36,3 +36,60 @@ std::string JsonFieldHandler::getFieldName(const Field field) {
     }
     throw std::invalid_argument("Field not found");
 }
+
+const nlohmann::json &JsonFieldHandler::getConfigurationLoaded() const {
+    return configurationLoaded;
+}
+
+std::string JsonFieldHandler::getSignalDomain() const {
+    const std::string field_name = getFieldName(Field::SignalDomain);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+int JsonFieldHandler::getSignalLength() const {
+    const std::string field_name = getFieldName(Field::SignalLength);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+double JsonFieldHandler::getHzFrequency() const {
+    const std::string field_name = getFieldName(Field::HzFrequency);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+double JsonFieldHandler::getPhase() const {
+    const std::string field_name = getFieldName(Field::Phase);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+double JsonFieldHandler::getNoise() const {
+    const std::string field_name = getFieldName(Field::Noise);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+
+int JsonFieldHandler::getSeed() const {
+    const std::string field_name = getFieldName(Field::Seed);
+    if (configurationLoaded.at(field_name).is_null()) {
+        throw std::runtime_error(field_name + " is null.");
+    }
+    return configurationLoaded.at(field_name);
+}
+
+bool JsonFieldHandler::hasSeed() const {
+    return configurationLoaded.contains(getFieldName(Field::Seed));
+}
