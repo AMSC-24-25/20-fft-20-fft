@@ -31,11 +31,16 @@ void JSONConfigurationLoader::loadConfigurationFromFile(const std::string &fileP
         throw std::runtime_error("File is empty: " + filePath);
     }
     // if all checks pass, load the configuration data
+    nlohmann::json jsonConfigurationData;
     try {
-        configurationData = JsonFieldHandler(fileStream);
+        fileStream >> jsonConfigurationData;
     } catch (const nlohmann::json::parse_error &e) {
         throw std::runtime_error("Failed to parse JSON file: " + filePath + "; Parse error: " + e.what());
     }
+    // create the field handler object
+    configurationData = JsonFieldHandler(jsonConfigurationData);
+    // close the file stream
+    fileStream.close();
     // print the actual configuration data;
     printf("The configuration data has been loaded from the file: %s.\n%s\n\n",
         filePath.c_str(), configurationData->getConfigurationLoaded().dump(4).c_str());

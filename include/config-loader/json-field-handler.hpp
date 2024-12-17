@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
+#include <utility>
 
 /**
  * JsonFieldHandler class is a utility class that provides field names for the JSON configuration file.
@@ -13,7 +14,6 @@
  * It is a kind of wrapper around the JSON object of the nlohmann::json library.
  */
 class JsonFieldHandler {
-  nlohmann::json configurationLoaded = nlohmann::json::value_t::discarded;
 public:
   /**
    * Enum class for the field names in the JSON configuration file.
@@ -46,9 +46,9 @@ public:
    * @param json The JSON configuration data.
    * @throw std::runtime_error If the JSON cannot be parsed.
    */
-  explicit JsonFieldHandler(const std::ifstream& json) {
-    configurationLoaded = nlohmann::json::parse(json);
-  }
+  explicit JsonFieldHandler(nlohmann::json json) : configurationLoaded(std::move(json)) {}
+  // use std::move to move the json object to the configurationLoaded field
+  // to avoid copying (or deep copying) the json object
 
   /**
    * Get the configuration data that was loaded as a JSON object.
@@ -107,6 +107,7 @@ private:
    * Unordered map that maps the field enum to the field name.
    */
   static const std::unordered_map<Field, std::string> fieldNames;
+  nlohmann::json configurationLoaded;
 };
 
 #endif //JSON_FIELD_HANDLER_HPP
