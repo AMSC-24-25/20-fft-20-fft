@@ -34,12 +34,19 @@ The main purpose of this repository is to provide:
 To configure the simulation, you need to:
 
 1. Create a JSON file with the following parameters:
-    - Number of elements in the vector (length of the signal);
-    - The domain of the signal (time or space);
-    - The range of the signal:
-      - Lower bound: minimum value of the signal;
-      - Upper bound: maximum value of the signal;
-    - Seed for the random number generator (optional, if you want to make the simulation reproducible).
+    - `signal_length`. The length of the signal. Specifies the number of samples or data points in the signal.
+    - `signal_domain`. The domain of the signal (time or space);
+    - `hz_frequency`. Represents the frequency of the signal's oscillations. It depends on the signal domain.
+                      For example, it refers to the number of cycles per second (hertz) in the time domain,
+                      and it indicates spatial frequency (or the number of cycles per unit distance)
+                      in the spatial domain.
+    - `phase`. The phase of the signal.
+               It allows you to move the signal along the time axis (i.e. to the left or right).
+               It represents the initial angle of the sine or cosine function at time $t = 0$,
+               or the shift of the signal waveform.
+    - `noise`. Thanks to the noise parameter, the signal can be randomly distorted.
+               In addition, the noise guarantees a more realistic signal generation.
+    - `seed`. Seed for the random number generator (optional, if you want to make the simulation reproducible).
 2. Set the environment variable to point to the JSON file.
    The name of the environment variable is `CONFIG_FILE_PATH_FFT`.
    If you don't set the environment variable,
