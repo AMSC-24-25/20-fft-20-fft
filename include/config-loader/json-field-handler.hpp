@@ -17,7 +17,8 @@ public:
     SignalLength,
     HzFrequency,
     Phase,
-    Noise
+    Noise,
+    Seed
   };
 
   /**

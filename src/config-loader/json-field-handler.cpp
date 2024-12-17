@@ -8,7 +8,8 @@ const std::unordered_map<JsonFieldHandler::Field, std::string> JsonFieldHandler:
     {Field::SignalLength, "signal_length"},
     {Field::HzFrequency, "hz_frequency"},
     {Field::Phase, "phase"},
-    {Field::Noise, "noise"}
+    {Field::Noise, "noise"},
+    {Field::Seed, "seed"}
 };
 
 bool JsonFieldHandler::hasField(const std::string &field) {
