@@ -1,6 +1,7 @@
 {
   "signal_domain": "time",
   "signal_length": 10,
-  "lower_bound": 0,
-  "upper_bound": 50
+  "hz_frequency": 1,
+  "phase": 0,
+  "noise": 0.1
 }
