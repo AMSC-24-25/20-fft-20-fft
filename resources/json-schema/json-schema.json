@@ -14,20 +14,24 @@
       "type": "string",
       "enum": ["time", "space"]
     },
-    "lower_bound": {
-      "description": "The lower bound of the signal (vector) to generate.",
+    "hz_frequency": {
+      "description": "Represents the frequency of the signal's oscillations. It refers to the number of cycles per second (hertz) in the time domain, and it indicates spatial frequency (or the number of cycles per unit distance) in the spatial domain.",
       "type": "number"
     },
-    "upper_bound": {
-      "description": "The upper bound of the signal (vector) to generate.",
+    "phase": {
+      "description": "Phase shift of the signal (vector) to generate. It represents the initial angle of the sine or cosine function at time t = 0, or the shift of the signal waveform.",
       "type": "number"
+    },
+    "noise": {
+      "description": "The standard deviation of the Gaussian noise to be added to the signal (vector). Used to simulate real data and random fluctuations.",
+      "type": "number",
+      "minimum": 0
     },
     "seed": {
       "description": "The optional seed to use for the generation of the signal (vector). If not provided, a random seed will be used. It can be used to reproduce the same signal (vector) multiple times.",
-      "type": "integer",
-      "minimum": 0
+      "type": "integer"
     }
   },
-  "required": ["signal_length", "signal_domain", "lower_bound", "upper_bound"],
+  "required": ["signal_length", "signal_domain", "hz_frequency", "phase", "noise"],
   "additionalProperties": false
 }
