@@ -45,13 +45,41 @@ To configure the simulation, you need to:
                It represents the initial angle of the sine or cosine function at time $t = 0$,
                or the shift of the signal waveform.
     - `noise`. Thanks to the noise parameter, the signal can be randomly distorted.
-               In addition, the noise guarantees a more realistic signal generation.
+               In addition, the noise guarantees a more realistic signal generation. \
+               The random generation is based on a Gaussian distribution with a mean of 0 and a standard deviation equal to the noise.
+               The mean ($\mu$) is 0, so the noise is centered around zero and does not distort the signal.
+               The standard deviation ($\sigma$) is equal to the noise because it determines
+               how the noise values are spread around the mean. \
+               Approximately $68\%$ of the noise values will fall within $\pm \sigma$ of the mean,
+               $95\%$ will fall within $\pm 2 \sigma$,
+               and $99.7\%$ will fall within $\pm 3 \sigma$.
     - `seed`. Seed for the random number generator (optional, if you want to make the simulation reproducible).
 2. Set the environment variable to point to the JSON file.
    The name of the environment variable is `CONFIG_FILE_PATH_FFT`.
    If you don't set the environment variable,
    the simulation will use a sample configuration file: [sample-config.json](resources/sample-config.json);
    and the program will print a warning message.
+
+> **Example: JSON Configuration File**
+>
+> ```json
+> {
+>   "signal_domain": "time",
+>   "signal_length": 10,
+>   "hz_frequency": 1,
+>   "phase": 0,
+>   "noise": 0.1
+> }
+> ```
+>
+> An example of JSON file that describes a signal with the following characteristics:
+> - **Signal Domain**: `"time"` - The signal is represented in the time domain.
+> - **Signal Length**: `10` - The duration or length of the signal (number of samples).
+> - **Frequency**: `1 Hz` - The frequency of the signal in Hertz (cycles per second).
+> - **Phase**: `0` - The phase shift of the signal, which is 0 in this case.
+> - **Noise**: `0.1` - The noise level or amplitude of noise in the signal.
+>
+> In short, the configuration describes a time domain signal with a frequency of `1 Hz`, no phase shift, and a small amount of noise (`0.1`).
 
 In the [resources/json-schema](resources/json-schema) folder,
 you can find the JSON schema that you can use to easily validate/write the JSON configuration file.
@@ -63,6 +91,8 @@ If you are not familiar with JSON Schema, you can use the following website vali
 [JSON Schema Validator][JSONSchemaValidator].
 You need to copy the [contents of the JSON schema file](resources/json-schema/json-schema.json) on the left
 and the contents of your JSON file on the right (the validation is done automatically).
+
+------------------------------------------------------------------------------------------------------------------------
 
 ### 2. Set the Environment Variable
 
@@ -82,6 +112,8 @@ However, to set the environment variable, you can use the following command:
   ```
 
 The path to the JSON file can be absolute or relative to current working directory.
+
+------------------------------------------------------------------------------------------------------------------------
 
 ### 3. Compile and Run the Code
 
@@ -157,14 +189,6 @@ However, here is a list of available programs:
 ## Development Notes (to be removed)
 
 ### TODO
-
-- Environment variables or, better, a configuration file to set the following parameters
-  ([json](https://github.com/nlohmann/json?tab=readme-ov-file)): 
-  - [x] Number of elements in the vector
-  - [x] Seed for the random number generator (optional, if we want to make it reproducible)
-
-- [x] Generate a vector: real values (complex?) as input.
-  Can we use a seed for the random number generator to make it reproducible
 
 - [ ] Implement the sequential FFT algorithm (how?)
 
