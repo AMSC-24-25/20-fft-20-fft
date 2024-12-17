@@ -11,12 +11,6 @@ public:
 
     /**
      * Generate a random (thanks to noise) one-dimensional signal in the time domain.
-     * The generation is based on a Gaussian distribution with a mean of 0 and a standard deviation equal to the noise.
-     *  - The mean (mu) is 0, so the noise is centered around zero and does not distort the signal.
-     *  - The standard deviation (sigma) is equal to the noise because it determines
-     *    how the noise values are spread around the mean.
-     *    Approximately 68% of the noise values will fall within +-sigma of the mean, 95% will fall within +-2*sigma,
-     *    and 99.7% will fall within +-3*sigma.
      *
      * Let the angular frequency be:
      * @code

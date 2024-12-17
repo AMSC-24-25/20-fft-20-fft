@@ -40,6 +40,13 @@ public:
     /**
      * Generate a random (thanks to noise) one-dimensional signal.
      *
+     * The generation is based on a Gaussian distribution with a mean of 0 and a standard deviation equal to the noise.
+     *  - The mean (mu) is 0, so the noise is centered around zero and does not distort the signal.
+     *  - The standard deviation (sigma) is equal to the noise because it determines
+     *    how the noise values are spread around the mean.
+     *    Approximately 68% of the noise values will fall within +-sigma of the mean, 95% will fall within +-2*sigma,
+     *    and 99.7% will fall within +-3*sigma.
+     *
      * @param length The length of the signal. Specifies the number of samples or data points in the signal.
      * @param frequency Represents the frequency of the signal's oscillations. It depends on the signal domain.
      *                  For example, it refers to the number of cycles per second (hertz) in the time domain,
