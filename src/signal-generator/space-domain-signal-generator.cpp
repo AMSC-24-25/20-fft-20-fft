@@ -2,25 +2,29 @@
 
 #include <iostream>
 
-std::vector<std::complex<double> > SpaceDomainSignalGenerator::generateSignal(
-    const int length, const int lower_bound, const int upper_bound
+std::vector<std::complex<double> > SpaceDomainSignalGenerator::generate1DSignal(
+    const int length, const double frequency, const double phase, const double noise
 ) {
-    // the method should be take rows, cols and major order as parameters...
-    // but this is a simple implementation of a 1D signal, so the signal is generated as a 1D signal
+    // init
     std::vector<std::complex<double>> signal;
-    // initialize the distributions
-    std::uniform_real_distribution real_distribution(static_cast<float>(lower_bound), static_cast<float>(upper_bound));
-    std::uniform_real_distribution i_distribution(static_cast<float>(lower_bound), static_cast<float>(upper_bound));
     // reserve the space for the signal
     try {
         signal.reserve(length);
     } catch (std::length_error &e) {
         std::cerr << "Error: the length of the signal cannot be grater than " << signal.max_size()
-                  << ". Reason: " << e.what() << std::endl;
+                << ". Reason: " << e.what() << std::endl;
     }
-    // generate the signal
-    for (int i = 0; i < length; ++i) {
-        signal.emplace_back(real_distribution(_engine), i_distribution(_engine));
+    // there is memory space for the signal, so generate it
+    // initialize the Gaussian distribution for the noise
+    std::normal_distribution<> gaussian(0, noise);
+    // angular spatial frequency or wave number
+    const double angular_spatial_frequency = 2 * M_PI * frequency;
+    // generate the signal 1D, so we have only one spatial coordinate called x for convenience
+    for (int x = 0; x < length; ++x) {
+        signal.emplace_back(
+            std::cos(angular_spatial_frequency * x + phase) + gaussian(_engine),
+            std::sin(angular_spatial_frequency * x + phase) + gaussian(_engine)
+        );
     }
     return signal;
 }

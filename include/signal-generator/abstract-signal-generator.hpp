@@ -11,6 +11,17 @@ protected:
      * Seed for the random generator.
      */
     std::optional<int> _seed;
+    /**
+     * Random engine for the random generator.
+     * The Mersenne Twister is a general-purpose pseudorandom number generator (PRNG).
+     *
+     * It produces 32-bit pseudo-random numbers using the well-known and
+     * popular algorithm named Mersenne Twister algorithm.
+     *
+     * The word mt19937 stands for Mersenne Twister with a long period of 2^{19937} – 1 which means
+     * mt19937 produces a sequence of 32-bit integers that only repeats itself
+     * after 2^{19937} – 1 number have been generated.
+     */
     std::mt19937 _engine;
 
 public:
@@ -27,13 +38,24 @@ public:
     virtual ~AbstractSignalGenerator() = default;
 
     /**
-     * Generate a signal of a given length.
-     * @param length The length of the signal.
-     * @param lower_bound The lower bound for the uniform distribution.
-     * @param upper_bound The upper bound for the uniform distribution.
+     * Generate a random (thanks to noise) one-dimensional signal.
+     *
+     * @param length The length of the signal. Specifies the number of samples or data points in the signal.
+     * @param frequency Represents the frequency of the signal's oscillations. It depends on the signal domain.
+     *                  For example, it refers to the number of cycles per second (hertz) in the time domain,
+     *                  and it indicates spatial frequency (or the number of cycles per unit distance)
+     *                  in the spatial domain.
+     * @param phase The phase (radians) of the signal.
+     *              It allows you to move the signal along the time axis (i.e. to the left or right).
+     *              It represents the initial angle of the sine or cosine function at time t = 0,
+     *              or the shift of the signal waveform.
+     * @param noise Thanks to the noise parameter, the signal can be randomly distorted.
+     *              In addition, the noise guarantees a more realistic signal generation.
      * @return The generated signal.
      */
-    virtual std::vector<std::complex<double>> generateSignal(int length, int lower_bound, int upper_bound) = 0;
+    virtual std::vector<std::complex<double>> generate1DSignal(
+        int length, double frequency, double phase, double noise
+    ) = 0;
 
     /**
      * Get the _seed for the random generator.

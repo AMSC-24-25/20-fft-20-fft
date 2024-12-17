@@ -2,23 +2,28 @@
 
 #include <iostream>
 
-std::vector<std::complex<double> > TimeDomainSignalGenerator::generateSignal(
-    const int length, const int lower_bound, const int upper_bound
+std::vector<std::complex<double> > TimeDomainSignalGenerator::generate1DSignal(
+    const int length, const double frequency, const double phase, const double noise
 ) {
+    // init
     std::vector<std::complex<double>> signal;
-    // initialize the distributions
-    std::uniform_real_distribution real_distribution(static_cast<float>(lower_bound), static_cast<float>(upper_bound));
-    std::uniform_real_distribution i_distribution(static_cast<float>(lower_bound), static_cast<float>(upper_bound));
     // reserve the space for the signal
     try {
         signal.reserve(length);
     } catch (std::length_error &e) {
         std::cerr << "Error: the length of the signal cannot be grater than " << signal.max_size()
-                  << ". Reason: " << e.what() << std::endl;
+                << ". Reason: " << e.what() << std::endl;
     }
+    // there is memory space for the signal, so generate it
+    // initialize the Gaussian distribution for the noise
+    std::normal_distribution<> gaussian(0, noise);
+    const double angular_frequency = 2 * M_PI * frequency;
     // generate the signal
-    for (int i = 0; i < length; ++i) {
-        signal.emplace_back(real_distribution(_engine), i_distribution(_engine));
+    for (int time = 0; time < length; ++time) {
+        signal.emplace_back(
+            std::cos(angular_frequency * time + phase) + gaussian(_engine),
+            std::sin(angular_frequency * time + phase) + gaussian(_engine)
+        );
     }
     return signal;
 }
