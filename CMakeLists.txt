@@ -5,8 +5,21 @@ set(CMAKE_CXX_STANDARD 20)
 # add C++20 and OpenMP flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 
+# Detect if the OpenMP library is available
+find_package(OpenMP REQUIRED)
+
+# Find gnuplot package and install it if necessary (only for Linux)
+if (UNIX AND NOT APPLE)
+    message(STATUS "Checking if gnuplot is installed...")
+    execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_gnuplot_linux.sh RESULT_VARIABLE result)
+    if (result)
+        message(FATAL_ERROR "Gnuplot installation failed or was skipped.")
+    endif()
+endif()
+
 # External libraries
 include_directories(external)
+add_subdirectory(external/matplotplusplus)
 # Header files
 include_directories(include)
 
@@ -49,5 +62,26 @@ set(HEADERS
     include/utils/timestamp.hpp
 )
 
-# Add the executable
+# Add the default executable
 add_executable(main ${SOURCES} ${HEADERS})
+# Link the matplot library
+target_link_libraries(main PUBLIC matplot)
+
+##################
+# Parallel build #
+##################
+# Since matplot can be slow to compile, we suggest to use the parallel_build target
+# Naive benchmark: 1 core -> 1m 40s, 12 cores -> 30s (Intel i7-8700K, approx.)
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+    set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
+    message(WARNING
+            "Your system has ${N} CPU cores. You can use the following command to build the project faster: 'make -f ./Makefile -C . parallel_build'."
+    )
+endif()
+# Add the parallel_build target
+add_custom_target(parallel_build
+        COMMAND ${CMAKE_COMMAND} --build . --parallel ${CMAKE_BUILD_PARALLEL_LEVEL}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
