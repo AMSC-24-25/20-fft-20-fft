@@ -34,4 +34,9 @@ add_executable(main src/main.cpp
         src/signal-generator/space-domain-signal-generator.cpp
         include/config-loader/json-field-handler.hpp
         src/config-loader/json-field-handler.cpp
+        include/signal-saver/abstract-file-signal-saver.hpp
+        include/signal-saver/csv-signal-saver.hpp
+        src/signal-saver/csv-signal-saver.cpp
+        include/utils/timestamp.hpp
+        src/utils/timestamp.cpp
 )
