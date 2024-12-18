@@ -2,6 +2,7 @@
 #include "config-loader/json-configuration-loader.hpp"
 #include "signal-generator/space-domain-signal-generator.hpp"
 #include "signal-generator/time-domain-signal-generator.hpp"
+#include "signal-saver/csv-signal-saver.hpp"
 
 /**
  * Environment variable name for the file path for the configuration file.
@@ -50,5 +51,11 @@ int main() {
     for (const auto &s : signal) {
         std::cout << s << std::endl;
     }
+
+    // save the signal to a file
+    const std::string output_file_path = "output/signal";
+    const CsvSignalSaver csv_signal_saver;
+    csv_signal_saver.saveToFile(signal, output_file_path);
+
     return 0;
 }
