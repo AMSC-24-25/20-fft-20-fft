@@ -84,13 +84,16 @@ To configure the simulation, you need to:
 In the [resources/json-schema](resources/json-schema) folder,
 you can find the JSON schema that you can use to easily validate/write the JSON configuration file.
 
-Unfortunately, the JSON schema is not used in the code yet because
-we should install external libraries to validate the JSON file (not necessary at the moment).
+> [!WARNING]
+> Unfortunately, the JSON schema is not used in the code yet because
+> we should install external libraries to validate the JSON file (not necessary at the moment).
+> Therefore, the JSON should be validated manually.
 
-If you are not familiar with JSON Schema, you can use the following website validator to validate your JSON file:
-[JSON Schema Validator][JSONSchemaValidator].
-You need to copy the [contents of the JSON schema file](resources/json-schema/json-schema.json) on the left
-and the contents of your JSON file on the right (the validation is done automatically).
+> [!TIP]
+> If you are not familiar with JSON Schema, you can use the following website validator to validate your JSON file:
+> [JSON Schema Validator][JSONSchemaValidator].
+> You need to copy the [contents of the JSON schema file](resources/json-schema/json-schema.json) on the left
+> and the contents of your JSON file on the right (the validation is done automatically).
 
 ------------------------------------------------------------------------------------------------------------------------
 
