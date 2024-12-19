@@ -242,13 +242,14 @@ Otherwise, you can compile the code using the command line.
    # assuming you are in the repository folder where the CMakeLists.txt file is located
    make -f ./Makefile -C . all
    ```
-   > [!TIP] 
-   > Most likely you have a multi-core processor.
-   > Since the build needs to compile the `matplotplusplus` library,
-   > we strongly recommend using the `parallel_build` command. So you can use the following command:
-   > ```bash
-   > make -f ./Makefile -C . parallel_build
-   > ```
+> [!TIP]
+>
+> Most likely you have a multi-core processor.
+> Since the build needs to compile the `matplotplusplus` library,
+> we strongly recommend using the `parallel_build` command. So you can use the following command:
+> ```bash
+> make -f ./Makefile -C . parallel_build
+> ```
 3. Set the environment variable:
    ```bash
    export CONFIG_FILE_PATH_FFT=/path/to/your/json/file.json
