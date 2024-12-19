@@ -47,6 +47,11 @@ set(SOURCES
     src/config-loader/json-field-handler.cpp
     src/signal-saver/csv-signal-saver.cpp
     src/utils/timestamp.cpp
+    src/utils/bit-reversal.cpp
+    src/fourier-transform-solver/parallel-1d-fast-ft.cpp
+    src/fourier-transform-solver/parallel-1d-inverse-fast-ft.cpp
+    src/fourier-transform-solver/sequential-1d-fast-ft.cpp
+    src/fourier-transform-solver/sequential-1d-inverse-fast-ft.cpp
 )
 
 # Header files
@@ -60,6 +65,12 @@ set(HEADERS
     include/signal-saver/abstract-file-signal-saver.hpp
     include/signal-saver/csv-signal-saver.hpp
     include/utils/timestamp.hpp
+    include/fourier-transform-solver/abstract-fourier-transform-solver.hpp
+    include/fourier-transform-solver/sequential-1d-fast-ft.hpp
+    include/fourier-transform-solver/parallel-1d-fast-ft.hpp
+    include/fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp
+    include/utils/bit-reversal.hpp
+    include/fourier-transform-solver/sequential-1d-inverse-fast-ft.hpp
 )
 
 # Add the default executable
