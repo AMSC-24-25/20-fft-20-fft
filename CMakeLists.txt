@@ -8,13 +8,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 # Detect if the OpenMP library is available
 find_package(OpenMP REQUIRED)
 
-# Find gnuplot package and install it if necessary (only for Linux)
-if (UNIX AND NOT APPLE)
-    message(STATUS "Checking if gnuplot is installed...")
-    execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_gnuplot_linux.sh RESULT_VARIABLE result)
-    if (result)
-        message(FATAL_ERROR "Gnuplot installation failed or was skipped.")
-    endif()
+# Detect if gnuplot is installed
+find_program(GNUPLOT_EXECUTABLE gnuplot)
+if (NOT GNUPLOT_EXECUTABLE)
+    message(FATAL_ERROR "Gnuplot not found. Please install it.")
 endif()
 
 # External libraries
