@@ -151,7 +151,7 @@ To configure the simulation, you need to:
 > ```json
 > {
 >   "signal_domain": "time",
->   "signal_length": 1024,
+>   "signal_length": 2048,
 >   "hz_frequency": 5,
 >   "phase": 0,
 >   "noise": 5
