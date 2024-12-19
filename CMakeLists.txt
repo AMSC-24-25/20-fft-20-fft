@@ -11,7 +11,7 @@ find_package(OpenMP REQUIRED)
 # Detect if gnuplot is installed
 find_program(GNUPLOT_EXECUTABLE gnuplot)
 if (NOT GNUPLOT_EXECUTABLE)
-    message(FATAL_ERROR "Gnuplot not found. Please install it.")
+    message(FATAL_ERROR "Gnuplot not found. Please install it with 'sudo apt-get install gnuplot'.")
 endif()
 
 # External libraries
