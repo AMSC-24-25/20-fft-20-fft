@@ -128,7 +128,7 @@ int main() {
     delete tmp_solver;
 
 
-    // ====================== Plotting ======================
+    // =================================================== Plotting ===================================================
     // prepare the data for plotting
     // original signal comparison:
     std::vector<double> plot_original_signal(signal_length),
