@@ -115,6 +115,8 @@ private:
 
   /**
    * Validate the configuration data.
+   *
+   * TODO: The json schema should be used to validate the configuration data.
    * @throw std::invalid_argument If the configuration data is not valid or the required fields are missing.
    */
   void validation() const;

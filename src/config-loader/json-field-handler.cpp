@@ -43,6 +43,10 @@ void JsonFieldHandler::validation() const {
     if (getSignalLength() <= 0 || (getSignalLength() & (getSignalLength() - 1)) != 0) {
         throw std::invalid_argument("Signal length is not a power of 2.");
     }
+    // check if the noise is positive
+    if (getNoise() < 0) {
+        throw std::invalid_argument("Noise must be a positive value.");
+    }
 }
 
 bool JsonFieldHandler::hasField(const std::string &field) {
