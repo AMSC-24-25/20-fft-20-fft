@@ -14,7 +14,9 @@ public:
     ) : AbstractFourierTransformSolver(inputVector) {}
 
     /**
-     * Run the sequential 1D Fast Fourier Transform solver.
+     * Run the Parallel 1D Fast Fourier Transform solver.
+     * It implements the Cooley-Tukey algorithm in an iterative way (parallel).
+     * The algorithm is parallelized using OpenMP.
      */
     void compute() override;
 };
