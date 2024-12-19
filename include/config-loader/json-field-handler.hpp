@@ -45,8 +45,12 @@ public:
    * Constructor that takes a JSON configuration data.
    * @param json The JSON configuration data.
    * @throw std::runtime_error If the JSON cannot be parsed.
+   * @throw std::invalid_argument If the JSON is not valid or the required fields are missing.
    */
-  explicit JsonFieldHandler(nlohmann::json json) : configurationLoaded(std::move(json)) {}
+  explicit JsonFieldHandler(nlohmann::json json) : configurationLoaded(std::move(json)) {
+    // validate the configuration data, throw an exception if it is not valid
+    validation();
+  }
   // use std::move to move the json object to the configurationLoaded field
   // to avoid copying (or deep copying) the json object
 
@@ -108,6 +112,12 @@ private:
    */
   static const std::unordered_map<Field, std::string> fieldNames;
   nlohmann::json configurationLoaded;
+
+  /**
+   * Validate the configuration data.
+   * @throw std::invalid_argument If the configuration data is not valid or the required fields are missing.
+   */
+  void validation() const;
 };
 
 #endif //JSON_FIELD_HANDLER_HPP

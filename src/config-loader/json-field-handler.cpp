@@ -1,5 +1,6 @@
 #include "config-loader/json-field-handler.hpp"
 
+#include <set>
 #include <stdexcept>
 #include <bits/ranges_algo.h>
 
@@ -11,6 +12,38 @@ const std::unordered_map<JsonFieldHandler::Field, std::string> JsonFieldHandler:
     {Field::Noise, "noise"},
     {Field::Seed, "seed"}
 };
+
+void JsonFieldHandler::validation() const {
+    // optional fields
+    const std::set optional_fields = {
+        fieldNames.at(Field::Seed),
+    };
+    // documentation: https://en.cppreference.com/w/cpp/ranges
+    // "takes a view consisting of pair-like values
+    //  and produces a view of the second elements of each pair"
+    // so in this case, it produces a view of the field names
+    for (const auto &map_value: fieldNames | std::views::values) {
+        // check if the field is not optional and not loaded (not in the configuration)
+        if (!optional_fields.contains(map_value) && !configurationLoaded.contains(map_value)) {
+            throw std::invalid_argument("Field not found: " + map_value);
+        }
+    }
+    // check allowed values for signal domain
+    if (getSignalDomain() != "time" && getSignalDomain() != "space") {
+        throw std::invalid_argument("Signal domain is not valid. The signal domain must be 'time' or 'space'.");
+    }
+    // check if the signal length is a power of 2
+    // use bitwise AND:
+    //  - if the signal length is a power of 2, there is only one bit set in the binary representation
+    //  - the consequence is that the result of the bitwise AND is 0
+    // for example:
+    //  - length = 8 (binary: 1000)
+    //  - length - 1 = 7 (binary: 0111)
+    //  - 1000 & 0111 = 0
+    if (getSignalLength() <= 0 || (getSignalLength() & (getSignalLength() - 1)) != 0) {
+        throw std::invalid_argument("Signal length is not a power of 2.");
+    }
+}
 
 bool JsonFieldHandler::hasField(const std::string &field) {
     /**
