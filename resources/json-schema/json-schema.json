@@ -5,9 +5,9 @@
   "type": "object",
   "properties": {
     "signal_length": {
-      "description": "The length of the signal (vector) to generate. The values inside the vector will be generated randomly.",
+      "description": "The length of the signal (vector) to generate. The values inside the vector will be generated randomly. Must be a power of two.",
       "type": "integer",
-      "minimum": 5
+      "minimum": 2
     },
     "signal_domain": {
       "description": "The domain of the signal (vector) to generate.",
