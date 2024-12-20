@@ -22,6 +22,12 @@
   - [Fourier Transform Solver](#fourier-transform-solver)
   - [Utils](#utils)
   - [Main](#main)
+- [Benchmark](#benchmark)
+  - [FFT Performance](#fft-performance)
+  - [Inverse FFT Performance](#inverse-fft-performance)
+  - [Standard Deviation](#standard-deviation)
+    - [FFT](#fft)
+    - [Inverse FFT](#inverse-fft)
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -426,8 +432,79 @@ The main file contains the following steps:
    1. Plot the original signal against the inverse FFT of the original signal's FFT.
    2. Plot the magnitude of the FFT of the original signal using the sequential and parallel versions of the algorithm.
    3. Plot the phase of the FFT of the original signal using the sequential and parallel versions of the algorithm.
-
+    
 ------------------------------------------------------------------------------------------------------------------------
+
+## Benchmark
+
+### FFT Performance
+
+In the following figure, we show the execution time of the sequential and parallel versions of the FFT algorithm:
+
+<img src="docs/_static/fft_performance.png">
+
+The signal length is on a logarithmic scale (ranging from 10 to 10 million), and the execution time is also on a 
+logarithmic scale (ranging from 0.001 ms to 1000 ms).
+- For small signal lengths (up to about $10^2$), the Sequential FFT performs better,
+  and takes less time than the parallel FFT.
+  This is likely due to the overhead associated with parallel processing
+  which outweighs the benefits for smaller data sets.
+- As the signal length increases beyond $10^2$, the parallel FFT begins to show its advantages,
+  becomes more efficient and takes less time compared to the Sequential FFT.
+  This indicates that for larger data sets, the workload sharing in the Parallel FFT
+  effectively utilizes multiple processors and significantly reduces computation time.
+- The gap between the Sequential and Parallel FFTs widens as the signal length increases.
+  The Parallel FFT consistently outperforms the Sequential FFT for larger signal lengths,
+  demonstrating the scalability and efficiency of parallel processing for intensive computations.
+
+### Inverse FFT Performance
+
+And in the following figure, we show the execution time of the sequential and parallel versions of the inverse FFT algorithm:
+
+<img src="docs/_static/inverse_fft_performance.png">
+
+- For smaller signal lengths (up to around $10^2$), the Sequential Inverse FFT often performs slightly better,
+  similar to the FFT performance.
+  The overhead associated with managing parallel tasks can make the parallel version less efficient for small datasets.
+- As the signal length increases beyond $10^2$, the Parallel Inverse FFT starts to show its strength and efficiency.
+  The execution time for the parallel version becomes significantly lower than that of the sequential version
+  for larger datasets. This is due to the effective utilization of multiple cores to handle the increased workload.
+- The gap between Sequential Inverse FFT and Parallel Inverse FFT widens with increasing signal lengths.
+  This indicates that parallel processing significantly improves performance for large-scale inverse FFT computations.
+
+### Standard Deviation
+
+#### FFT
+
+The standard deviation of the execution time for the sequential and parallel versions of the FFT algorithm is shown in the following figure:
+
+<img src="docs/_static/std_fft_performance.png">
+
+- The error bars on the graph represent the standard deviation of the measured times.
+  They indicate the variability or consistency of the performance measurements. 
+  
+  Smaller error bars mean more consistent performance,
+  while larger error bars suggest more variability in the execution times.
+
+The graph highlights the point at which parallel processing begins to show a clear advantage over sequential processing.
+
+#### Inverse FFT
+
+The standard deviation of the execution time for the sequential and parallel versions of the inverse FFT algorithm
+is shown in the following figure:
+
+<img src="docs/_static/std_inverse_fft_performance.png">
+
+- Error bars indicate the standard deviation of execution times,
+  highlighting the variability in performance measurements.
+
+  Consistent performance is indicated by smaller error bars.
+- The smaller error bars indicate more consistent and reliable performance.
+  When the Parallel Inverse FFT shows smaller error bars for large signal lengths, it highlights its stable performance.
+
+- The larger error bars indicate greater variability.
+  If the Parallel Inverse FFT shows larger error bars, it may be subject to more variability due to system or
+  algorithmic factors.
 
 
 [OpenMP]: https://www.openmp.org/
