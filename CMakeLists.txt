@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.22)
 project(20_fft_20_fft)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # add C++20 and OpenMP flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 
@@ -28,7 +30,7 @@ include_directories(include)
 #  Developed at MOX (Politecnico di Milano) and based on Lmod."
 # https://github.com/pcafrica/mk
 include_directories(
-        /u/sw/toolchains/gcc-glibc/11.2.0/base/include
+        # /u/sw/toolchains/gcc-glibc/11.2.0/base/include
         # To include the Eigen library:
         # /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/eigen/3.3.9/include/eigen3
         # To include the LIS library:
