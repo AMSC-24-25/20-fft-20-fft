@@ -6,9 +6,9 @@
 #include <fstream>
 
 void CsvSignalSaver::saveToFile(const std::vector<std::complex<double>> &signal, const std::string &filePath) const {
-    const std::string output_file_path = std::format(
-        "{}_{}.{}", filePath, createReadableTimestamp("%Y%m%d_%H%M%S"), getExtension()
-    );
+    std::ostringstream stringStream;
+    stringStream << filePath << "_" << createReadableTimestamp("%Y%m%d_%H%M%S") << "." << getExtension();
+    const std::string output_file_path = stringStream.str();
     printf("Saving signal to file: %s\n", output_file_path.c_str());
     // validate the input
     if (signal.empty()) {
@@ -35,7 +35,7 @@ void CsvSignalSaver::saveToFile(const std::vector<std::complex<double>> &signal,
     }
     // write the signal to the file
     for (const std::complex<double> &sample : signal) {
-        file << std::format("{},{}\n", sample.real(), sample.imag());
+        file << sample.real() << "," << sample.imag() << "\n";
     }
     // close the file
     file.close();
