@@ -12,3 +12,6 @@ CMakeFiles
 cmake-build-*
 build
 CMakePresets.json
+
+# main output files
+output
