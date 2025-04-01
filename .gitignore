@@ -11,3 +11,4 @@ Makefile
 CMakeFiles
 cmake-build-*
 build
+CMakePresets.json
