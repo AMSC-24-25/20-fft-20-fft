@@ -51,6 +51,7 @@ set(SOURCES
     src/fourier-transform-solver/parallel-1d-inverse-fast-ft.cpp
     src/fourier-transform-solver/sequential-1d-fast-ft.cpp
     src/fourier-transform-solver/sequential-1d-inverse-fast-ft.cpp
+    src/fourier-transform-solver/parallel-2d-fast-ft.cpp
 )
 
 # Header files
@@ -70,6 +71,7 @@ set(HEADERS
     include/fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp
     include/utils/bit-reversal.hpp
     include/fourier-transform-solver/sequential-1d-inverse-fast-ft.hpp
+    include/fourier-transform-solver/parallel-2d-fast-ft.hpp
 )
 
 # Add the default executable

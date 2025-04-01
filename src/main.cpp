@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fourier-transform-solver/parallel-2d-fast-ft.hpp>
 #include "config-loader/json-configuration-loader.hpp"
 #include "fourier-transform-solver/parallel-1d-fast-ft.hpp"
 #include "fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp"
@@ -14,8 +15,44 @@
  */
 #define ENV_FILE_PATH "CONFIG_FILE_PATH_FFT"
 
+void compute(std::vector<std::vector<std::complex<double>>> data) {
+    const size_t rows = data.size();
+    const size_t cols = data[0].size();
+
+    // Apply 1D FFT to each row
+#pragma omp parallel for
+    for (size_t i = 0; i < rows; ++i) {
+        Parallel1DFastFT row_fft(data[i]);
+        row_fft.compute();
+        data[i] = row_fft.getSolution();
+    }
+
+    // Transpose the matrix
+    std::vector<std::vector<std::complex<double>>> transposed(cols, std::vector<std::complex<double>>(rows));
+#pragma omp parallel for
+    for (size_t i = 0; i < rows; ++i)
+        for (size_t j = 0; j < cols; ++j)
+            transposed[j][i] = data[i][j];
+
+
+    // Apply 1D FFT to each column (originally a row in transposed)
+#pragma omp parallel for
+    for (size_t i = 0; i < rows; ++i) {
+        Parallel1DFastFT col_fft(transposed[i]);
+        col_fft.compute();
+        transposed[i] = col_fft.getSolution();
+    }
+
+    // Transpose back to original orientation
+#pragma omp parallel for
+    for (size_t i = 0; i < rows; ++i)
+        for (size_t j = 0; j < cols; ++j)
+            data[i][j] = transposed[j][i];
+
+}
+
 int main() {
-    // ============================================= Configuration Loading =============================================
+    /*// ============================================= Configuration Loading =============================================
     // get the file path from environment variable
     if (getenv(ENV_FILE_PATH) == nullptr) {
         std::cerr << "Warning: Environment variable " << ENV_FILE_PATH << " is not set. "
@@ -243,7 +280,43 @@ int main() {
     matplot::plot(x, plot_parallel_inverse_fft_phase);
     matplot::title("Inverse Parallel FFT");
     // show the plot and block the execution
-    phase_figure->show();
+    phase_figure->show();*/
 
+    std::vector<std::vector<std::complex<double>>> input_matrix{
+            { {1, 0}, {2, 0}, {3, 0}, {4, 0} },
+            { {5, 0}, {6, 0}, {7, 0}, {8, 0} },
+            { {9, 0}, {10, 0}, {11, 0}, {12, 0} },
+            { {13, 0}, {14, 0}, {15, 0}, {16, 0} },
+    };
+
+
+    printf("Input Matrix: \n");
+
+    for (int i=0; i < input_matrix.size(); i++) {
+        for (int j=0; j < input_matrix[0].size(); j++) {
+            std::cout << input_matrix[i][j] << "  ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+
+    const std::chrono::time_point<std::chrono::system_clock> start_time = std::chrono::high_resolution_clock::now();
+    compute(std::move(input_matrix));
+
+    const std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::high_resolution_clock::now();
+
+
+    printf("End: %f ms.\n",
+        std::chrono::duration<float, std::milli>(end_time - start_time).count());
+
+    for (int i=0; i < input_matrix.size(); i++) {
+        for (int j=0; j < input_matrix[0].size(); j++) {
+            std::cout << input_matrix[i][j] << "  ";
+        }
+        std::cout << std::endl;
+    }
     return 0;
 }

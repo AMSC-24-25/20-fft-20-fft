@@ -1,5 +1,6 @@
 #include <vector>
 #include <complex>
+#include <iostream>
 #include <omp.h>
 #include "fourier-transform-solver/parallel-1d-fast-ft.hpp"
 
@@ -13,8 +14,9 @@ public:
         const size_t cols = data[0].size();
 
         // Apply 1D FFT to each row
-#pragma omp parallel for
+//#pragma omp parallel for
         for (size_t i = 0; i < rows; ++i) {
+            std::cout << i << std::endl;
             Parallel1DFastFT row_fft(data[i]);
             row_fft.compute();
             data[i] = row_fft.getSolution();
