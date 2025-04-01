@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "~ Export configuration ./resources/sample-config.json ~"
-export CONFIG_FILE_PATH_FFT=${pwd}/resources/sample-config.json
+export CONFIG_FILE_PATH_FFT=$(pwd)/resources/sample-config.json
 echo ""
 
 echo "~ Compile CMakeLists.txt ~"
