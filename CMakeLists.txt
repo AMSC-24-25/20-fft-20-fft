@@ -18,7 +18,13 @@ endif()
 
 # External libraries
 include_directories(external)
-add_subdirectory(external/matplotplusplus)
+if(EXISTS "${CMAKE_SOURCE_DIR}/external/matplotplusplus")
+    add_subdirectory(external/matplotplusplus)
+else()
+    message(FATAL_ERROR
+            "The directory 'external/matplotplusplus' does not exist. Did you forget to clone the repository? Use the following command: git clone --recurse-submodules repo-url"
+    )
+endif()
 # Header files
 include_directories(include)
 
