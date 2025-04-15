@@ -1,10 +1,7 @@
 #include <iostream>
-#include <fourier-transform-solver/parallel-2d-fast-ft.hpp>
 #include "config-loader/json-configuration-loader.hpp"
-#include "fourier-transform-solver/parallel-1d-fast-ft.hpp"
-#include "fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp"
-#include "fourier-transform-solver/sequential-1d-fast-ft.hpp"
-#include "fourier-transform-solver/sequential-1d-inverse-fast-ft.hpp"
+#include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
+#include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
 #include "matplot/matplot.h"
 #include "signal-generator/space-domain-signal-generator.hpp"
 #include "signal-generator/time-domain-signal-generator.hpp"
@@ -15,16 +12,19 @@
  */
 #define ENV_FILE_PATH "CONFIG_FILE_PATH_FFT"
 
-void compute(std::vector<std::vector<std::complex<double>>> data) {
+/**
+ * Compute the 2D FFT of a matrix using the Fast Fourier Transform algorithm.
+ * TODO: move this...
+ */
+void compute(std::vector<std::vector<std::complex<double>>> &data) {
     const size_t rows = data.size();
     const size_t cols = data[0].size();
 
     // Apply 1D FFT to each row
 #pragma omp parallel for
     for (size_t i = 0; i < rows; ++i) {
-        Parallel1DFastFT row_fft(data[i]);
-        row_fft.compute();
-        data[i] = row_fft.getSolution();
+        fft::solver::FastFourierTransform<1> row_fft;
+        row_fft.compute(data[i], fft::solver::ComputationMode::OPENMP);
     }
 
     // Transpose the matrix
@@ -38,9 +38,8 @@ void compute(std::vector<std::vector<std::complex<double>>> data) {
     // Apply 1D FFT to each column (originally a row in transposed)
 #pragma omp parallel for
     for (size_t i = 0; i < rows; ++i) {
-        Parallel1DFastFT col_fft(transposed[i]);
-        col_fft.compute();
-        transposed[i] = col_fft.getSolution();
+        fft::solver::FastFourierTransform<1> col_fft;
+        col_fft.compute(transposed[i], fft::solver::ComputationMode::OPENMP);
     }
 
     // Transpose back to original orientation
@@ -282,6 +281,34 @@ int main() {
     // show the plot and block the execution
     phase_figure->show();*/
 
+    /**
+     * Simple test for the FFT solver.
+     */
+    printf("1D FFT test\n");
+    std::vector<std::complex<double>> input { {1, 0}, {2, 0}, {3, 0}, {4, 0} };
+    fft::solver::FastFourierTransform<1> solver;
+    solver.compute(input, fft::solver::ComputationMode::OPENMP);
+
+    printf("Input Vector: \n");
+    for (std::complex val : input)
+    {
+        printf("Value: (%f, %f)\n", val.real(), val.imag());
+    }
+
+    fft::solver::InverseFastFourierTransform<1> inverse_solver;
+    inverse_solver.compute(input, fft::solver::ComputationMode::OPENMP);
+
+    printf("Original Vector: \n");
+    for (std::complex val : input)
+    {
+        printf("Value: (%f, %f)\n", val.real(), val.imag());
+    }
+    printf("\n\n\n");
+
+
+    /**
+     * 2D FFT test
+     */
     std::vector<std::vector<std::complex<double>>> input_matrix{
             { {1, 0}, {2, 0}, {3, 0}, {4, 0} },
             { {5, 0}, {6, 0}, {7, 0}, {8, 0} },
@@ -289,28 +316,22 @@ int main() {
             { {13, 0}, {14, 0}, {15, 0}, {16, 0} },
     };
 
-
     printf("Input Matrix: \n");
-
     for (int i=0; i < input_matrix.size(); i++) {
         for (int j=0; j < input_matrix[0].size(); j++) {
             std::cout << input_matrix[i][j] << "  ";
         }
         std::cout << std::endl;
     }
-
-    std::cout << std::endl;
     std::cout << std::endl;
 
 
     const std::chrono::time_point<std::chrono::system_clock> start_time = std::chrono::high_resolution_clock::now();
-    compute(std::move(input_matrix));
-
+    compute(input_matrix);
     const std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::high_resolution_clock::now();
 
 
-    printf("End: %f ms.\n",
-        std::chrono::duration<float, std::milli>(end_time - start_time).count());
+    printf("End 2D: %f ms.\n", std::chrono::duration<float, std::milli>(end_time - start_time).count());
 
     for (int i=0; i < input_matrix.size(); i++) {
         for (int j=0; j < input_matrix[0].size(); j++) {

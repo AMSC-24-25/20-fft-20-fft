@@ -1,4 +1,4 @@
-#include "utils/bit-reversal.hpp"
+#include "bit-reversal.hpp"
 
 std::vector<std::complex<double>> & sequentialBitReversal(std::vector<std::complex<double>> &data) {
     // size of the input data

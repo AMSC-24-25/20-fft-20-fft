@@ -17,7 +17,10 @@ if (NOT GNUPLOT_EXECUTABLE)
 endif()
 
 # External libraries
-include_directories(external)
+include_directories(
+        external
+        src
+)
 if(EXISTS "${CMAKE_SOURCE_DIR}/external/matplotplusplus")
     add_subdirectory(external/matplotplusplus)
 else()
@@ -25,8 +28,6 @@ else()
             "The directory 'external/matplotplusplus' does not exist. Did you forget to clone the repository? Use the following command: git clone --recurse-submodules repo-url"
     )
 endif()
-# Header files
-include_directories(include)
 
 # If you are a 'Politecnico di Milano' student, you can use the following lines to include the MK library
 # Otherwise, you can remove them...
@@ -43,45 +44,53 @@ include_directories(
         # /u/sw/toolchains/gcc-glibc/11.2.0/pkgs/lis/2.0.30/include
 )
 
-# Source files
-set(SOURCES
-    src/main.cpp
-    src/config-loader/json-configuration-loader.cpp
-    src/signal-generator/time-domain-signal-generator.cpp
-    src/signal-generator/space-domain-signal-generator.cpp
-    src/config-loader/json-field-handler.cpp
-    src/signal-saver/csv-signal-saver.cpp
-    src/utils/timestamp.cpp
-    src/utils/bit-reversal.cpp
-    src/fourier-transform-solver/parallel-1d-fast-ft.cpp
-    src/fourier-transform-solver/parallel-1d-inverse-fast-ft.cpp
-    src/fourier-transform-solver/sequential-1d-fast-ft.cpp
-    src/fourier-transform-solver/sequential-1d-inverse-fast-ft.cpp
-    src/fourier-transform-solver/parallel-2d-fast-ft.cpp
-)
+set (
+        FFT-LIBRARY
 
-# Header files
-set(HEADERS
-    include/config-loader/abstract-configuration-loader.hpp
-    include/config-loader/json-configuration-loader.hpp
-    include/signal-generator/abstract-signal-generator.hpp
-    include/signal-generator/time-domain-signal-generator.hpp
-    include/signal-generator/space-domain-signal-generator.hpp
-    include/config-loader/json-field-handler.hpp
-    include/signal-saver/abstract-file-signal-saver.hpp
-    include/signal-saver/csv-signal-saver.hpp
-    include/utils/timestamp.hpp
-    include/fourier-transform-solver/abstract-fourier-transform-solver.hpp
-    include/fourier-transform-solver/sequential-1d-fast-ft.hpp
-    include/fourier-transform-solver/parallel-1d-fast-ft.hpp
-    include/fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp
-    include/utils/bit-reversal.hpp
-    include/fourier-transform-solver/sequential-1d-inverse-fast-ft.hpp
-    include/fourier-transform-solver/parallel-2d-fast-ft.hpp
+        # config-loader
+        src/config-loader/abstract-configuration-loader.hpp
+        src/config-loader/json-configuration-loader.cpp
+        src/config-loader/json-configuration-loader.hpp
+        src/config-loader/json-field-handler.cpp
+        src/config-loader/json-field-handler.hpp
+
+        # fourier-transform-solver
+        src/fourier-transform-solver/fourier-transform-solver.hpp
+        # - algorithms
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft.hpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft.cpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft-openmp.hpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft-openmp.cpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft.hpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft.cpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft-openmp.hpp
+        src/fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft-openmp.cpp
+        # - fast-fourier-transform
+        src/fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp
+        # - inverse-fast-fourier-transform
+        src/fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp
+
+        # signal-generator
+        src/signal-generator/abstract-signal-generator.hpp
+        src/signal-generator/space-domain-signal-generator.cpp
+        src/signal-generator/space-domain-signal-generator.hpp
+        src/signal-generator/time-domain-signal-generator.cpp
+        src/signal-generator/time-domain-signal-generator.hpp
+
+        # signal-saver
+        src/signal-saver/abstract-file-signal-saver.hpp
+        src/signal-saver/csv-signal-saver.cpp
+        src/signal-saver/csv-signal-saver.hpp
+
+        # utils
+        src/utils/timestamp.cpp
+        src/utils/timestamp.hpp
+        src/utils/bit-reversal.cpp
+        src/utils/bit-reversal.hpp
 )
 
 # Add the default executable
-add_executable(main ${SOURCES} ${HEADERS})
+add_executable(main ${FFT-LIBRARY} src/main.cpp)
 # Link the matplot library
 target_link_libraries(main PUBLIC matplot)
 

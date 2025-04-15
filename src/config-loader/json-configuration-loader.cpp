@@ -3,8 +3,8 @@
  */
 
 #include <fstream>
-#include <config-loader/json-configuration-loader.hpp>
-#include <config-loader/json-field-handler.hpp>
+#include "config-loader/json-configuration-loader.hpp"
+#include "config-loader/json-field-handler.hpp"
 
 using json = nlohmann::json;
 
