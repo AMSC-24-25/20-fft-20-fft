@@ -38,16 +38,16 @@ int main(){
 
     //==================================================2D Haar wavelet transform example==================================================
 
-    /*std::vector<std::vector<double>> matrix = {{64, 2, 3, 61, 60, 6, 7, 57},  
+    std::vector<std::vector<double>> matrix = {{64, 2, 3, 61, 60, 6, 7, 57},  
                                                 {9, 55, 54, 12, 13, 51, 50, 16}, 
                                                 {17, 47, 46, 20, 21, 43, 42, 24},
                                                 {40, 26, 27, 37, 36, 30, 31, 33},
                                                 {32, 34, 35, 29, 28, 38, 39, 25},
                                                 {41, 23, 22, 44, 45, 19, 18, 48},
                                                 {49, 15, 14, 52, 53, 11, 10, 56},
-                                                {8, 58, 59, 5, 4, 62, 63, 1}};*/
-
-    std::vector<std::vector<double>> matrix = {{0, 1, 1, 0 },{1, 0, 0, 1 },{1, 0, 0, 1 },{0, 1, 1, 0 }};
+                                                {8, 58, 59, 5, 4, 62, 63, 1}};
+    
+    /*std::vector<std::vector<double>> matrix = {{0, 1, 1, 0}, {1, 0, 0,1}, {1, 0, 0,1}, {0, 1, 1, 0}};*/
 
     std::cout << "2D Haar wavelet transform example: " << std::endl;
     std::cout << "Input matrix: " << std::endl << std::endl << "\t";
@@ -62,6 +62,16 @@ int main(){
     HaarWaveletTransform2D waveletT2D(matrix);
     waveletT2D.compute();
     std::vector<std::vector<double>> matSolution = waveletT2D.getSolution();
+    std::vector<std::vector<double>> Hn = waveletT2D.getHnMatrix();
+
+    std::cout << "Corrensponding Hn matrix: " << std::endl << std::endl << "\t";
+    for(int i = 0; i < matrix.size(); i++){
+        for(int j = 0; j < matrix[0].size(); j++){
+            std::cout << Hn[i][j] << "\t";
+        }
+        std::cout << std::endl << "\t";
+    }
+    std::cout << std::endl << std::endl;
 
     std::cout << "Solution matrix: " << std::endl << std::endl << "\t";
     for(int i = 0; i < matrix.size(); i++){
@@ -72,6 +82,7 @@ int main(){
     }
     std::cout << std::endl << std::endl;
 
+    //Hn.~vector<std::vector<double>>()                 optional if memory is needed
     //matrix.~vector<std::vector<double>>()             optional if memory is needed
     //waveletT2D.~HaarWaveletTransform2D()              optional if memory is needed
     //matSolution.~vector<std::vector<double>>()        optional if memory is needed
