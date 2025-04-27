@@ -1,21 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "Haart1D.cpp"
-#include "Haart2D.cpp"
-#include "imgWL.cpp"
+#include "Haart1D.cpp"    //include 1D Haar transform
+#include "Haart2D.cpp"    //include 2D Haar transform
+#include "imgWL.cpp"      //include wavelet-based image compression
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stblib/stb_image.h"
+#include "stblib/stb_image.h"    //library to load images
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stblib/stb_image_write.h"
-
+#include "stblib/stb_image_write.h"    //library to save images
 
 int main(){
 
     //==================================================1D Haar wavelet transform example==================================================
 
-    std::vector<double> input = { 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 4.0, 0.0};;
+    std::vector<double> input = { 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 4.0, 0.0}; //example input for 1D transform
 
     std::cout << "1D Haar wavelet transform example: " << std::endl;
     std::cout << "Input vector: [";
@@ -23,21 +22,19 @@ int main(){
         std::cout << input[i] << "  ";
     std::cout << "]" << std::endl;
 
-    HaarWaveletTransform1D waveletT1D(input);
-    waveletT1D.compute();
-    std::vector<double> vecSolution = waveletT1D.getSolution();
+    HaarWaveletTransform1D waveletT1D(input);  //create object for 1D transform
+    waveletT1D.compute();                     //compute the transform
+    std::vector<double> vecSolution = waveletT1D.getSolution(); //get the solution
 
     std::cout << "Solution vector: [";
     for(int i = 0; i < input.size(); i++)
         std::cout << vecSolution[i] << "  ";
     std::cout << "]" << std::endl << std::endl;
 
-    //input.~vector()                           optional if memory is needed
-    //vecSolution.~vector()                     optional if memory is needed
-    //wavwlet1D.~HaarWaveletTransform1D()       optional if memory is needed
 
     //==================================================2D Haar wavelet transform example==================================================
 
+    // Example 2D input matrix (8x8 square)
     std::vector<std::vector<double>> matrix = {{64, 2, 3, 61, 60, 6, 7, 57},  
                                                 {9, 55, 54, 12, 13, 51, 50, 16}, 
                                                 {17, 47, 46, 20, 21, 43, 42, 24},
@@ -47,7 +44,8 @@ int main(){
                                                 {49, 15, 14, 52, 53, 11, 10, 56},
                                                 {8, 58, 59, 5, 4, 62, 63, 1}};
     
-    /*std::vector<std::vector<double>> matrix = {{0, 1, 1, 0}, {1, 0, 0,1}, {1, 0, 0,1}, {0, 1, 1, 0}};*/
+    /*alternative test matrix
+    std::vector<std::vector<double>> matrix = {{0, 1, 1, 0}, {1, 0, 0,1}, {1, 0, 0,1}, {0, 1, 1, 0}};*/
 
     std::cout << "2D Haar wavelet transform example: " << std::endl;
     std::cout << "Input matrix: " << std::endl << std::endl << "\t";
@@ -59,12 +57,12 @@ int main(){
     }
     std::cout << std::endl;
 
-    HaarWaveletTransform2D waveletT2D(matrix);
-    waveletT2D.compute();
-    std::vector<std::vector<double>> matSolution = waveletT2D.getSolution();
-    std::vector<std::vector<double>> Hn = waveletT2D.getHnMatrix();
+    HaarWaveletTransform2D waveletT2D(matrix); //create object for 2D transform
+    waveletT2D.compute();                      //compute the transform
+    std::vector<std::vector<double>> matSolution = waveletT2D.getSolution(); //get the solution
+    std::vector<std::vector<double>> Hn = waveletT2D.getHnMatrix();          //get Hn matrix
 
-    std::cout << "Corrensponding Hn matrix: " << std::endl << std::endl << "\t";
+    std::cout << "Corresponding Hn matrix: " << std::endl << std::endl << "\t";
     for(int i = 0; i < matrix.size(); i++){
         for(int j = 0; j < matrix[0].size(); j++){
             std::cout << Hn[i][j] << "\t";
@@ -82,41 +80,39 @@ int main(){
     }
     std::cout << std::endl << std::endl;
 
-    //Hn.~vector<std::vector<double>>()                 optional if memory is needed
-    //matrix.~vector<std::vector<double>>()             optional if memory is needed
-    //waveletT2D.~HaarWaveletTransform2D()              optional if memory is needed
-    //matSolution.~vector<std::vector<double>>()        optional if memory is needed
-
     //=======================================2D Haar wavelet transform for image compression example=======================================
 
     int w, h, channels; 
-    unsigned char* image_data = stbi_load("cat-original.png", &w, &h, &channels, 0);
+    unsigned char* image_data = stbi_load("cat-original.png", &w, &h, &channels, 0); //load image
 
     if(!image_data){
         std::cout << "could not load image cat-original" << std::endl;
-        return 1;
+        return 1; //if loading fails, terminate program
     }
 
-    std::vector<std::vector<double>> image(h, std::vector<double>(w));
-    std::cout << "Image compression trough Haar wavelet transform example:" << std::endl;
+    std::vector<std::vector<double>> image(h, std::vector<double>(w)); //vector to hold the image
+    std::cout << "Image compression through Haar wavelet transform example:" << std::endl;
 
+    //copy image pixels to double vector
     for(int i = 0; i<h; i++)
         for(int j = 0; j<w; j++)
             image[i][j]= static_cast<double>(image_data[(i*w+j)*channels]);
 
     std::cout << "Image: 'cat-original.png' loaded" << std::endl;
 
-    ImgWLComp imgWL(image);
-    imgWL.compress();
+    ImgWLComp imgWL(image); //create object for image compression
+    imgWL.compress();       //compress the image
 
     std::vector<std::vector<double>> solution(h, std::vector<double>(w));
-    solution = imgWL.getCompressed();
+    solution = imgWL.getCompressed(); //get compressed image
 
+    //prepare vector to save compressed image
     std::vector<unsigned char> outputImage(h*w);
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++)
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
     
+    //save compressed image
     if (stbi_write_png("compressed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to compressed-cat.png" << std::endl;
         return 1;
@@ -125,15 +121,17 @@ int main(){
     std::cout << "Image compressed and saved as compressed-cat.png" << std::endl;
     std::cout << "Reconstructing image" << std::endl;
 
-    imgWL.reconstruct();
-    solution = imgWL.getDecompressed();
+    imgWL.reconstruct();    //decompress the image
+    solution = imgWL.getDecompressed(); //get decompressed image
 
+    //prepare vector to save decompressed image
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++)
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
     
+    //save decompressed image
     if (stbi_write_png("reconstructed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
-        std::cerr << "Error: Could not save image to reconstructe-cat.png" << std::endl;
+        std::cerr << "Error: Could not save image to reconstructed-cat.png" << std::endl;
         return 1;
     }
 
