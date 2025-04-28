@@ -19,6 +19,14 @@ namespace fft::solver {
      */
     template <size_t N>
     class InverseFastFourierTransform final : public FourierTransformSolver<N> {
+    public:
+        /**
+         * Create an Inverse Fast Fourier Transform solver.
+         *
+         * @param dimensions An array of dimensions for the IFFT.
+         */
+        explicit InverseFastFourierTransform(const std::array<size_t, N>& dimensions)
+            : FourierTransformSolver<N>(dimensions) {}
     protected:
         /**
          * Internal method to compute the Inverse Fast Fourier Transform in sequential mode.

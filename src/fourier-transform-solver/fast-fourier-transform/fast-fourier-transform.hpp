@@ -19,6 +19,14 @@ namespace fft::solver {
     */
     template <size_t N>
     class FastFourierTransform final : public FourierTransformSolver<N> {
+    public:
+        /**
+         * Create a Fast Fourier Transform solver.
+         *
+         * @param dimensions An array of dimensions for the FFT.
+         */
+        explicit FastFourierTransform(const std::array<size_t, N>& dimensions)
+            : FourierTransformSolver<N>(dimensions) {}
     protected:
         /**
          * Internal method to compute the Fast Fourier Transform in sequential mode.
