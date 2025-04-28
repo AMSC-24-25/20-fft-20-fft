@@ -25,7 +25,10 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/external/matplotplusplus")
     add_subdirectory(external/matplotplusplus)
 else()
     message(FATAL_ERROR
-            "The directory 'external/matplotplusplus' does not exist. Did you forget to clone the repository? Use the following command: git clone --recurse-submodules repo-url"
+            "The directory 'external/matplotplusplus' does not exist. " +
+            "Did you forget to clone the repository? " +
+            "Go to the root of the repository and run the following command: " +
+            "git submodule update --init --recursive"
     )
 endif()
 
