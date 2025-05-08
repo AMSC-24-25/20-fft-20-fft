@@ -90,6 +90,34 @@ set (
         src/utils/timestamp.hpp
         src/utils/bit-reversal.cpp
         src/utils/bit-reversal.hpp
+
+        #discrete-cosine-transform-solver
+        src/discrete-cosine-transform-solver/discrete-cosine-transform-solver.hpp
+        src/discrete-cosine-transform-solver/discrete-cosine-transform-solver.cpp
+        src/discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.hpp
+        src/discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.cpp
+        src/discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.hpp
+        src/discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.cpp
+        src/discrete-cosine-transform-solver/algorithms/dct.hpp
+        src/discrete-cosine-transform-solver/algorithms/dct.cpp
+        src/discrete-cosine-transform-solver/algorithms/dct_openMP.hpp
+        src/discrete-cosine-transform-solver/algorithms/dct_openMP.cpp
+        src/discrete-cosine-transform-solver/algorithms/idct.hpp
+        src/discrete-cosine-transform-solver/algorithms/idct.cpp
+        src/discrete-cosine-transform-solver/algorithms/idct_openMP.hpp
+        src/discrete-cosine-transform-solver/algorithms/idct_openMP.cpp
+
+        # zigzag-scan
+        src/zigzag_scan/zigzag_scan.hpp
+        src/zigzag_scan/zigzag_scan.cpp
+
+        # rle-compressor
+        src/rle_compressor/rle_compressor.hpp
+        src/rle_compressor/rle_compressor.cpp
+
+        # jpeg-image-compression
+        src/jpeg_image_compression/imageJPEG.hpp
+        src/jpeg_image_compression/imageJPEG.cpp
 )
 
 # Add the default executable
