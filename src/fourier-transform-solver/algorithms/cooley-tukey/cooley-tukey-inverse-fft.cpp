@@ -1,4 +1,5 @@
-#include "fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft.hpp"
+#include "cooley-tukey-fft.hpp"
+
 
 #include "utils/bit-reversal.hpp"
 
