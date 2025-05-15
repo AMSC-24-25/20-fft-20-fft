@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(20_fft_20_fft)
+project(20_fft_20_fft VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -120,10 +120,19 @@ set (
         src/jpeg_image_compression/imageJPEG.cpp
 )
 
-# Add the default executable
-add_executable(main ${FFT-LIBRARY} src/main.cpp)
+# Add examples
+add_executable(
+        example-fourier_transform_solver
+        ${FFT-LIBRARY}
+        examples/fourier_transform_solver.cpp
+)
+add_executable(
+        example-fourier_transform_solver_performance
+        ${FFT-LIBRARY}
+        examples/fourier_transform_solver_performance.cpp
+)
 # Link the matplot library
-target_link_libraries(main PUBLIC matplot)
+target_link_libraries(example-fourier_transform_solver PUBLIC matplot)
 
 ##################
 # Parallel build #
