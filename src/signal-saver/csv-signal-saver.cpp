@@ -9,7 +9,6 @@ void CsvSignalSaver::saveToFile(const std::vector<std::complex<double>> &signal,
     std::ostringstream stringStream;
     stringStream << filePath << "_" << createReadableTimestamp("%Y%m%d_%H%M%S") << "." << getExtension();
     const std::string output_file_path = stringStream.str();
-    printf("Saving signal to file: %s\n", output_file_path.c_str());
     // validate the input
     if (signal.empty()) {
         throw std::invalid_argument("Signal cannot be empty");
