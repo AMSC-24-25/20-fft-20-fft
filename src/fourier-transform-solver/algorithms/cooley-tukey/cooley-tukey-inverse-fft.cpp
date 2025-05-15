@@ -10,7 +10,6 @@ namespace fft::algorithms::cooley_tukey {
          * The algorithm is intentionally uncommented because it is well commented in the sequential version (FFT).
          * Therefore, if you are looking for a well-commented version, please check the sequential version (FFT).
          */
-        printf("Running the Sequential 1D Inverse Fast Fourier Transform solver...\n");
         // 0. Prepare the variables.
         const size_t N = input.size();
         const auto log2N = static_cast<size_t>(std::log2(N));
