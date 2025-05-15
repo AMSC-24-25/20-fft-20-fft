@@ -1,16 +1,17 @@
-#include "jpeg-image-compression/imageJPEG.hpp"
+#include <iostream>
+#include <fstream>
+#include <cmath>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
+
+#include "jpeg_image_compression/imageJPEG.hpp"
 #include "zigzag_scan/zigzag_scan.hpp"
 #include "rle_compressor/rle_compressor.hpp"
 #include "discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.hpp"
 #include "discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.hpp"
-
-// from https://github.com/nothings/stb/tree/master
-#include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
-
-#include <iostream>
-#include <fstream>
-#include <cmath>
 
 //#################### CONSTRUCTORS ##############################################
 
@@ -18,7 +19,7 @@
  * Constructor that initializes the ImageJPEG object from a given matrix by copying it.
  * @params inputMatrix: 2D vector containing pixel values.
  */
-ImageJPEG::ImageJPEG(std::vector<std::vector<double>> inputMatrix): image(inputMatrix) {};
+ImageJPEG::ImageJPEG(std::vector<std::vector<double>> inputMatrix): image(inputMatrix) {}
 
 /*
  * Constructor that loads a PNG file into the variable image of ImageJPEG object.
@@ -353,16 +354,16 @@ const void ImageJPEG::save_compressed_submatrix(std::ofstream& file, const std::
     file.write(reinterpret_cast<const char*>(&rle_size), sizeof(uint8_t));*/
 
     for (const auto& [repetitions, value] : rleVector) {
-        int16_t count = static_cast<int16_t>(repetitions);
+        auto count = static_cast<int16_t>(repetitions);
         if (count == 1){
             //Write only the value and ignore repetitions
-            int16_t val = static_cast<int16_t>(value);
+            auto val = static_cast<int16_t>(value);
             file.write(reinterpret_cast<const char*>(&val), sizeof(val));
         }
         else{
             //Write a reserved value and then write #repetitions and value
-            uint8_t val = static_cast<uint8_t>(value);
-            int16_t mark = static_cast<int16_t>(-1);
+            auto val = static_cast<uint8_t>(value);
+            auto mark = static_cast<int16_t>(-1);
             file.write(reinterpret_cast<const char*>(&mark), sizeof(mark));
             file.write(reinterpret_cast<const char*>(&count), sizeof(count));
             file.write(reinterpret_cast<const char*>(&val), sizeof(val));
