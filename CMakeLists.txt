@@ -131,6 +131,11 @@ add_executable(
         ${FFT-LIBRARY}
         examples/fourier_transform_solver_performance.cpp
 )
+add_executable(
+        example-fourier_transform_solver_image
+        ${FFT-LIBRARY}
+        examples/fourier_transform_solver_image.cpp
+)
 # Link the matplot library
 target_link_libraries(example-fourier_transform_solver PUBLIC matplot)
 
