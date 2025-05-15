@@ -29,35 +29,27 @@ namespace fft::solver {
             : FourierTransformSolver<N>(dimensions) {}
     protected:
         /**
-         * Internal method to compute the Fast Fourier Transform in sequential mode.
+         * Get the sequential transform function.
          *
-         * This method modifies the input vector in place.
-         *
-         * @param input The input vector to be transformed.
+         * This method provides the specific implementation of the Fast Fourier Transform
+         * using a sequential algorithm.
          */
-        void computeSequential(
-            std::vector<std::complex<double>>& input
-        ) override {
-            if (N == 1) {
-                return algorithms::cooley_tukey::computeCooleyTurkeyFFT(input);
-            }
-            throw std::runtime_error("FFT not implemented for N > 1");
+        [[nodiscard]] typename FastFourierTransform::transform_t getSequentialTransform() const override {
+            return [](std::vector<std::complex<double>>& data) {
+                algorithms::cooley_tukey::computeCooleyTurkeyFFT(data);
+            };
         }
 
         /**
-         * Internal method to compute the Fast Fourier Transform in parallel mode using OpenMP.
+         * Get the OpenMP transform function.
          *
-         * This method modifies the input vector in place.
-         *
-         * @param input The input vector to be transformed.
+         * This method provides the specific implementation of the Fast Fourier Transform
+         * using OpenMP for parallel execution.
          */
-        void computeOpenMP(
-            std::vector<std::complex<double>>& input
-        ) override {
-            if (N == 1) {
-                return algorithms::cooley_tukey::computeCooleyTurkeyFFTOpenMP(input);
-            }
-            throw std::runtime_error("FFT not implemented for N > 1");
+        [[nodiscard]] typename FastFourierTransform::transform_t getOpenMPTransform() const override {
+            return [](std::vector<std::complex<double>>& data) {
+                algorithms::cooley_tukey::computeCooleyTurkeyFFTOpenMP(data);
+            };
         }
     };
 }

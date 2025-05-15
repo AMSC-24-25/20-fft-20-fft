@@ -29,35 +29,27 @@ namespace fft::solver {
             : FourierTransformSolver<N>(dimensions) {}
     protected:
         /**
-         * Internal method to compute the Inverse Fast Fourier Transform in sequential mode.
+         * Get the sequential transform function.
          *
-         * The input vector is transformed in place.
-         *
-         * @param input The input vector to be transformed.
+         * This method provides the specific implementation of the Inverse Fast Fourier Transform
+         * using a sequential algorithm.
          */
-        void computeSequential(
-            std::vector<std::complex<double>>& input
-        ) override {
-            if (N == 1) {
-                return algorithms::cooley_tukey::computeCooleyTurkeyInverseFFT(input);
-            }
-            throw std::runtime_error("Inverse FFT not implemented for N > 1");
+        [[nodiscard]] typename InverseFastFourierTransform::transform_t getSequentialTransform() const override {
+            return [](std::vector<std::complex<double>>& data) {
+                algorithms::cooley_tukey::computeCooleyTurkeyInverseFFT(data);
+            };
         }
 
         /**
-         * Internal method to compute the Inverse Fast Fourier Transform in parallel mode (OpenMP).
+         * Get the OpenMP transform function.
          *
-         * The input vector is transformed in place.
-         *
-         * @param input The input vector to be transformed.
+         * This method provides the specific implementation of the Inverse Fast Fourier Transform
+         * using OpenMP for parallel execution.
          */
-        void computeOpenMP(
-            std::vector<std::complex<double>>& input
-        ) override {
-            if (N == 1) {
-                return algorithms::cooley_tukey::computeCooleyTurkeyInverseFFTOpenMP(input);
-            }
-            throw std::runtime_error("Inverse FFT not implemented for N > 1");
+        [[nodiscard]] typename InverseFastFourierTransform::transform_t getOpenMPTransform() const override {
+            return [](std::vector<std::complex<double>>& data) {
+                algorithms::cooley_tukey::computeCooleyTurkeyInverseFFTOpenMP(data);
+            };
         }
     };
 }

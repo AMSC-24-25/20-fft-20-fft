@@ -3,6 +3,8 @@
 #include <complex>
 #include <vector>
 #include <numeric>
+#include <omp.h>
+#include <functional>
 
 namespace fft::solver
 {
@@ -99,9 +101,10 @@ namespace fft::solver
                 );
             }
             if (mode == ComputationMode::SEQUENTIAL) {
-                this->computeSequential(input);
+                omp_set_num_threads(1);
+                this->computeND(input, this->getSequentialTransform());
             } else if (mode == ComputationMode::OPENMP) {
-                this->computeOpenMP(input);
+                this->computeND(input, this->getOpenMPTransform());
             } else {
                 throw std::invalid_argument("Invalid mode specified.");
             }
@@ -127,26 +130,181 @@ namespace fft::solver
 
     protected:
         /**
-         * Internal method to compute the Fourier Transform in sequential mode.
+         * Transform function type.
          *
-         * It modifies the input vector in-place.
-         *
-         * @param input The input vector to be transformed.
+         * This is a function that takes a vector of complex numbers and applies the Fourier Transform.
          */
-        virtual void computeSequential(
-            std::vector<std::complex<double>>& input
-        ) = 0;
+        using transform_t = std::function<void(std::vector<std::complex<double>>&)>;
 
         /**
-         * Internal method to compute the Fourier Transform in parallel mode using OpenMP.
+         * Compute the Fourier Transform of the input vector in N dimensions.
          *
-         * It modifies the input vector in-place.
+         * This method is responsible for iterating over each dimension and applying the
+         * transform function to the corresponding slices of the input vector.
          *
          * @param input The input vector to be transformed.
+         * @param transform The transform function to be applied.
          */
-        virtual void computeOpenMP(
-            std::vector<std::complex<double>>& input
-        ) = 0;
+        void computeND(
+            std::vector<std::complex<double>>& input,
+            const transform_t& transform
+        ) {
+            // dimensions of the N-dimensional space
+            const std::array<size_t, N> dims = this->dims;
+            /**
+             * Strides for each dimension (used for flattening the N-dimensional array).
+             *
+             * The calculation of strides is necessary to map multi-dimensional coordinates to a flat,
+             * one-dimensional index in memory.
+             *
+             * This is because multi-dimensional arrays are stored in a contiguous block of memory,
+             * and strides help determine the memory offset for each dimension.
+             *
+             * For example, in a 2D array with dimensions [rows, columns],
+             * the stride for the last dimension (columns) is 1 because
+             * elements in this dimension are stored contiguously.
+             * The stride for the first dimension (rows) is equal to the number of columns,
+             * as moving to the next row requires skipping all the columns of the current row.
+             *
+             * The formula for strides ensures that the correct memory location
+             * is accessed for any given multi-dimensional coordinate.
+             *
+             * It is a common pattern in numerical computing and is used in libraries like NumPy.
+             */
+            const std::array<size_t, N> strides = this->computeStrides(dims);
+            // total number of elements in the input vector
+            const size_t totalSize = input.size();
+
+            // iterate over each dimension (axis)
+            for (size_t axis = 0; axis < N; ++axis) {
+                // current axis size
+                const size_t axisSize = dims[axis];
+                // total number of slices along the current axis,
+                // so how many times we need to apply the transform function
+                const size_t numSlices = totalSize / axisSize;
+
+                // parallelize the loop over slices if OpenMP is enabled
+                # pragma omp parallel for
+                for (size_t slice = 0; slice < numSlices; ++slice) {
+                    // prepare the coordinates for the current slice
+                    std::vector<std::complex<double>> line(axisSize);
+                    std::array<size_t, N> baseCoord{};
+                    size_t temp = slice;
+                    // fill the baseCoord array with the coordinates of the current slice
+                    for (int i = N - 1; i >= 0; --i) {
+                        if (i != static_cast<int>(axis)) {
+                            baseCoord[i] = temp % dims[i];
+                            temp /= dims[i];
+                        }
+                    }
+                    // fill the line vector with the values from the input vector
+                    for (size_t i = 0; i < axisSize; ++i) {
+                        baseCoord[axis] = i;
+                        line[i] = input[this->toFlatIndex(baseCoord, strides)];
+                    }
+
+                    // apply the transform function to the line vector
+                    transform(line);
+
+                    // store the transformed values back into the input vector
+                    for (size_t i = 0; i < axisSize; ++i) {
+                        baseCoord[axis] = i;
+                        // compute the flat index for the transformed value
+                        // because the baseCoord array has been modified
+                        input[this->toFlatIndex(baseCoord, strides)] = line[i];
+                    }
+                }
+            }
+        }
+
+        /**
+         * Compute the strides for each dimension.
+         *
+         * Strides are used to map multidimensional coordinates to a flat, one-dimensional index.
+         *
+         * @param dims The dimensions of the N-dimensional space.
+         * @return An array of strides for each dimension.
+         */
+        std::array<size_t, N> computeStrides(const std::array<size_t, N>& dims) {
+            // computed strides for each dimension
+            std::array<size_t, N> strides;
+            // the last dimension's stride is always 1 because it represents the smallest step in memory
+            strides[N - 1] = 1;
+            // iterate backward through the dimesions to compute the strides
+            for (int i = static_cast<int>(N) - 2; i >= 0; --i)
+                strides[i] = strides[i + 1] * dims[i + 1];
+            return strides;
+        }
+
+        /**
+         * Convert multidimensional coordinates to a flat index.
+         *
+         * This method computes the flat index in a one-dimensional array
+         * corresponding to the given multidimensional coordinates and strides.
+         *
+         * @param coord The multi-dimensional coordinates.
+         * @param strides The strides for each dimension.
+         * @return The flat index in the one-dimensional array.
+         */
+        size_t toFlatIndex(const std::array<size_t, N>& coord, const std::array<size_t, N>& strides) {
+            size_t flat = 0;
+            for (size_t i = 0; i < N; ++i)
+                flat += coord[i] * strides[i];
+            return flat;
+        }
+
+        /**
+         * Convert a slice index to multidimensional coordinates.
+         *
+         * This method computes the multidimensional coordinates corresponding
+         * to the given slice index and axis.
+         *
+         * @param slice The slice index.
+         * @param dims The dimensions of the N-dimensional space.
+         * @param axis The axis along which the slice is taken.
+         * @param axisIndex The index along the specified axis.
+         * @return The multidimensional coordinates corresponding to the slice index.
+         */
+        std::array<size_t, N> sliceToCoord(
+            size_t slice,
+            const std::array<size_t, N>& dims,
+            const size_t axis,
+            size_t axisIndex
+        ) {
+            std::array<size_t, N> coord{};
+            // similar to the toFlatIndex method, but in reverse;
+            // we need to set the axis index to the specified value
+            // and compute the other coordinates based on the slice index
+            for (int i = N - 1; i >= 0; --i) {
+                if (i == static_cast<int>(axis)) {
+                    coord[i] = axisIndex;
+                } else {
+                    coord[i] = slice % dims[i];
+                    slice /= dims[i];
+                }
+            }
+            return coord;
+        }
+
+        /**
+         * Get the sequential transform function.
+         *
+         * This method should be overridden by derived classes to provide the specific
+         * implementation of the Fourier Transform.
+         *
+         * @return The sequential transform function.
+         */
+        [[nodiscard]] virtual transform_t getSequentialTransform() const = 0;
+
+        /**
+         * Get the OpenMP transform function.
+         *
+         * This method should be overridden by derived classes to provide the specific
+         * implementation of the Fourier Transform.
+         *
+         * @return The OpenMP transform function.
+         */
+        [[nodiscard]] virtual transform_t getOpenMPTransform() const = 0;
     };
 }
 
