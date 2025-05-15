@@ -135,8 +135,25 @@ void plot_signal_fft_and_ifft(
     // note: the solver is used in place, so the input vector is modified;
     //       the result of the FFT is then used to compute the inverse FFT;
     //       this demonstrates the solver's versatility
-    solver.compute(fft_signal, fft::solver::ComputationMode::OPENMP);
-    inverse_solver.compute(fft_signal, inverse_fft_signal, fft::solver::ComputationMode::OPENMP);
+    solver.compute(fft_signal, fft::solver::ComputationMode::SEQUENTIAL);
+    inverse_solver.compute(fft_signal, inverse_fft_signal, fft::solver::ComputationMode::SEQUENTIAL);
+
+    // check if the inverse_fft_signal is the same of signal
+    // if not, print the difference
+    for (int i = 0; i < signal_length; ++i) {
+        if (signal[i].real() - inverse_fft_signal[i].real() > 1e-6) {
+            printf(
+                "Difference between original signal and inverse FFT signal at index %d: %f\n",
+                i, std::abs(signal[i] - inverse_fft_signal[i])
+            );
+        }
+        if (signal[i].imag() - inverse_fft_signal[i].imag() > 1e-6) {
+            printf(
+                "(Imag) Difference between original signal and inverse FFT signal at index %d: %f\n",
+                i, std::abs(signal[i] - inverse_fft_signal[i])
+            );
+        }
+    }
 
     // plot the comparison
     const std::vector<double> x = matplot::linspace(0, signal_length - 1, signal_length);
