@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "jpeg_image_compression/compressed_image/compressed_image.hpp"
-#include "zigzag_scan/zigzag_scan.hpp"
+#include "utils/zigzag_scan.hpp"
 #include "rle_compressor/rle_compressor.hpp"
 #include "discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp"
 #include "discrete_cosine_transform/inverse_discrete_cosine_transform/inverse_discrete_cosine_transform.hpp"

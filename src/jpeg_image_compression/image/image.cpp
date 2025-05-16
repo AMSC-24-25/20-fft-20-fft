@@ -8,7 +8,7 @@
 #include "stb/stb_image_write.h"
 
 #include "jpeg_image_compression/image/image.hpp"
-#include "zigzag_scan/zigzag_scan.hpp"
+#include "utils/zigzag_scan.hpp"
 #include "discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp"
 #include "jpeg_image_compression/compressed_image/compressed_image.hpp"
 

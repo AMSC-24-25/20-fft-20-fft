@@ -67,10 +67,8 @@ add_library(
         utils/timestamp.hpp
         utils/bit_reversal.cpp
         utils/bit_reversal.hpp
-
-        # zigzag_scan
-        zigzag_scan/zigzag_scan.hpp
-        zigzag_scan/zigzag_scan.cpp
+        utils/zigzag_scan.hpp
+        utils/zigzag_scan.cpp
 )
 
 if (HAS_CUDA)
