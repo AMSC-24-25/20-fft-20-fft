@@ -12,5 +12,8 @@ CMakeFiles
 cmake-build-*
 build
 
+# python files
+__pycache__
+
 # main output files
 output
