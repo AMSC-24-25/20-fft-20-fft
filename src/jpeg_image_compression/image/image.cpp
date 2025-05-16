@@ -5,7 +5,9 @@
 #include "jpeg_image_compression/compressed_image/compressed_image.hpp"
 
 // from https://github.com/nothings/stb/tree/master
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
 #include <iostream>
