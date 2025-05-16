@@ -17,9 +17,9 @@
 #include "opencv2/core/types.hpp"
 #include "opencv2/core/hal/interface.h"
 
-#include "fourier_transform/base_fourier_transform.hpp"
-#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "transforms/fourier_transform/base_fourier_transform.hpp"
+#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
 #include "utils/timestamp.hpp"
 
 int main() {
@@ -27,7 +27,9 @@ int main() {
     * 1. Load the Video using OpenCV
      */
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("%Y%m%d_%H%M%S") << ".avi";
+    filepath_out_oss << "examples/output/fft-"
+                     << signal_processing::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
+                     << ".avi";
     cv::VideoCapture cap("examples/resources/cats-resize.mp4");
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
@@ -80,14 +82,14 @@ int main() {
      * 4. Apply Cooley-Tukey 3D FFT
      */
     auto start_time = std::chrono::high_resolution_clock::now();
-    fft::solver::FastFourierTransform<3> solver(
+    signal_processing::fft::solver::FastFourierTransform<3> solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    fft::solver::InverseFastFourierTransform<3> i_solver(
+    signal_processing::fft::solver::InverseFastFourierTransform<3> i_solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
-    i_solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::CUDA);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("FFT and IFFT applied.\n");

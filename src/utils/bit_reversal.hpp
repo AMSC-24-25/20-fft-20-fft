@@ -4,23 +4,33 @@
 #include <vector>
 
 /**
- * Perform a sequential bit-reversal on the input data vector.
+ * Bit-Reversal Algorithm.
  *
- * The operation is done in-place and the input data vector is modified.
- * The returned vector is done for convenience.
- * @param data The input data vector.
- * @return The input data vector after bit-reversal. It is modified in-place, so the return value is for convenience.
+ * This module provides functions to perform bit-reversal on a vector of complex numbers.
  */
-std::vector<std::complex<double>> & sequentialBitReversal(std::vector<std::complex<double>> &data);
+namespace signal_processing::utils::bit_reversal
+{
+    /**
+    * Perform a sequential bit-reversal on the input data vector.
+    *
+    * The operation is done in-place and the input data vector is modified.
+    * The returned vector is done for convenience.
+    * @param data The input data vector.
+    * @return The input data vector after bit-reversal. It is modified in-place,
+    *         so the return value is for convenience.
+    */
+    std::vector<std::complex<double>> & sequentialBitReversal(std::vector<std::complex<double>> &data);
 
-/**
- * Perform a parallel (OpenMP) bit-reversal on the input data vector.
- *
- * The operation is done in-place and the input data vector is modified.
- * The returned vector is done for convenience.
- * @param data The input data vector.
- * @return The input data vector after bit-reversal. It is modified in-place, so the return value is for convenience.
- */
-std::vector<std::complex<double>> & parallelBitReversal(std::vector<std::complex<double>> &data);
+    /**
+     * Perform a parallel (OpenMP) bit-reversal on the input data vector.
+     *
+     * The operation is done in-place and the input data vector is modified.
+     * The returned vector is done for convenience.
+     * @param data The input data vector.
+     * @return The input data vector after bit-reversal.
+     *         It is modified in-place, so the return value is for convenience.
+     */
+    std::vector<std::complex<double>> & parallelBitReversal(std::vector<std::complex<double>> &data);
+}
 
 #endif //BIT_REVERSAL_HPP

@@ -10,11 +10,10 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
-#include "config_loader/json_configuration_loader.hpp"
-#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "handlers/config_loader/json_configuration_loader.hpp"
+#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
 #include "utils/timestamp.hpp"
-
 
 
 int main() {
@@ -48,7 +47,9 @@ int main() {
     int width, height, channels;
     const std::string filepath_in = choice == 'd' ? "examples/resources/dog.png" : "examples/resources/eiffel-tower.png";
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << choice << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".png";
+    filepath_out_oss << "examples/output/fft-" << choice
+                     << signal_processing::utils::timestamp::createReadableTimestamp("_%Y%m%d_%H%M%S")
+                     << ".png";
     const std::string filepath_out = filepath_out_oss.str();
     // load the image
     unsigned char* image = stbi_load(
@@ -86,16 +87,16 @@ int main() {
     printf("Starting FFT computation...\n");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
-    fft::solver::FastFourierTransform<2> solver(
+    signal_processing::fft::solver::FastFourierTransform<2> solver(
         std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    fft::solver::InverseFastFourierTransform<2> inverse_solver(
+    signal_processing::fft::solver::InverseFastFourierTransform<2> inverse_solver(
         std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    auto computation_mode = fft::solver::ComputationMode::OPENMP;
+    auto computation_mode = signal_processing::fft::solver::ComputationMode::OPENMP;
     #ifdef HAS_CUDA
     if (use_cuda == 'y') {
-        computation_mode = fft::solver::ComputationMode::CUDA;
+        computation_mode = signal_processing::fft::solver::ComputationMode::CUDA;
     }
     #endif // HAS_CUDA
     solver.compute(R, computation_mode);

@@ -17,9 +17,9 @@
 #include "opencv4/opencv2/core/types.hpp"
 #include "opencv4/opencv2/core/hal/interface.h"
 
-#include "fourier_transform/base_fourier_transform.hpp"
-#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "transforms/fourier_transform/base_fourier_transform.hpp"
+#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
 #include "utils/timestamp.hpp"
 
 int main() {
@@ -28,7 +28,9 @@ int main() {
      */
     const std::string input_file = "examples/resources/cats-resize.mp4";
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("%Y%m%d_%H%M%S") << ".avi";
+    filepath_out_oss << "examples/output/fft-"
+                     << signal_processing::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
+                     << ".avi";
     cv::VideoCapture cap(input_file);
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
@@ -74,7 +76,7 @@ int main() {
     std::vector<std::complex<double>> volume_g(depth * height * width);
     std::vector<std::complex<double>> volume_b(depth * height * width);
 
-# pragma omp parallel for
+    # pragma omp parallel for
     for (int z = 0; z < depth; ++z)
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
@@ -88,46 +90,50 @@ int main() {
     /**
      * 4. Apply Cooley-Tukey 3D FFT
      */
-    fft::solver::FastFourierTransform<3> solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
-    fft::solver::InverseFastFourierTransform<3> i_solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
+    signal_processing::fft::solver::FastFourierTransform<3> solver(
+        {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
+    signal_processing::fft::solver::InverseFastFourierTransform<3> i_solver(
+        {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_r, fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::CUDA);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("R FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_r, fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::CUDA);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("R IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_g, fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::CUDA);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_g, fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::CUDA);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_b, fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::CUDA);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_b, fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::CUDA);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B IFFT: %f seconds\n", elapsed.count());
@@ -166,7 +172,6 @@ int main() {
     /**
      * 6. Save the Reconstructed Video
      */
-    createReadableTimestamp("%Y%m%d_%H%M%S");
     cv::VideoWriter writer(
         filepath_out_oss.str(),
         cv::VideoWriter::fourcc('M','J','P','G'),
