@@ -27,8 +27,8 @@ int main() {
     * 1. Load the Video using OpenCV
      */
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".avi";
-    cv::VideoCapture cap("examples/resources/cats.mp4");
+    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("%Y%m%d_%H%M%S") << ".avi";
+    cv::VideoCapture cap("examples/resources/cats-resize.mp4");
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
         return -1;
@@ -40,7 +40,7 @@ int main() {
      */
     std::vector<cv::Mat> frames;
     cv::Mat frame;
-    for (int i = 0; i < 128; ++i)
+    for (int i = 0; i < 256; ++i)
     {
         if (!cap.read(frame)) {
             std::cerr << "Error reading frame " << i << std::endl;
@@ -49,10 +49,10 @@ int main() {
         cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);  // Optional: use grayscale for simplicity
 
         // crop to 1024*1024
-        int x = (frame.cols - 1024) / 2;
-        int y = (frame.rows - 1024) / 2;
-        cv::Rect roi(x, y, 1024, 1024);
-        frame = frame(roi);
+        // int x = (frame.cols - 1024) / 2;
+        // int y = (frame.rows - 1024) / 2;
+        // cv::Rect roi(x, y, 1024, 1024);
+        // frame = frame(roi);
 
         frame.convertTo(frame, CV_64F);  // Ensure double precision for FFT
         frames.push_back(frame);

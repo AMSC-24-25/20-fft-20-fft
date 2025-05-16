@@ -26,9 +26,9 @@ int main() {
     /**
     * 1. Load the Video using OpenCV
      */
-    const std::string input_file = "examples/resources/cats.mp4";
+    const std::string input_file = "examples/resources/cats-resize.mp4";
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".avi";
+    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("%Y%m%d_%H%M%S") << ".avi";
     cv::VideoCapture cap(input_file);
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
@@ -41,14 +41,15 @@ int main() {
      */
     cv::Mat frame;
     std::vector<cv::Mat> frames_r, frames_g, frames_b;
-    for (int i = 0; i < 128; ++i)
+    for (int i = 0; i < 256; ++i)
     {
         if (!cap.read(frame)) break;
 
-        int x = (frame.cols - 1024) / 2;
-        int y = (frame.rows - 1024) / 2;
-        cv::Rect roi(x, y, 1024, 1024);
-        frame = frame(roi);
+        // crop to 1024*1024
+        // int x = (frame.cols - 1024) / 2;
+        // int y = (frame.rows - 1024) / 2;
+        // cv::Rect roi(x, y, 1024, 1024);
+        // frame = frame(roi);
 
         std::vector<cv::Mat> channels(3);
         cv::split(frame, channels);  // BGR
