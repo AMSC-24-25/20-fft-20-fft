@@ -86,3 +86,8 @@ add_executable(
         example-haar_wavelet_transform_solver_2d
         haar_wavelet_transform_2d.cpp
 )
+# Harr Wavelet Transform
+add_executable(
+        example-haar_wavelet_transform_solver
+        haar_wavelet_transform.cpp
+)

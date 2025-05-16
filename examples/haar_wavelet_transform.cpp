@@ -6,9 +6,9 @@
 #include "imgWL.cpp"      //include wavelet-based image compression
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stblib/stb_image.h"    //library to load images
+#include "stb/stb_image.h"    //library to load images
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stblib/stb_image_write.h"    //library to save images
+#include "stb/stb_image_write.h"    //library to save images
 
 int main(){
 
@@ -35,15 +35,15 @@ int main(){
     //==================================================2D Haar wavelet transform example==================================================
 
     // Example 2D input matrix (8x8 square)
-    std::vector<std::vector<double>> matrix = {{64, 2, 3, 61, 60, 6, 7, 57},  
-                                                {9, 55, 54, 12, 13, 51, 50, 16}, 
+    std::vector<std::vector<double>> matrix = {{64, 2, 3, 61, 60, 6, 7, 57},
+                                                {9, 55, 54, 12, 13, 51, 50, 16},
                                                 {17, 47, 46, 20, 21, 43, 42, 24},
                                                 {40, 26, 27, 37, 36, 30, 31, 33},
                                                 {32, 34, 35, 29, 28, 38, 39, 25},
                                                 {41, 23, 22, 44, 45, 19, 18, 48},
                                                 {49, 15, 14, 52, 53, 11, 10, 56},
                                                 {8, 58, 59, 5, 4, 62, 63, 1}};
-    
+
     /*alternative test matrix
     std::vector<std::vector<double>> matrix = {{0, 1, 1, 0}, {1, 0, 0,1}, {1, 0, 0,1}, {0, 1, 1, 0}};*/
 
@@ -82,7 +82,7 @@ int main(){
 
     //=======================================2D Haar wavelet transform for image compression example=======================================
 
-    int w, h, channels; 
+    int w, h, channels;
     unsigned char* image_data = stbi_load("cat-original.png", &w, &h, &channels, 0); //load image
 
     if(!image_data){
@@ -111,7 +111,7 @@ int main(){
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++)
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
-    
+
     //save compressed image
     if (stbi_write_png("compressed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to compressed-cat.png" << std::endl;
@@ -128,7 +128,7 @@ int main(){
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++)
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
-    
+
     //save decompressed image
     if (stbi_write_png("reconstructed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to reconstructed-cat.png" << std::endl;

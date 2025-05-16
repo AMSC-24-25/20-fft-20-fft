@@ -9,7 +9,13 @@ if (BUILD_EXAMPLES)
     if(EXISTS "${CMAKE_SOURCE_DIR}/src/external/matplotplusplus")
         add_subdirectory(matplotplusplus)
     else()
-        message(FATAL_ERROR "The directory 'external/matplotplusplus' does not exist.")
+        message(
+                FATAL_ERROR
+                "The directory 'external/matplotplusplus' does not exist. "
+                "Did you forget to clone the repository? "
+                "Go to the root of the repository and run the following command: "
+                "git submodule update --init --recursive"
+        )
     endif()
 
     # Detect if OpenCV is installed
