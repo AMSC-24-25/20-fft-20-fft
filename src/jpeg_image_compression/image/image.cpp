@@ -1,39 +1,40 @@
-#include "jpeg_image_compression/image/image.hpp"
-#include "zigzag_scan/zigzag_scan.hpp"
-#include "rle_compressor/rle_compressor.hpp"
-#include "discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.hpp"
-#include "jpeg_image_compression/compressed_image/compressed_image.hpp"
+#include <iostream>
+#include <fstream>
+#include <cmath>
 
-// from https://github.com/nothings/stb/tree/master
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
-#include <iostream>
-#include <fstream>
-#include <cmath>
+#include "jpeg_image_compression/image/image.hpp"
+#include "zigzag_scan/zigzag_scan.hpp"
+#include "discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp"
+#include "jpeg_image_compression/compressed_image/compressed_image.hpp"
 
-//#################### CONSTRUCTORS ##############################################
+// #################### CONSTRUCTORS ####################
 
-/*
+/**
  * Constructor that initializes the Image object from a given matrix by copying it.
- * @params inputMatrix: 2D vector containing pixel values.
+ *
+ * @param inputMatrix: 2D vector containing pixel values.
  */
-Image::Image(std::vector<std::vector<double>> inputMatrix): img_matrix(inputMatrix) {};
+Image::Image(std::vector<std::vector<double>> inputMatrix): img_matrix(inputMatrix) {}
 
-/*
+/**
  * Constructor that loads a PNG file into the variable image of Image object.
- * @input_image_path: path to the PNG image file.
+ *
+ * @param image_path: path to the PNG image file.
  */
 Image::Image(const char* image_path){
     this->img_matrix = load_from_png(image_path);
 };
 
-//###################### PUBLIC ##########################################
+// #################### PUBLIC ####################
 
-/*
- * Function that saves the image matrix of the current object as a PNG file using stb_image_write..
+/**
+ * Function that saves the image matrix of the current object as a PNG file using stb_image_write.
+ *
  * @path: path for the PNG file.
  */
 const void Image::save_as_png(const std::string path){
@@ -49,30 +50,32 @@ const void Image::save_as_png(const std::string path){
 
     for (int r = 0; r < rows; ++r) {
         for (int c = 0; c < cols; ++c) {
-            image_data[r * cols + c] = std::min(255.0, std::max(0.0, this->img_matrix[r][c])); //clamp value between 0,255
+            // clamp value between 0,255
+            image_data[r * cols + c] = std::min(255.0, std::max(0.0, this->img_matrix[r][c]));
         }
     }
     // Save the image using stb_image_write
     if (stbi_write_png(path.c_str(), cols, rows, 1, image_data.data(), cols) == 0) {
         std::cerr << "Error: Could not save grayscale image" << std::endl;
         throw std::runtime_error("Error: Could not save grayscale image");
-        return;
     }
 
     std::cout << "Image written successfully in a png file!" << std::endl;
 }
 
-/*
+/**
  * Function that implements the JPEG compression algorithm on the full image matrix.
+ *
+ * @return: compressed image.
  */
 CompressedImage Image::compress(){
-    if(this->img_matrix.empty()){
+    if (this->img_matrix.empty()) {
         throw std::invalid_argument("Error: image matrix is empty, cannot be compressed.");
     }
 
     const size_t rows = this->img_matrix.size();
     const size_t cols = this->img_matrix[0].size();
-    std::vector<std::vector<double>> compressed = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
+    std::vector<std::vector<double>> compressed = std::vector(rows, std::vector<double>(cols));
 
     // Create the constant matrix Q (quantization matrix) --> is a 8x8
     std::vector<std::vector<double>> Q = {
@@ -89,8 +92,9 @@ CompressedImage Image::compress(){
     // Split up the image into blocks of 8 × 8 pixels
     int submatrixSize = 8;
     // sanity check if the image_data size are multiple of submatrixSize
-    if(rows%submatrixSize!=0 || cols%submatrixSize!=0){
-        std::cout<<"Error: the image is not compressible since its sizes are not multiple of " << submatrixSize << std::endl;
+    if(rows % submatrixSize != 0 || cols % submatrixSize != 0) {
+        std::cerr << "Error: the image is not compressible since its sizes are not multiple of "
+                  << submatrixSize << std::endl;
         throw std::runtime_error("Error: the image is not compressible since its sizes are not multiple of 8");
     }
 
@@ -105,18 +109,26 @@ CompressedImage Image::compress(){
     return compressedImage;
 }
 
-//##################### PRIVATE #################################
+// #################### PRIVATE ####################
 
-/*
- * Function that compresses a single 8x8 block using JPEG (DCT + quantization)
+/**
+ * Function that compresses a single 8x8 block using JPEG (DCT + quantization).
+ *
  * The output is directly saved into the corresponding position of compressed.
- * @r: position in image of the first row of the current submatrix;
- * @c: position in image of the first column of the current submatrix;
- * @submatrixSize: block size (is a squared block);
- * @compressed: compressed image matrix;
- * @Q: quantization matrix.
+ *
+ * @param r: position in image of the first row of the current submatrix.
+ * @param c: position in image of the first column of the current submatrix.
+ * @param submatrixSize: block size (is a squared block).
+ * @param compressed: compressed image matrix.
+ * @param Q: quantization matrix.
  */
-void Image::jpeg_compression(const int r, const int c, const int submatrixSize, std::vector<std::vector<double>>& compressed, std::vector<std::vector<double>>& Q){
+void Image::jpeg_compression(
+    const int r,
+    const int c,
+    const int submatrixSize,
+    std::vector<std::vector<double>>& compressed,
+    std::vector<std::vector<double>>& Q
+) {
     // 1. Create a copy of the submatrix
     std::vector<std::vector<double>> submatrix(submatrixSize, std::vector<double>(submatrixSize));
     for (int i=0; i<submatrixSize; ++i){
@@ -131,7 +143,8 @@ void Image::jpeg_compression(const int r, const int c, const int submatrixSize, 
     const dct::solver::ComputationMode cm = dct::solver::ComputationMode::OPENMP;
     dct_solver.compute(submatrix, cm);
 
-    // 4. Divide the block elementwise by a constant matrix Q known as a quantization matrix, and then round each entry to the nearest integer
+    // 4. Divide the block elementwise by a constant matrix Q known as a quantization matrix,
+    //    and then round each entry to the nearest integer
     for (int i=0; i<submatrixSize; ++i){
         for (int j=0; j<submatrixSize; ++j){
             // 5. Save the result in the big matrix of the image
@@ -140,9 +153,11 @@ void Image::jpeg_compression(const int r, const int c, const int submatrixSize, 
     }
 }
 
-/*
+/**
  * Function that loads an image from a PNG file into a matrix using stb_image.
- * @image_path: path to the PNG file.
+ *
+ * @param image_path: path to the PNG file.
+ * @return 2D vector containing pixel values.
 */
 const std::vector<std::vector<double>> Image::load_from_png(const char* image_path){
     // Load the image using stb_image
@@ -166,7 +181,7 @@ const std::vector<std::vector<double>> Image::load_from_png(const char* image_pa
         }
     }
 
-    stbi_image_free(image_data); //FREE MEMORY!!
+    stbi_image_free(image_data); // Free the image data after loading it into the matrix
 
     return image_matrix;
 }

@@ -10,9 +10,9 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
-#include "config-loader/json-configuration-loader.hpp"
-#include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
-#include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
+#include "config_loader/json_configuration_loader.hpp"
+#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
 #include "utils/timestamp.hpp"
 
 

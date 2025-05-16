@@ -11,12 +11,12 @@
 
 #include "matplot/matplot.h"
 
-#include "config-loader/json-configuration-loader.hpp"
-#include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
-#include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
-#include "signal-generator/space-domain-signal-generator.hpp"
-#include "signal-generator/time-domain-signal-generator.hpp"
-#include "signal-saver/csv-signal-saver.hpp"
+#include "config_loader/json_configuration_loader.hpp"
+#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "signal_generator/space_domain_signal_generator.hpp"
+#include "signal_generator/time_domain_signal_generator.hpp"
+#include "signal_saver/csv_signal_saver.hpp"
 #include "utils/timestamp.hpp"
 
 /**

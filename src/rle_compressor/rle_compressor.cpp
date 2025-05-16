@@ -6,7 +6,7 @@
  * Compresses the input by storing pairs of (count, value) for repeated consecutive values.
  * @input: input vector of doubles to compress
  */
-const std::vector<std::pair<int, int>> RLEcompressor::compress(const std::vector<double>& input) {
+const std::vector<std::pair<int, int>> RLECompressor::compress(const std::vector<double>& input) {
     std::vector<std::pair<int, int>> compressed; // (#value_repetitions, value)
     int count = 1;
 
@@ -28,7 +28,7 @@ const std::vector<std::pair<int, int>> RLEcompressor::compress(const std::vector
  * Expands pairs of (count, value) back into the original sequence.
  * @compressed: input vector of (count, value) pairs
  */
-const std::vector<double> RLEcompressor::decompress(const std::vector<std::pair<int, int>>& compressed) {
+const std::vector<double> RLECompressor::decompress(const std::vector<std::pair<int, int>>& compressed) {
     std::vector<double> decompressed;
 
     for (const auto& [repetitions, value] : compressed) {

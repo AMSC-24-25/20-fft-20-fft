@@ -1,77 +1,85 @@
 add_library(
         signal_processing
 
-        # config-loader
-        config-loader/abstract-configuration-loader.hpp
-        config-loader/json-configuration-loader.cpp
-        config-loader/json-configuration-loader.hpp
-        config-loader/json-field-handler.cpp
-        config-loader/json-field-handler.hpp
+        # config_loader
+        config_loader/base_configuration_loader.hpp
+        config_loader/json_configuration_loader.cpp
+        config_loader/json_configuration_loader.hpp
+        config_loader/json_field_handler.cpp
+        config_loader/json_field_handler.hpp
 
-        # fourier-transform-solver
-        fourier-transform-solver/fourier-transform-solver.hpp
+        #discrete_cosine_transform
+        discrete_cosine_transform/base_discrete_cosine_transform.hpp
+        discrete_cosine_transform/base_discrete_cosine_transform.cpp
+        discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp
+        discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.cpp
+        discrete_cosine_transform/inverse_discrete_cosine_transform/inverse_discrete_cosine_transform.hpp
+        discrete_cosine_transform/inverse_discrete_cosine_transform/inverse_discrete_cosine_transform.cpp
+        discrete_cosine_transform/algorithms/dct.hpp
+        discrete_cosine_transform/algorithms/dct.cpp
+        discrete_cosine_transform/algorithms/dct_openmp.hpp
+        discrete_cosine_transform/algorithms/dct_openmp.cpp
+        discrete_cosine_transform/algorithms/idct.hpp
+        discrete_cosine_transform/algorithms/idct.cpp
+        discrete_cosine_transform/algorithms/idct_openmp.hpp
+        discrete_cosine_transform/algorithms/idct_openmp.cpp
+
+        # fourier_transform
+        fourier_transform/base_fourier_transform.hpp
         # - algorithms
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft.hpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft.cpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft-openmp.hpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-fft-openmp.cpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft.hpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft.cpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft-openmp.hpp
-        fourier-transform-solver/algorithms/cooley-tukey/cooley-tukey-inverse-fft-openmp.cpp
-        # - fast-fourier-transform
-        fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp
-        # - inverse-fast-fourier-transform
-        fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp
-
-        # signal-generator
-        signal-generator/abstract-signal-generator.hpp
-        signal-generator/space-domain-signal-generator.cpp
-        signal-generator/space-domain-signal-generator.hpp
-        signal-generator/time-domain-signal-generator.cpp
-        signal-generator/time-domain-signal-generator.hpp
-
-        # signal-saver
-        signal-saver/abstract-file-signal-saver.hpp
-        signal-saver/csv-signal-saver.cpp
-        signal-saver/csv-signal-saver.hpp
-
-        # utils
-        utils/timestamp.cpp
-        utils/timestamp.hpp
-        utils/bit-reversal.cpp
-        utils/bit-reversal.hpp
-
-        #discrete-cosine-transform-solver
-        discrete-cosine-transform-solver/discrete-cosine-transform-solver.hpp
-        discrete-cosine-transform-solver/discrete-cosine-transform-solver.cpp
-        discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.hpp
-        discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.cpp
-        discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.hpp
-        discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.cpp
-        discrete-cosine-transform-solver/algorithms/dct.hpp
-        discrete-cosine-transform-solver/algorithms/dct.cpp
-        discrete-cosine-transform-solver/algorithms/dct_openMP.hpp
-        discrete-cosine-transform-solver/algorithms/dct_openMP.cpp
-        discrete-cosine-transform-solver/algorithms/idct.hpp
-        discrete-cosine-transform-solver/algorithms/idct.cpp
-        discrete-cosine-transform-solver/algorithms/idct_openMP.hpp
-        discrete-cosine-transform-solver/algorithms/idct_openMP.cpp
-
-        # zigzag-scan
-        zigzag_scan/zigzag_scan.hpp
-        zigzag_scan/zigzag_scan.cpp
-
-        # rle-compressor
-        rle_compressor/rle_compressor.hpp
-        rle_compressor/rle_compressor.cpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.hpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.cpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft_openmp.hpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft_openmp.cpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.hpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.cpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.hpp
+        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.cpp
+        # - fast_fourier_transform
+        fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp
+        # - inverse-fast_fourier_transform
+        fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp
 
         # jpeg-image-compression
         jpeg_image_compression/image/image.hpp
         jpeg_image_compression/image/image.cpp
         jpeg_image_compression/compressed_image/compressed_image.hpp
         jpeg_image_compression/compressed_image/compressed_image.cpp
+
+        # rle-compressor
+        rle_compressor/rle_compressor.hpp
+        rle_compressor/rle_compressor.cpp
+
+        # signal_generator
+        signal_generator/base_signal_generator.hpp
+        signal_generator/space_domain_signal_generator.cpp
+        signal_generator/space_domain_signal_generator.hpp
+        signal_generator/time_domain_signal_generator.cpp
+        signal_generator/time_domain_signal_generator.hpp
+
+        # signal_saver
+        signal_saver/base_file_signal_saver.hpp
+        signal_saver/csv_signal_saver.cpp
+        signal_saver/csv_signal_saver.hpp
+
+        # utils
+        utils/timestamp.cpp
+        utils/timestamp.hpp
+        utils/bit_reversal.cpp
+        utils/bit_reversal.hpp
+
+        # zigzag_scan
+        zigzag_scan/zigzag_scan.hpp
+        zigzag_scan/zigzag_scan.cpp
 )
 
+add_library(
+        signal_processing_cuda STATIC
+        # - algorithms
+        fourier_transform/algorithms/cuda_fft.cu
+        fourier_transform/algorithms/cuda_fft.hpp
+)
+
+target_include_directories(signal_processing_cuda PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(signal_processing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(signal_processing PUBLIC OpenMP::OpenMP_CXX)

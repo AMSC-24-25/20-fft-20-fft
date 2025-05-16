@@ -12,12 +12,12 @@
 #include <cmath>
 #include <omp.h>
 
-#include "config-loader/json-configuration-loader.hpp"
-#include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
-#include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
-#include "signal-generator/space-domain-signal-generator.hpp"
-#include "signal-generator/time-domain-signal-generator.hpp"
-#include "signal-saver/csv-signal-saver.hpp"
+#include "config_loader/json_configuration_loader.hpp"
+#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "signal_generator/space_domain_signal_generator.hpp"
+#include "signal_generator/time_domain_signal_generator.hpp"
+#include "signal_saver/csv_signal_saver.hpp"
 #include "utils/timestamp.hpp"
 
 /**
@@ -100,6 +100,8 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
 int main() {
     // ============================================= Configuration Loading =============================================
     // load the configuration from the sample file
+    // print number of threads used by OpenMP
+    printf("Number of threads used by OpenMP: %d\n", omp_get_max_threads());
     const std::string file_path = "examples/resources/performance_fft_config.json";
     // load the configuration from the file
     const auto loader = new JSONConfigurationLoader();

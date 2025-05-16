@@ -1,11 +1,11 @@
 #include <iostream>
-#include "config-loader/json-configuration-loader.hpp"
+#include "config_loader/json-configuration-loader.hpp"
 #include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
 #include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
 #include "matplot/matplot.h"
 #include "signal-generator/space-domain-signal-generator.hpp"
 #include "signal-generator/time-domain-signal-generator.hpp"
-#include "signal-saver/csv-signal-saver.hpp"
+#include "signal_saver/csv-signal-saver.hpp"
 
 /**
  * Environment variable name for the file path for the configuration file.

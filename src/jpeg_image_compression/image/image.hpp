@@ -8,12 +8,15 @@ class CompressedImage;
 
 class Image {
     public:
-        std::vector<std::vector<double>> img_matrix;	        //input matrix (original image)
+        /**
+         * Input matrix (original image) is a 2D vector of doubles.
+         */
+        std::vector<std::vector<double>> img_matrix;
 
-        //constructor
-        Image() = default;                                      //default constructor
-        Image(std::vector<std::vector<double>> inputMatrix);	//constructor: initialize image from a matrix
-        Image(const char* image_path);                          //constructor: initialize image from file .png
+        // default constructor
+        Image() = default;
+        Image(std::vector<std::vector<double>> inputMatrix);
+        Image(const char* image_path);
 
         const void save_as_png(const std::string path);
         CompressedImage compress();

@@ -1,51 +1,55 @@
-#include "jpeg_image_compression/compressed_image/compressed_image.hpp"
-#include "zigzag_scan/zigzag_scan.hpp"
-#include "rle_compressor/rle_compressor.hpp"
-#include "discrete-cosine-transform-solver/discrete-cosine-transform/discrete-cosine-transform.hpp"
-#include "discrete-cosine-transform-solver/inverse-discrete-cosine-transform/inverse-discrete-cosine-transform.hpp"
-#include "jpeg_image_compression/image/image.hpp"
-
-// from https://github.com/nothings/stb/tree/master
-#include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
-
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <cstdint>
 
-//#################### CONSTRUCTORS ##############################################
+#include "jpeg_image_compression/compressed_image/compressed_image.hpp"
+#include "zigzag_scan/zigzag_scan.hpp"
+#include "rle_compressor/rle_compressor.hpp"
+#include "discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp"
+#include "discrete_cosine_transform/inverse_discrete_cosine_transform/inverse_discrete_cosine_transform.hpp"
+#include "jpeg_image_compression/image/image.hpp"
 
-/*
+// #################### CONSTRUCTORS ####################
+
+/**
  * Constructor that initializes the CompressedImage object from a given matrix by copying it.
- * @params inputMatrix: 2D vector containing pixel values.
+ *
+ * @param inputMatrix: 2D vector containing pixel values.
  */
-CompressedImage::CompressedImage(std::vector<std::vector<double>> inputMatrix): compressed(inputMatrix) {};
+CompressedImage::CompressedImage(std::vector<std::vector<double>> inputMatrix): compressed(inputMatrix) {}
 
-/*
+/**
  * Constructor that loads the compressed image from a file .bin
- * @compressed_image_path:  path to binary file;
- * @option: 1 (raw binary), 2 (compressed binary).
+ * @param compressed_image_path:  path to binary file;
+ * @param option: 1 (raw binary), 2 (compressed binary).
  */
-CompressedImage::CompressedImage(const std::string compressed_image_path, const int option){
+CompressedImage::CompressedImage(const std::string compressed_image_path, const int option) {
     if (option == 1){
         this->compressed = load_from_binary(compressed_image_path);
     }
     else if (option == 2){
         this->compressed = load_from_compressed_binary(compressed_image_path);
     }
-    else{
-        throw std::runtime_error("Error: invalid option in ImageJPEG constructor. Acceptable ones are only option=1 for \"load compressed image from a binary file\", or option=2 for \"load compressed image form a compressed binary file (zigzag+rle)\"");
+    else {
+        throw std::runtime_error(
+            "Error: invalid option in ImageJPEG constructor. "
+            "Acceptable ones are only option=1 for \"load compressed image from a binary file\", "
+            "or option=2 for \"load compressed image form a compressed binary file (zigzag+rle)\""
+        );
     }
 }
 
-//###################### PUBLIC ##########################################
 
-/* Function that saves compressed as a binary file.
- * @path: binary file path.
+// #################### PUBLIC ####################
+
+/**
+ * Function that saves compressed as a binary file.
+ *
+ * @param path: binary file path.
  */
-const void CompressedImage::save_as_binary(const std::string& path){
-    if(this->compressed.empty()){
+const void CompressedImage::save_as_binary(const std::string& path) {
+    if (this->compressed.empty()) {
         throw std::invalid_argument("Error: there is no compressed image to save as binary file.");
     }
 
@@ -61,13 +65,15 @@ const void CompressedImage::save_as_binary(const std::string& path){
     size_t rows = this->compressed.size();
     size_t cols = this->compressed[0].size();
 
-    file.write(reinterpret_cast<char*>(&rows), sizeof(rows)); //reinterpret_cast<char*> --> to interpret each double as an array of byte
+    // reinterpret_cast<char*> --> to interpret each double as an array of byte
+    file.write(reinterpret_cast<char*>(&rows), sizeof(rows));
     file.write(reinterpret_cast<char*>(&cols), sizeof(cols));
 
     // Write matrix's elements
     for (int r=0; r<rows; ++r) {
         for (int c=0; c<cols; ++c) {
-            int8_t value = static_cast<int8_t>(this->compressed[r][c]); // since img_matrix[r][c] stays in a range of -128 e 127
+            // since img_matrix[r][c] stays in a range of -128 e 127
+            int8_t value = static_cast<int8_t>(this->compressed[r][c]);
             file.write(reinterpret_cast<char*>(&value), sizeof(value));
         }
     }
@@ -77,11 +83,13 @@ const void CompressedImage::save_as_binary(const std::string& path){
     std::cout << "Compressed image written successfully in a binary file!" << std::endl;
 }
 
-/* Function that saves compressed as a compressed binary file (with zigzag + RLE).
- * @path: compressed binary file path.
-*/
+/**
+ * Function that saves compressed as a compressed binary file (with zigzag + RLE).
+ *
+ * @param path: compressed binary file path.
+ */
 const void CompressedImage::save_as_compressed_binary(const std::string& path){
-    if(this->compressed.empty()){
+    if (this->compressed.empty()) {
         throw std::invalid_argument("Error: there is no compressed image to save as binary file.");
     }
 
@@ -114,8 +122,10 @@ const void CompressedImage::save_as_compressed_binary(const std::string& path){
     std::cout << "Image matrix written successfully in a binary file using zigzag scan & rle compression!" << std::endl;
 }
 
-/*
- * Function that implements the jpeg decompression algorithm on compressed
+/**
+ * Function that implements the jpeg decompression algorithm on compressed image matrix.
+ *
+ * @return: decompressed image.
  */
 Image CompressedImage::decompress(){
     if(this->compressed.empty()){
@@ -123,7 +133,7 @@ Image CompressedImage::decompress(){
     }
     const size_t rows = this->compressed.size();
     const size_t cols = this->compressed[0].size();
-    std::vector<std::vector<double>> decompressed = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
+    std::vector<std::vector<double>> decompressed = std::vector(rows, std::vector<double>(cols));
 
     // Create the constant matrix Q (quantization matrix) --> is a 8x8
     std::vector<std::vector<double>> Q = {
@@ -138,10 +148,11 @@ Image CompressedImage::decompress(){
     };
 
     // Split up the image into blocks of 8 × 8 pixels
-    int submatrixSize = 8;
+    const int submatrixSize = 8;
     // sanity check if the image_data size are multiple of submatrixSize
-    if(rows%submatrixSize!=0 || cols%submatrixSize!=0){
-        std::cout<<"Error: the image is not decompressible since its sizes are not multiple of " << submatrixSize << std::endl;
+    if (rows % submatrixSize != 0 || cols % submatrixSize != 0) {
+        std::cerr << "Error: the image is not decompressible since its sizes are not multiple of "
+                  << submatrixSize << std::endl;
         throw std::runtime_error("Error: the image is not decompressible since its sizes are not multiple of 8");
     }
 
@@ -156,22 +167,30 @@ Image CompressedImage::decompress(){
     return image;
 }
 
-//##################### PRIVATE #################################
+// #################### PRIVATE ####################
 
-/*
+/**
  * Function that decompresses a single 8x8 block using JPEG (dequantization + inverse DCT).
+ *
  * The output is directly copy into the corresponding position of decompressed.
- * @r: position in image_data of the first row of the current submatrix;
- * @c: position in image_data of the first column of the current submatrix;
- * @decompressed: decompressed image matrix;
- * @submatrixSize: block size (is a squared block);
- * @Q: quantization matrix.
+ *
+ * @param r: position in image_data of the first row of the current submatrix.
+ * @param c: position in image_data of the first column of the current submatrix.
+ * @param submatrixSize: block size (is a squared block).
+ * @param decompressed: decompressed image matrix.
+ * @param Q: quantization matrix.
 */
-void CompressedImage::jpeg_decompression(const int r, const int c, const int submatrixSize, std::vector<std::vector<double>>& decompressed, std::vector<std::vector<double>>& Q){
+void CompressedImage::jpeg_decompression(
+    const int r,
+    const int c,
+    const int submatrixSize,
+    std::vector<std::vector<double>>& decompressed,
+    std::vector<std::vector<double>>& Q
+){
     // 1. Create a copy of the submatrix in which the value is moltiplied by the corresponding element in Q
     std::vector<std::vector<double>> submatrix(submatrixSize, std::vector<double>(submatrixSize));
-    for (int i=0; i<submatrixSize; ++i){
-        for (int j=0; j<submatrixSize; ++j){
+    for (int i = 0; i < submatrixSize; ++i) {
+        for (int j = 0; j < submatrixSize; ++j) {
             submatrix[i][j] = std::round(this->compressed[r+i][c+j] * Q[i][j]);
         }
     }
@@ -182,32 +201,34 @@ void CompressedImage::jpeg_decompression(const int r, const int c, const int sub
     idct_solver.compute(submatrix, cm);
 
     // 3. Copy the decompressed submatrix into the original image
-    for (int i=0; i<submatrixSize; ++i){
-        for (int j=0; j<submatrixSize; ++j){
+    for (int i = 0; i < submatrixSize; ++i){
+        for (int j = 0; j < submatrixSize; ++j){
             // 4. Add 128 from each entry, so that the entries are now again integers between 0 and 255.
             decompressed[r+i][c+j] = round(submatrix[i][j]) + 128.0;
         }
     }
 }
 
-/* Function that saves a vector using RLE to a binary file. The vector corresponds to zigzag scan of a submatrix.
- * @file: binary file stream;
- * @zzVector: zigzag-scanned vector.
+/**
+ * Function that saves a vector using RLE to a binary file.
+ * The vector corresponds to zigzag scan of a submatrix.
+ *
+ * @param file: binary file stream.
+ * @param zzVector: zigzag-scanned vector.
 */
 const void CompressedImage::save_compressed_submatrix(std::ofstream& file, const std::vector<double>& zzVector) {
-    std::vector<std::pair<int, int>> rleVector = RLEcompressor::compress(zzVector);
+    std::vector<std::pair<int, int>> rleVector = RLECompressor::compress(zzVector);
     /*
     uint8_t rle_size = rle.size();
     file.write(reinterpret_cast<const char*>(&rle_size), sizeof(uint8_t));*/
 
     for (const auto& [repetitions, value] : rleVector) {
         int16_t count = static_cast<int16_t>(repetitions);
-        if (count == 1){
+        if (count == 1) {
             //Write only the value and ignore repetitions
             int16_t val = static_cast<int16_t>(value);
             file.write(reinterpret_cast<const char*>(&val), sizeof(val));
-        }
-        else{
+        } else {
             //Write a reserved value and then write #repetitions and value
             uint8_t val = static_cast<uint8_t>(value);
             int16_t mark = static_cast<int16_t>(-1);
@@ -226,9 +247,13 @@ const void CompressedImage::save_compressed_submatrix(std::ofstream& file, const
     */
 }
 
-/*
+/**
  * Function that loads a compressed image from a binary file into a matrix (vector of vector).
- * @path: path to the binary file.
+ *
+ * The binary file contains the image data in a raw format.
+ *
+ * @param path: path to the binary file.
+ * @return: the matrix containing the image.
 */
 const std::vector<std::vector<double>> CompressedImage::load_from_binary(const std::string& path){
     // Open the file in binary mode to read
@@ -261,9 +286,11 @@ const std::vector<std::vector<double>> CompressedImage::load_from_binary(const s
     return img_matrix;
 }
 
-/*
+/**
  * Function that loads a compressed matrix from a compressed binary file (zigzag + rle).
- * @path: the path to the compressed binary file
+ *
+ * @param path: the path to the compressed binary file.
+ * @return: the matrix containing the image.
  */
 const std::vector<std::vector<double>> CompressedImage::load_from_compressed_binary(const std::string& path){
     std::ifstream file(path, std::ios::binary);
@@ -274,17 +301,22 @@ const std::vector<std::vector<double>> CompressedImage::load_from_compressed_bin
     file.read(reinterpret_cast<char*>(&cols), sizeof(cols));
     file.read(reinterpret_cast<char*>(&submatrixSize), sizeof(submatrixSize));
 
-    if(submatrixSize != 8){
-        throw std::runtime_error("Error: the compressed binary file cannot be decompressed using jpeg (submatrix size != 8)");
+    if (submatrixSize != 8) {
+        throw std::runtime_error(
+            "Error: the compressed binary file cannot be decompressed using jpeg (submatrix size != 8)"
+        );
     }
 
     std::vector<std::vector<double>> img_matrix(rows, std::vector<double>(cols));
 
-    // For each 8x8 block, reads the compressed data, decodes it (inverse zig-zag scan), and places it into the final image matrix.
+    // For each 8x8 block, reads the compressed data,
+    // decodes it (inverse zig-zag scan), and places it into the final image matrix.
     for (int r = 0; r < rows; r += submatrixSize) {
         for (int c = 0; c < cols; c += submatrixSize) {
             std::vector<double>  zzVector = load_compressed_submatrix(file, submatrixSize*submatrixSize);
-            std::vector<std::vector<double>> submatrix = ZigZagScan::inverse_scan(zzVector, submatrixSize, submatrixSize);
+            std::vector<std::vector<double>> submatrix = ZigZagScan::inverse_scan(
+                zzVector, submatrixSize, submatrixSize
+            );
             for (int i = 0; i < submatrixSize; ++i)
                 for (int j = 0; j < submatrixSize; ++j)
                     img_matrix[r+i][c+j] = submatrix[i][j];
@@ -296,17 +328,21 @@ const std::vector<std::vector<double>> CompressedImage::load_from_compressed_bin
     return img_matrix;
 }
 
-/* Function that loads a submatrix from the compressed binary file stream.
- * It returns a vector of size vectorSize, containing the zigzag scan of the submatrix
- * @file: reference to the input binary file stream;
- * @vectorSize: number of elements to read in the file.
+/**
+ * Function that loads a submatrix from the compressed binary file stream.
+ *
+ * It returns a vector of size vectorSize, containing the zigzag scan of the submatrix.
+ *
+ * @param file: reference to the input binary file stream.
+ * @param vectorSize: number of elements to read in the file.
+ * @return: the vector containing the zigzag scan of the submatrix.
  */
 const std::vector<double> CompressedImage::load_compressed_submatrix(std::ifstream& file, const int vectorSize) {
     std::vector<std::pair<int, int>> zzVector;
     int i = 0;
 
-    // Reads values sequentially untill we fill zzVector
-    while(i < vectorSize){
+    // Reads values sequentially until we fill zzVector
+    while(i < vectorSize) {
         int16_t v;
         file.read(reinterpret_cast<char*>(&v), sizeof(int16_t));
 
@@ -314,9 +350,8 @@ const std::vector<double> CompressedImage::load_compressed_submatrix(std::ifstre
             // v is not a reserved value => it is a value with no contiguous repetitions
             zzVector.emplace_back(static_cast<long>(1), static_cast<int>(v));
             i++;
-        }
-        else{
-            //we have found a reserved value => the next two value are (#repetitions, value)
+        } else {
+            // we have found a reserved value => the next two value are (#repetitions, value)
             int16_t count;
             int8_t val;
             file.read(reinterpret_cast<char*>(&count), sizeof(count));
@@ -326,9 +361,9 @@ const std::vector<double> CompressedImage::load_compressed_submatrix(std::ifstre
         }
     }
 
-    return RLEcompressor::decompress(zzVector);
+    return RLECompressor::decompress(zzVector);
 
-    /* Version that read always valu as couple (#repetitions, value)
+    /* Version that read always value as couple (#repetitions, value)
     while(i < vectorSize){
         int8_t z;
         int16_t v;
@@ -338,7 +373,7 @@ const std::vector<double> CompressedImage::load_compressed_submatrix(std::ifstre
         i += z+1; //i = i + #zeros + 1
     }
 
-    return RLEcompressor::decompress(zzVector);
+    return RLECompressor::decompress(zzVector);
 
     //1st version
     uint8_t rle_size;
@@ -353,5 +388,5 @@ const std::vector<double> CompressedImage::load_compressed_submatrix(std::ifstre
         rle[i] = {z, v};
     }
 
-    return RLEcompressor::decompress(dc, rle);*/
+    return RLECompressor::decompress(dc, rle);*/
 }

@@ -301,29 +301,29 @@ The project is divided into six main parts.
 
 ### Configuration Loader
 
-The [configuration loader](src/config-loader) is responsible for loading the configuration from the JSON file.
+The [configuration loader](src/config_loader) is responsible for loading the configuration from the JSON file.
 
 It contains the following classes:
-- The [AbstractConfigurationLoader class](src/config-loader/abstract-configuration-loader.hpp) is an abstract class
+- The [AbstractConfigurationLoader class](src/config_loader/abstract-configuration-loader.hpp) is an abstract class
   that defines the interface for loading the configuration.
-- The [JsonConfigurationLoader class](src/config-loader/json-configuration-loader.hpp) is a concrete class
+- The [JsonConfigurationLoader class](src/config_loader/json-configuration-loader.hpp) is a concrete class
   that loads the configuration from a JSON file. The implementation is on the
-  [json-configuration-loader.cpp file](src/config-loader/json-configuration-loader.cpp).
-- The [JsonFieldHandler class](src/config-loader/json-field-handler.hpp)
+  [json-configuration-loader.cpp file](src/config_loader/json-configuration-loader.cpp).
+- The [JsonFieldHandler class](src/config_loader/json-field-handler.hpp)
   is a utility class that provides field names for the JSON configuration file.
   It also provides methods to retrieve the field values from the JSON configuration file.
   There is also a enumeration class used to define the field names.
   The validation method verifies that the JSON configuration file is correct (because the JSON schema is not used yet).
-  Finally, the implementation is on the [json-field-handler.cpp file](src/config-loader/json-field-handler.cpp).
+  Finally, the implementation is on the [json-field-handler.cpp file](src/config_loader/json-field-handler.cpp).
 
 ------------------------------------------------------------------------------------------------------------------------
 
 ### Signal Generator
 
-The [signal generator](src/signal-generator) is responsible for generating a random signal.
+The [signal generator](src/signal_generator) is responsible for generating a random signal.
 
 It contains the following classes:
-- The [AbstractSignalGenerator class](src/signal-generator/abstract-signal-generator.hpp) is an abstract class
+- The [AbstractSignalGenerator class](src/signal_generator/abstract-signal-generator.hpp) is an abstract class
   that defines the interface for generating a signal.
 
   It contains a `_seed` field which is used to make the simulation reproducible. If the seed is not set,
@@ -335,32 +335,32 @@ It contains the following classes:
   The word mt19937 stands for Mersenne Twister with a long period of $2^{19937} - 1$, which means that mt19937 produces
   is a sequence of 32-bit integers that repeats only after $2^{19937} - 1$ numbers have been generated.
 
-- The [TimeDomainSignalGenerator class](src/signal-generator/time-domain-signal-generator.hpp) is a concrete class
+- The [TimeDomainSignalGenerator class](src/signal_generator/time-domain-signal-generator.hpp) is a concrete class
   that generates a signal in the time domain.
   To see the documentation of the method that generates the signal, you can see the
-  [header file](src/signal-generator/time-domain-signal-generator.hpp).
+  [header file](src/signal_generator/time-domain-signal-generator.hpp).
   Instead, the implementation is on the
-  [time-domain-signal-generator.cpp file](src/signal-generator/time-domain-signal-generator.cpp).
+  [time-domain-signal-generator.cpp file](src/signal_generator/time-domain-signal-generator.cpp).
 
-- Finally, the [SpaceDomainSignalGenerator class](src/signal-generator/space-domain-signal-generator.hpp)
+- Finally, the [SpaceDomainSignalGenerator class](src/signal_generator/space-domain-signal-generator.hpp)
   is a concrete class that generates a signal in the space domain.
   To see the documentation of the method that generates the signal, you can see the
-  [header file](src/signal-generator/space-domain-signal-generator.hpp).
+  [header file](src/signal_generator/space-domain-signal-generator.hpp).
   Instead, the implementation is on the
-  [space-domain-signal-generator.cpp file](src/signal-generator/space-domain-signal-generator.cpp).
+  [space-domain-signal-generator.cpp file](src/signal_generator/space-domain-signal-generator.cpp).
 
 ------------------------------------------------------------------------------------------------------------------------
 
 ### Signal Saver
 
-The [signal saver](src/signal-saver) is responsible for saving the generated signal to a file.
+The [signal saver](src/signal_saver) is responsible for saving the generated signal to a file.
 
 It contains the following classes:
-- The [AbstractSignalSaver class](src/signal-saver/abstract-file-signal-saver.hpp) is an abstract class
+- The [AbstractSignalSaver class](src/signal_saver/abstract-file-signal-saver.hpp) is an abstract class
   that defines the interface for saving the signal to a file.
-- The [CsvSignalSaver class](src/signal-saver/csv-signal-saver.hpp) is a concrete class
+- The [CsvSignalSaver class](src/signal_saver/csv-signal-saver.hpp) is a concrete class
   that saves the signal to a CSV file.
-  The implementation is on the [csv-signal-saver.cpp file](src/signal-saver/csv-signal-saver.cpp).
+  The implementation is on the [csv-signal-saver.cpp file](src/signal_saver/csv-signal-saver.cpp).
 
 Other classes can be implemented to save the signal to other file formats.
 
@@ -368,7 +368,7 @@ Other classes can be implemented to save the signal to other file formats.
 
 ### Fourier Transform Solver
 
-The [Fourier transform solver](src/fourier-transform-solver) is responsible for solving the Fourier transform.
+The [Fourier transform solver](src/fourier_transform) is responsible for solving the Fourier transform.
 
 It contains the following classes:
 - The [AbstractFourierTransformSolver class](include/fourier-transform-solver/abstract-fourier-transform-solver.hpp)
@@ -378,20 +378,20 @@ It contains the following classes:
   - The [Sequential1DFastFT class](include/fourier-transform-solver/sequential-1d-fast-ft.hpp)
     is a concrete class that solves the Fourier transform sequentially.
     The implementation is on the
-    [sequential-1d-fast-ft.cpp file](src/fourier-transform-solver/sequential-1d-fast-ft.cpp).
+    [sequential-1d-fast-ft.cpp file](src/fourier_transform/sequential-1d-fast-ft.cpp).
   - The [Sequential1DInverseFastFT class](include/fourier-transform-solver/sequential-1d-inverse-fast-ft.hpp)
     is a concrete class that solves the inverse Fourier transform sequentially.
     The implementation is on the
-    [sequential-1d-inverse-fast-ft.cpp file](src/fourier-transform-solver/sequential-1d-inverse-fast-ft.cpp).
+    [sequential-1d-inverse-fast-ft.cpp file](src/fourier_transform/sequential-1d-inverse-fast-ft.cpp).
 - Parallel Solver:
   - The [Parallel1DFastFT class](include/fourier-transform-solver/parallel-1d-fast-ft.hpp)
     is a concrete class that solves the Fourier transform in parallel using the [OpenMP framework][OpenMP].
     The implementation is on the
-    [parallel-1d-fast-ft.cpp file](src/fourier-transform-solver/parallel-1d-fast-ft.cpp).
+    [parallel-1d-fast-ft.cpp file](src/fourier_transform/parallel-1d-fast-ft.cpp).
   - The [Parallel1DInverseFastFT class](include/fourier-transform-solver/parallel-1d-inverse-fast-ft.hpp)
     is a concrete class that solves the inverse Fourier transform in parallel using the [OpenMP framework][OpenMP].
     The implementation is on the
-    [parallel-1d-inverse-fast-ft.cpp file](src/fourier-transform-solver/parallel-1d-inverse-fast-ft.cpp).
+    [parallel-1d-inverse-fast-ft.cpp file](src/fourier_transform/parallel-1d-inverse-fast-ft.cpp).
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -404,7 +404,7 @@ The two main implementations are:
   There are two implementations:
   - The sequential implementation is used by the sequential solver.
   - The parallel implementation is used by the parallel solver.
-  The implementation is on the [bit-reversal.cpp file](src/utils/bit-reversal.cpp) and
+  The implementation is on the [bit_reversal.cpp file](src/utils/bit-reversal.cpp) and
   the header file is [bit-reversal.hpp](src/utils/bit-reversal.hpp).
 - The timestamp method that is used to create a readable timestamp.
   The implementation is on the [timestamp.cpp file](src/utils/timestamp.cpp) and
@@ -518,6 +518,6 @@ is shown in the following figure:
 [MK library]: https://github.com/pcafrica/mk
 [JSONSchemaValidator]: https://www.jsonschemavalidator.net/
 [matplotplusplus]: https://alandefreitas.github.io/matplotplusplus/
-[AbstractFileSignalSaver]: src/signal-saver/abstract-file-signal-saver.hpp
+[AbstractFileSignalSaver]: src/signal_saver/abstract-file-signal-saver.hpp
 [gnuplot]: http://gnuplot.info/
 [mt19937]: https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine

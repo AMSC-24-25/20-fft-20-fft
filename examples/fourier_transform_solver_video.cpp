@@ -8,9 +8,9 @@
 #include "opencv4/opencv2/core/types.hpp"
 #include "opencv4/opencv2/core/hal/interface.h"
 
-#include "fourier-transform-solver/fourier-transform-solver.hpp"
-#include "fourier-transform-solver/fast-fourier-transform/fast-fourier-transform.hpp"
-#include "fourier-transform-solver/inverse-fast-fourier-transform/inverse-fast-fourier-transform.hpp"
+#include "fourier_transform/base_fourier_transform.hpp"
+#include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
+#include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
 
 int main() {
     /**

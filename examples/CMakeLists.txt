@@ -42,6 +42,7 @@ target_link_libraries(
         example-fourier_transform_solver_video
         PRIVATE ${OpenCV_LIBS}
         PRIVATE signal_processing
+        PRIVATE signal_processing_cuda
 )
 
 # Application of 3D FFT to video processing with RGB channels
@@ -54,4 +55,5 @@ target_link_libraries(
         example-fourier_transform_solver_video_rgb
         PRIVATE ${OpenCV_LIBS}
         PRIVATE signal_processing
+        PRIVATE signal_processing_cuda
 )
