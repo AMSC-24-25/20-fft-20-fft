@@ -37,7 +37,8 @@
       "description": "Build only the FFT library in a clean way (no examples)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_EXAMPLES": "OFF"
+        "BUILD_EXAMPLES": "OFF",
+        "HAS_CUDA": "OFF"
       }
     },
     {
@@ -58,7 +59,8 @@
       "description": "Development build with example programs",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_EXAMPLES": "ON"
+        "BUILD_EXAMPLES": "ON",
+        "HAS_CUDA": "OFF"
       }
     },
     {
@@ -79,7 +81,8 @@
       "description": "Build only the FFT library in a clean way (no examples)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_EXAMPLES": "OFF"
+        "BUILD_EXAMPLES": "OFF",
+        "HAS_CUDA": "OFF"
       }
     },
     {
@@ -100,7 +103,8 @@
       "description": "Development build with example programs",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_EXAMPLES": "ON"
+        "BUILD_EXAMPLES": "ON",
+        "HAS_CUDA": "OFF"
       }
     },
     {

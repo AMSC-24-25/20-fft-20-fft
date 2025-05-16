@@ -22,6 +22,8 @@ if (HAS_CUDA)
         message(WARNING "CUDA not found: compiling without CUDA FFT")
         set(HAS_CUDA FALSE)
     endif()
+else ()
+    message(STATUS "CUDA support deactivated by the user")
 endif ()
 
 # Dependencies and src
