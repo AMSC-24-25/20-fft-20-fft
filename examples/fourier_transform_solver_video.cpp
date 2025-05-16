@@ -84,8 +84,8 @@ int main() {
     auto start_time = std::chrono::high_resolution_clock::now();
     fft::solver::FastFourierTransform<3> solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
     fft::solver::InverseFastFourierTransform<3> i_solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
-    solver.compute(volume_data, fft::solver::ComputationMode::OPENMP);
-    i_solver.compute(volume_data, fft::solver::ComputationMode::OPENMP);
+    solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("FFT and IFFT applied.\n");
