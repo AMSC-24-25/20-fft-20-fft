@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 find_package(OpenMP REQUIRED)
 
+# Add CUDA support
 option(HAS_CUDA "Enable CUDA support" ON)
 if (HAS_CUDA)
     message(STATUS "CUDA support requested by the user")
@@ -27,7 +28,7 @@ else ()
 endif ()
 
 # Dependencies and src
-include_directories(external src)
+include_directories(src/external src)
 
 # Add library to the build
 add_subdirectory(src)
@@ -35,28 +36,6 @@ add_subdirectory(src)
 # Optionally add examples
 option(BUILD_EXAMPLES "Build example programs" ON)
 if(BUILD_EXAMPLES)
-    # Detect if gnuplot is installed (required by matplot++)
-    find_program(GNUPLOT_EXECUTABLE gnuplot)
-    if (NOT GNUPLOT_EXECUTABLE)
-        message(FATAL_ERROR "Gnuplot not found. Please install it with 'sudo apt-get install gnuplot'.")
-    endif()
-    # Detect if matplot++ is installed
-    if(EXISTS "${CMAKE_SOURCE_DIR}/external/matplotplusplus")
-        add_subdirectory(external/matplotplusplus)
-    else()
-        message(FATAL_ERROR
-                "The directory 'external/matplotplusplus' does not exist. " +
-                "Did you forget to clone the repository? " +
-                "Go to the root of the repository and run the following command: " +
-                "git submodule update --init --recursive"
-        )
-    endif()
-    # Detect if OpenCV is installed
-    find_package(OpenCV REQUIRED)
-    if (NOT OpenCV_FOUND)
-        message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
-    endif()
-    include_directories( ${OpenCV_INCLUDE_DIRS} )
     # Add examples
     add_subdirectory(examples)
 endif()

@@ -4,21 +4,18 @@
 # Basic 1D FFT example with matplot++
 add_executable(
         example-fourier_transform_solver
-        ${FFT-LIBRARY}
         fourier_transform_solver.cpp
 )
 
 # 1D FFT example to compare performance of different FFT libraries
 add_executable(
         example-fourier_transform_solver_performance
-        ${FFT-LIBRARY}
         fourier_transform_solver_performance.cpp
 )
 
 # Application of 2D FFT to image processing
 add_executable(
         example-fourier_transform_solver_image
-        ${FFT-LIBRARY}
         fourier_transform_solver_image.cpp
 )
 
@@ -43,7 +40,6 @@ if (HAS_CUDA)
     # Application of 3D FFT to video processing
     add_executable(
             example-fourier_transform_solver_video
-            ${FFT-LIBRARY}
             fourier_transform_solver_video.cpp
     )
     target_link_libraries(
@@ -55,7 +51,6 @@ if (HAS_CUDA)
     # Application of 3D FFT to video processing with RGB channels
     add_executable(
             example-fourier_transform_solver_video_rgb
-            ${FFT-LIBRARY}
             fourier_transform_solver_video_rgb.cpp
     )
     target_link_libraries(
@@ -76,3 +71,18 @@ else ()
             PRIVATE signal_processing
     )
 endif ()
+
+
+###################################
+# Haar Wavelet Transform Examples #
+###################################
+# Basic 1D Haar Wavelet Transform example
+add_executable(
+        example-haar_wavelet_transform_solver_1d
+        haar_wavelet_transform_1d.cpp
+)
+# Basic 2D Haar Wavelet Transform example
+add_executable(
+        example-haar_wavelet_transform_solver_2d
+        haar_wavelet_transform_2d.cpp
+)
