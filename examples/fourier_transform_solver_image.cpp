@@ -19,6 +19,18 @@
 
 int main() {
     /**
+     * Ask the user to choose between CPU and CUDA.
+     */
+    #ifdef HAS_CUDA
+    printf("Do you want to use CUDA? (y/n) ");
+    char use_cuda;
+    std::cin >> use_cuda;
+    if (use_cuda != 'y' && use_cuda != 'n') {
+        std::cerr << "Invalid choice. Please enter 'y' for CUDA or 'n' for CPU." << std::endl;
+        return 1;
+    }
+    #endif // HAS_CUDA
+    /**
      * Ask the user to choose between the dog image and the eiffel-tower image.
      */
     printf("Do you want to use the dog image or the eiffel-tower image? (d/e) ");
@@ -74,19 +86,29 @@ int main() {
     printf("Starting FFT computation...\n");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
-    fft::solver::FastFourierTransform<2> solver(std::array{static_cast<size_t>(height), static_cast<size_t>(width)});
-    fft::solver::InverseFastFourierTransform<2> inverse_solver(std::array{static_cast<size_t>(height), static_cast<size_t>(width)});
-    solver.compute(R, fft::solver::ComputationMode::OPENMP);
+    fft::solver::FastFourierTransform<2> solver(
+        std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
+    fft::solver::InverseFastFourierTransform<2> inverse_solver(
+        std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
+    auto computation_mode = fft::solver::ComputationMode::OPENMP;
+    #ifdef HAS_CUDA
+    if (use_cuda == 'y') {
+        computation_mode = fft::solver::ComputationMode::CUDA;
+    }
+    #endif // HAS_CUDA
+    solver.compute(R, computation_mode);
     printf("R FFT computed\n");
-    solver.compute(G, fft::solver::ComputationMode::OPENMP);
+    solver.compute(G, computation_mode);
     printf("G FFT computed\n");
-    solver.compute(B, fft::solver::ComputationMode::OPENMP);
+    solver.compute(B, computation_mode);
     printf("B FFT computed\n");
-    inverse_solver.compute(R, fft::solver::ComputationMode::OPENMP);
+    inverse_solver.compute(R, computation_mode);
     printf("R IFFT computed\n");
-    inverse_solver.compute(G, fft::solver::ComputationMode::OPENMP);
+    inverse_solver.compute(G, computation_mode);
     printf("G IFFT computed\n");
-    inverse_solver.compute(B, fft::solver::ComputationMode::OPENMP);
+    inverse_solver.compute(B, computation_mode);
     printf("B IFFT computed\n");
     const auto end_time = std::chrono::high_resolution_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();

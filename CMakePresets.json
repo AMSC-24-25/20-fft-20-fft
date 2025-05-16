@@ -41,6 +41,17 @@
       }
     },
     {
+      "name": "ninja-lib-cuda",
+      "displayName": "Build the signal processing library with CUDA support (as ninja-lib, but with CUDA)",
+      "inherits": "base-ninja",
+      "description": "Build only the FFT library in a clean way (no examples) with CUDA support",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "OFF",
+        "HAS_CUDA": "ON"
+      }
+    },
+    {
       "name": "ninja-dev",
       "displayName": "Build the signal processing library with examples (required packages: opencv and matplot++)",
       "inherits": "base-ninja",
@@ -48,6 +59,17 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "ninja-dev-cuda",
+      "displayName": "Build the signal processing library with CUDA support (as ninja-dev, but with CUDA)",
+      "inherits": "base-ninja",
+      "description": "Development build with example programs and CUDA support",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "ON",
+        "HAS_CUDA": "ON"
       }
     },
     {
@@ -61,6 +83,17 @@
       }
     },
     {
+      "name": "make-lib-cuda",
+      "displayName": "Build the signal processing library with CUDA support (as make-lib, but with CUDA)",
+      "inherits": "base-make",
+      "description": "Build only the FFT library in a clean way (no examples) with CUDA support",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "OFF",
+        "HAS_CUDA": "ON"
+      }
+    },
+    {
       "name": "make-dev",
       "displayName": "Build the signal processing library with examples (Ninja is preferred, consider using it; required packages: opencv and matplot++)",
       "inherits": "base-make",
@@ -69,24 +102,17 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_EXAMPLES": "ON"
       }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "ninja-lib",
-      "configurePreset": "ninja-lib"
     },
     {
-      "name": "ninja-dev",
-      "configurePreset": "ninja-dev"
-    },
-    {
-      "name": "make-dev",
-      "configurePreset": "make-dev"
-    },
-    {
-      "name": "make-lib",
-      "configurePreset": "make-lib"
+      "name": "make-dev-cuda",
+      "displayName": "Build the signal processing library with CUDA support (as make-dev, but with CUDA)",
+      "inherits": "base-make",
+      "description": "Development build with example programs and CUDA support",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "ON",
+        "HAS_CUDA": "ON"
+      }
     }
   ]
 }

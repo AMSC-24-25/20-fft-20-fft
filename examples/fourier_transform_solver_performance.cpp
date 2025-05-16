@@ -47,7 +47,7 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
     solver.compute(signal, parallel_fft, fft::solver::ComputationMode::OPENMP);
     const auto end_time_par = std::chrono::high_resolution_clock::now();
     printf(
-        "Time taken for parallel (OpenMP) FFT: %ld ms\n",
+        "Time taken for parallel (OpenMP, CPU) FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
     #ifdef HAS_CUDA
@@ -55,24 +55,24 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
     solver.compute(signal, parallel_fft, fft::solver::ComputationMode::CUDA);
     const auto end_time_cuda = std::chrono::high_resolution_clock::now();
     printf(
-        "Time taken for parallel (CUDA) FFT: %ld ms\n",
+        "Time taken for parallel (CUDA, GPU) FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );
     #endif // HAS_CUDA
     printf(
-        "With %d threads, the speedup is: %ld\n",
+        "With %d threads (CPU), the speedup is: %ld\n",
         omp_get_max_threads(),
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
     #ifdef HAS_CUDA
     printf(
-        "With CUDA, the speedup (vs. Sequential) is: %ld\n",
+        "With CUDA (GPU), the speedup (vs. Sequential) is: %ld\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );
     printf(
-        "With CUDA, the speedup (vs. Parallel) is: %ld\n",
+        "With CUDA (GPU), the speedup (vs. Parallel) is: %ld\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );
@@ -105,7 +105,7 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     inverse_solver.compute(signal, parallel_ifft, fft::solver::ComputationMode::OPENMP);
     const auto end_time_par = std::chrono::high_resolution_clock::now();
     printf(
-        "Time taken for parallel Inverse FFT: %ld ms\n",
+        "Time taken for parallel (OpenMP, CPU) Inverse FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
     #ifdef HAS_CUDA
@@ -113,24 +113,24 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     inverse_solver.compute(signal, parallel_ifft, fft::solver::ComputationMode::CUDA);
     const auto end_time_cuda = std::chrono::high_resolution_clock::now();
     printf(
-        "Time taken for parallel (CUDA) Inverse FFT: %ld ms\n",
+        "Time taken for parallel (CUDA, GPU) Inverse FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );
     #endif // HAS_CUDA
     printf(
-        "With %d threads, the speedup is: %ld\n",
+        "With %d threads (CPU), the speedup is: %ld\n",
         omp_get_max_threads(),
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
     #ifdef HAS_CUDA
     printf(
-        "With CUDA, the speedup (vs. Sequential) is: %ld\n",
+        "With CUDA (GPU), the speedup (vs. Sequential) is: %ld\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );
     printf(
-        "With CUDA, the speedup (vs. Parallel) is: %ld\n",
+        "With CUDA (GPU), the speedup (vs. Parallel) is: %ld\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
     );

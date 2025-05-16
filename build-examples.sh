@@ -29,8 +29,17 @@ echo ""
 
 echo -e "${GREEN}~ Compile CMakeLists.txt in $(pwd)/build ~${NC}"
 mkdir -p "build" && cd "build" || exit 1
-cmake .. --preset ninja-dev --log-level=ERROR || exit 1
-cd ninja-dev
+# check if CUDA is supported
+if ! command -v nvcc &> /dev/null
+then
+    echo -e "${YELLOW}CUDA is not supported. Using CPU only.${NC}"
+    cmake .. --preset ninja-dev --log-level=ERROR || exit 1
+    cd ninja-dev
+else
+    echo -e "${GREEN}CUDA is supported. Using GPU acceleration.${NC}"
+    cmake .. --preset ninja-dev-cuda --log-level=ERROR || exit 1
+    cd ninja-dev-cuda
+fi
 echo ""
 
 
@@ -40,5 +49,11 @@ ninja --quiet all || exit 1
 end_time=$(date +%s)
 elapsed_time=$((end_time - start_time))
 echo "Built in ~$elapsed_time seconds"
-echo "Run examples using ./build/ninja-dev/examples/example-name"
+# check if CUDA is supported
+if ! command -v nvcc &> /dev/null
+then
+    echo "Run examples using ./build/ninja-dev/examples/example-name"
+else
+    echo "Run examples using ./build/ninja-dev-cuda/examples/example-name"
+fi
 echo ""
