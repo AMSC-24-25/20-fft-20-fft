@@ -2,20 +2,23 @@
 #include <iostream>
 #include <vector>
 
-#include "opencv4/opencv2/videoio.hpp"
-#include "opencv4/opencv2/imgproc.hpp"
-#include "opencv4/opencv2/core/mat.hpp"
-#include "opencv4/opencv2/core/types.hpp"
-#include "opencv4/opencv2/core/hal/interface.h"
+#include "opencv2/videoio.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/core/mat.hpp"
+#include "opencv2/core/types.hpp"
+#include "opencv2/core/hal/interface.h"
 
 #include "fourier_transform/base_fourier_transform.hpp"
 #include "fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
 #include "fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
+#include "utils/timestamp.hpp"
 
 int main() {
     /**
     * 1. Load the Video using OpenCV
      */
+    std::ostringstream filepath_out_oss;
+    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".mp4";
     cv::VideoCapture cap("examples/resources/cats.mp4");
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
@@ -101,7 +104,13 @@ int main() {
     }
     printf("Reconstructed frames from FFT.\n");
 
-    cv::VideoWriter writer("examples/output/output.avi", cv::VideoWriter::fourcc('M','J','P','G'), 60, cv::Size(width, height), false);
+    cv::VideoWriter writer(
+        filepath_out_oss.str(),
+        cv::VideoWriter::fourcc('M','J','P','G'),
+        60,
+        cv::Size(width, height),
+        false
+    );
     for (const auto& f : reconstructed_frames)
         writer.write(f);
     writer.release();
