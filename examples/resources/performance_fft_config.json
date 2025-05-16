@@ -1,6 +1,6 @@
 {
   "signal_domain": "time",
-  "signal_length": 4194304,
+  "signal_length": 8388608,
   "hz_frequency": 1,
   "phase": 0,
   "noise": 5

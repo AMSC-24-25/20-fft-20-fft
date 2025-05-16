@@ -1,9 +1,9 @@
 /**
  * @file fourier_transform_solver.cpp
  * @brief This file demonstrates the use of the FFT and IFFT algorithms
- * to compute the FFT and IFFT of a signal.
+ *        to compute the FFT and IFFT of a signal.
  *
- * It uses the FFT algorithm (Cooley-Tukey) to compute the FFT of a signal.
+ * @details It uses the FFT algorithm (Cooley-Tukey) to compute the FFT of a signal.
  */
 
 #include <iostream>

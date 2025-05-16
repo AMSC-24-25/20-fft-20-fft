@@ -1,7 +1,7 @@
 /**
  * @file fourier_transform_solver_image.cpp
  * @brief This file demonstrates the correctness of the FFT and IFFT algorithms (2D)
- * by applying them to an image.
+ *        by applying them to an image.
  */
 
 #include <iostream>

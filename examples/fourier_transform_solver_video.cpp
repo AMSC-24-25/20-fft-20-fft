@@ -1,10 +1,10 @@
 /**
  * @file fourier_transform_solver_video.cpp
  * @brief This program demonstrates how to apply 3D FFT and IFFT
- * on a video using OpenCV and the Fast Fourier Transform (FFT) library.
+ *        on a video using OpenCV and the Fast Fourier Transform (FFT) library.
  *
- * This example uses the Cooley-Tukey algorithm to perform FFT and IFFT
- * on a 3D volume of frames extracted from a video.
+ * @details This example uses the Cooley-Tukey algorithm to perform FFT and IFFT
+ *          on a 3D volume of frames extracted from a video.
  */
 
 #include <complex>

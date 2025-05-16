@@ -18,9 +18,6 @@ add_executable(
         ${FFT-LIBRARY}
         fourier_transform_solver_performance.cpp
 )
-target_link_libraries(example-fourier_transform_solver_performance
-        PRIVATE signal_processing
-)
 
 # Application of 2D FFT to image processing
 add_executable(
@@ -34,6 +31,11 @@ target_link_libraries(example-fourier_transform_solver_image
 
 if (HAS_CUDA)
     message(STATUS "CUDA found: the video processing example will be running on GPU")
+    # 1D FFT example to compare performance of different FFT libraries
+    target_link_libraries(example-fourier_transform_solver_performance
+            PRIVATE signal_processing
+            PRIVATE signal_processing_cuda
+    )
     # Application of 3D FFT to video processing
     add_executable(
             example-fourier_transform_solver_video
@@ -57,5 +59,9 @@ if (HAS_CUDA)
             PRIVATE ${OpenCV_LIBS}
             PRIVATE signal_processing
             PRIVATE signal_processing_cuda
+    )
+else ()
+    target_link_libraries(example-fourier_transform_solver_performance
+            PRIVATE signal_processing
     )
 endif ()
