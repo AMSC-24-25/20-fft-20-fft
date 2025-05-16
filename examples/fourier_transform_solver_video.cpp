@@ -1,3 +1,12 @@
+/**
+ * @file fourier_transform_solver_video.cpp
+ * @brief This program demonstrates how to apply 3D FFT and IFFT
+ * on a video using OpenCV and the Fast Fourier Transform (FFT) library.
+ *
+ * This example uses the Cooley-Tukey algorithm to perform FFT and IFFT
+ * on a 3D volume of frames extracted from a video.
+ */
+
 #include <complex>
 #include <iostream>
 #include <vector>
@@ -18,7 +27,7 @@ int main() {
     * 1. Load the Video using OpenCV
      */
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".mp4";
+    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".avi";
     cv::VideoCapture cap("examples/resources/cats.mp4");
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
@@ -33,7 +42,10 @@ int main() {
     cv::Mat frame;
     for (int i = 0; i < 128; ++i)
     {
-        cap.read(frame);
+        if (!cap.read(frame)) {
+            std::cerr << "Error reading frame " << i << std::endl;
+            break;
+        }
         cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);  // Optional: use grayscale for simplicity
 
         // crop to 1024*1024
@@ -52,26 +64,9 @@ int main() {
 
 
     /**
-     * 3. Create a 3D Array and Apply FFT
-     */
-    std::vector<std::vector<std::vector<std::complex<double>>>> volume(
-        depth, std::vector<std::vector<std::complex<double>>>(
-            height, std::vector<std::complex<double>>(width)
-        )
-    );
-    // Fill volume from frames
-    for (int z = 0; z < depth; ++z)
-        for (int y = 0; y < height; ++y)
-            for (int x = 0; x < width; ++x)
-                volume[z][y][x] = std::complex<double>(frames[z].at<double>(y, x), 0.0);
-    printf("Volume created with dimensions %dx%dx%d.\n", depth, height, width);
-
-
-    /**
-     * 4. Apply Cooley-Tukey 3D FFT
+     * 3. Create an array to give to FFT; Row-Major order!
      */
     std::vector<std::complex<double>> volume_data(depth * height * width);
-
     for (int z = 0; z < depth; ++z)
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
@@ -81,9 +76,16 @@ int main() {
     printf("Volume data flattened for FFT.\n");
 
 
+    /**
+     * 4. Apply Cooley-Tukey 3D FFT
+     */
     auto start_time = std::chrono::high_resolution_clock::now();
-    fft::solver::FastFourierTransform<3> solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
-    fft::solver::InverseFastFourierTransform<3> i_solver({static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)});
+    fft::solver::FastFourierTransform<3> solver(
+        {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
+    fft::solver::InverseFastFourierTransform<3> i_solver(
+        {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
+    );
     solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
     i_solver.compute(volume_data, fft::solver::ComputationMode::CUDA);
     auto end_time = std::chrono::high_resolution_clock::now();
@@ -91,19 +93,25 @@ int main() {
     printf("FFT and IFFT applied.\n");
     printf("FFT computation time: %.2f seconds\n", elapsed.count());
 
+    /**
+     * 5. Reconstruct the frames from the FFT output
+     */
     std::vector<cv::Mat> reconstructed_frames;
     for (int z = 0; z < depth; ++z) {
         cv::Mat frame(height, width, CV_64F);
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
                 int idx = z * height * width + y * width + x;
-                frame.at<double>(y, x) = volume_data[idx].real();  // Discard imaginary
+                frame.at<double>(y, x) = volume_data[idx].real();
             }
         frame.convertTo(frame, CV_8U);
         reconstructed_frames.push_back(frame);
     }
     printf("Reconstructed frames from FFT.\n");
 
+    /**
+     * 6. Save the reconstructed frames as a video
+     */
     cv::VideoWriter writer(
         filepath_out_oss.str(),
         cv::VideoWriter::fourcc('M','J','P','G'),
@@ -114,6 +122,5 @@ int main() {
     for (const auto& f : reconstructed_frames)
         writer.write(f);
     writer.release();
-
-    printf("Reconstructed video saved as output.avi.\n");
+    printf("Reconstructed video saved as %s.\n", filepath_out_oss.str().c_str());
 }

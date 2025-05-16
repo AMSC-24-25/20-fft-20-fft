@@ -1,3 +1,12 @@
+/**
+ * @file fourier_transform_solver_video_rgb.cpp
+ * @brief This program demonstrates how to apply 3D FFT and IFFT
+ * on a video using OpenCV and the Fast Fourier Transform (FFT) library.
+ *
+ * The program extracts frames from a video, applies FFT and IFFT
+ * on the RGB channels separately, and reconstructs the video.
+ */
+
 #include <complex>
 #include <iostream>
 #include <vector>
@@ -19,7 +28,7 @@ int main() {
      */
     const std::string input_file = "examples/resources/cats.mp4";
     std::ostringstream filepath_out_oss;
-    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".mp4";
+    filepath_out_oss << "examples/output/fft-" << createReadableTimestamp("_%Y%m%d_%H%M%S") << ".avi";
     cv::VideoCapture cap(input_file);
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;
