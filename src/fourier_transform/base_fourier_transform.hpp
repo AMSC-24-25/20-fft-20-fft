@@ -13,10 +13,12 @@ namespace fft::solver
      * The modes are:
      *  - <code>SEQUENTIAL</code>: Sequential computation.
      *  - <code>OPENMP</code>: Parallel computation using OpenMP.
+     *  - <code>CUDA</code>: Parallel computation using CUDA (if available).
      */
     enum class ComputationMode {
         SEQUENTIAL,
-        OPENMP
+        OPENMP,
+        CUDA
     };
 
     /**
@@ -83,6 +85,7 @@ namespace fft::solver
          * @param input The input vector to be transformed.
          * @param mode The mode of computation.
          * @throws std::invalid_argument if the input vector size does not match the expected size (based on dimensions).
+         * @throws std::runtime_error if CUDA is not available and the mode is set to CUDA.
          */
         void compute(
             std::vector<std::complex<double>> &input,
@@ -103,6 +106,12 @@ namespace fft::solver
                 this->computeND(input, this->getSequentialTransform());
             } else if (mode == ComputationMode::OPENMP) {
                 this->computeND(input, this->getOpenMPTransform());
+            } else if (mode == ComputationMode::CUDA) {
+                #ifdef HAS_CUDA
+                this->getCudaTransform()(input);
+                #else // HAS_CUDA
+                throw std::runtime_error("CUDA is not available in this machine, please use another mode.");
+                #endif // HAS_CUDA
             } else {
                 throw std::invalid_argument("Invalid mode specified.");
             }
@@ -302,6 +311,16 @@ namespace fft::solver
          * @return The OpenMP transform function.
          */
         [[nodiscard]] virtual transform_t getOpenMPTransform() const = 0;
+
+        /**
+         * Get the CUDA transform function.
+         *
+         * This method should be overridden by derived classes to provide the specific
+         * implementation of the Fourier Transform using CUDA.
+         *
+         * @return The CUDA transform function.
+         */
+        [[nodiscard]] virtual transform_t getCudaTransform() const = 0;
     };
 }
 

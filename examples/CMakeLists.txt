@@ -32,28 +32,30 @@ target_link_libraries(example-fourier_transform_solver_image
         PRIVATE signal_processing
 )
 
-# Application of 3D FFT to video processing
-add_executable(
-        example-fourier_transform_solver_video
-        ${FFT-LIBRARY}
-        fourier_transform_solver_video.cpp
-)
-target_link_libraries(
-        example-fourier_transform_solver_video
-        PRIVATE ${OpenCV_LIBS}
-        PRIVATE signal_processing
-        PRIVATE signal_processing_cuda
-)
-
-# Application of 3D FFT to video processing with RGB channels
-add_executable(
-        example-fourier_transform_solver_video_rgb
-        ${FFT-LIBRARY}
-        fourier_transform_solver_video_rgb.cpp
-)
-target_link_libraries(
-        example-fourier_transform_solver_video_rgb
-        PRIVATE ${OpenCV_LIBS}
-        PRIVATE signal_processing
-        PRIVATE signal_processing_cuda
-)
+if (HAS_CUDA)
+    message(STATUS "CUDA found: the video processing example will be running on GPU")
+    # Application of 3D FFT to video processing
+    add_executable(
+            example-fourier_transform_solver_video
+            ${FFT-LIBRARY}
+            fourier_transform_solver_video.cpp
+    )
+    target_link_libraries(
+            example-fourier_transform_solver_video
+            PRIVATE ${OpenCV_LIBS}
+            PRIVATE signal_processing
+            PRIVATE signal_processing_cuda
+    )
+    # Application of 3D FFT to video processing with RGB channels
+    add_executable(
+            example-fourier_transform_solver_video_rgb
+            ${FFT-LIBRARY}
+            fourier_transform_solver_video_rgb.cpp
+    )
+    target_link_libraries(
+            example-fourier_transform_solver_video_rgb
+            PRIVATE ${OpenCV_LIBS}
+            PRIVATE signal_processing
+            PRIVATE signal_processing_cuda
+    )
+endif ()

@@ -8,7 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fopenmp")
 find_package(OpenMP REQUIRED)
 
-enable_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+    message(STATUS "CUDA found: enabling CUDA FFT")
+    set(HAS_CUDA TRUE)
+    add_definitions(-DHAS_CUDA)
+else()
+    message(STATUS "CUDA not found: compiling without CUDA FFT")
+    set(HAS_CUDA FALSE)
+endif()
 
 # Dependencies and src
 include_directories(external src)
