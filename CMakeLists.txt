@@ -16,6 +16,13 @@ if (NOT GNUPLOT_EXECUTABLE)
     message(FATAL_ERROR "Gnuplot not found. Please install it with 'sudo apt-get install gnuplot'.")
 endif()
 
+# Detect if OpenCV is installed
+find_package(OpenCV REQUIRED)
+if (NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
+endif()
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
 # External libraries
 include_directories(
         external
@@ -138,8 +145,20 @@ add_executable(
         ${FFT-LIBRARY}
         examples/fourier_transform_solver_image.cpp
 )
+add_executable(
+        example-fourier_transform_solver_video
+        ${FFT-LIBRARY}
+        examples/fourier_transform_solver_video.cpp
+)
+add_executable(
+        example-fourier_transform_solver_video_rgb
+        ${FFT-LIBRARY}
+        examples/fourier_transform_solver_video_rgb.cpp
+)
 # Link the matplot library
 target_link_libraries(example-fourier_transform_solver PUBLIC matplot)
+target_link_libraries(example-fourier_transform_solver_video ${OpenCV_LIBS})
+target_link_libraries(example-fourier_transform_solver_video_rgb ${OpenCV_LIBS})
 
 ##################
 # Parallel build #
