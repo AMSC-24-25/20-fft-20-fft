@@ -46,10 +46,6 @@ add_library(
         jpeg_image_compression/compressed_image/compressed_image.hpp
         jpeg_image_compression/compressed_image/compressed_image.cpp
 
-        # rle-compressor
-        rle_compressor/rle_compressor.hpp
-        rle_compressor/rle_compressor.cpp
-
         # signal_generator
         signal_generator/base_signal_generator.hpp
         signal_generator/space_domain_signal_generator.cpp
@@ -63,10 +59,12 @@ add_library(
         signal_saver/csv_signal_saver.hpp
 
         # utils
-        utils/timestamp.cpp
-        utils/timestamp.hpp
         utils/bit_reversal.cpp
         utils/bit_reversal.hpp
+        utils/rle_compressor.hpp
+        utils/rle_compressor.cpp
+        utils/timestamp.cpp
+        utils/timestamp.hpp
         utils/zigzag_scan.hpp
         utils/zigzag_scan.cpp
 )
