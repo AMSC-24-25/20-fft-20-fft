@@ -3,7 +3,7 @@
 
 #include "fourier_transform/base_fourier_transform.hpp"
 #include "fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.hpp"
-#include "fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft_openmp.hpp"
+#include "fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_fft_openmp.hpp"
 #ifdef HAS_CUDA
 #include "fourier_transform/algorithms/cooley_tukey/cuda/cooley_tukey_fft_cuda.hpp"
 #endif // HAS_CUDA
@@ -40,7 +40,7 @@ namespace fft::solver {
          */
         [[nodiscard]] typename FastFourierTransform::transform_t getSequentialTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeCooleyTurkeyFFT(data);
+                algorithms::cooley_tukey::computeFFT(data);
             };
         }
 
@@ -52,7 +52,7 @@ namespace fft::solver {
          */
         [[nodiscard]] typename FastFourierTransform::transform_t getOpenMPTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeCooleyTurkeyFFTOpenMP(data);
+                algorithms::cooley_tukey::computeFFTOpenMP(data);
             };
         }
 

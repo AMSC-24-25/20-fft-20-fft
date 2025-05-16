@@ -29,12 +29,12 @@ add_library(
         # - algorithms
         fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.hpp
         fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.cpp
-        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft_openmp.hpp
-        fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft_openmp.cpp
+        fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_fft_openmp.hpp
+        fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_fft_openmp.cpp
         fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.hpp
         fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.cpp
-        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.hpp
-        fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.cpp
+        fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_inverse_fft_openmp.hpp
+        fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_inverse_fft_openmp.cpp
         # - fast_fourier_transform
         fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp
         # - inverse-fast_fourier_transform

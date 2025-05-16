@@ -3,7 +3,7 @@
 #include "utils/bit_reversal.hpp"
 
 namespace fft::algorithms::cooley_tukey {
-    void computeCooleyTurkeyFFT(std::vector<std::complex<double>>& input) {
+    void computeFFT(std::vector<std::complex<double>>& input) {
         /**
          * Sequential Cooley-Tukey Fast Fourier Transform (FFT) Algorithm.
          * The algorithm is well commented in the code below.

@@ -2,7 +2,7 @@
 #define INVERSE_FAST_FOURIER_TRANSFORM_HPP
 
 #include "fourier_transform/base_fourier_transform.hpp"
-#include "fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.hpp"
+#include "fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_inverse_fft_openmp.hpp"
 #include "fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.hpp"
 #ifdef HAS_CUDA
 #include "fourier_transform/algorithms/cooley_tukey/cuda/cooley_tukey_fft_cuda.hpp"
@@ -39,7 +39,7 @@ namespace fft::solver {
          */
         [[nodiscard]] typename InverseFastFourierTransform::transform_t getSequentialTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeCooleyTurkeyInverseFFT(data);
+                algorithms::cooley_tukey::computeInverseFFT(data);
             };
         }
 
@@ -51,7 +51,7 @@ namespace fft::solver {
          */
         [[nodiscard]] typename InverseFastFourierTransform::transform_t getOpenMPTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeCooleyTurkeyInverseFFTOpenMP(data);
+                algorithms::cooley_tukey::computeInverseFFTOpenMP(data);
             };
         }
 

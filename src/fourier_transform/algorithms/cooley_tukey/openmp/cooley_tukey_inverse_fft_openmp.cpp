@@ -1,9 +1,8 @@
-#include "fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft_openmp.hpp"
-
+#include "cooley_tukey_inverse_fft_openmp.hpp"
 #include "utils/bit_reversal.hpp"
 
 namespace fft::algorithms::cooley_tukey {
-    void computeCooleyTurkeyInverseFFTOpenMP(std::vector<std::complex<double>>& input) {
+    void computeInverseFFTOpenMP(std::vector<std::complex<double>>& input) {
         /**
          * Parallel Cooley-Tukey Inverse Fast Fourier Transform (FFT) Algorithm.
          * The algorithm is intentionally uncommented because it is well commented in the sequential version.

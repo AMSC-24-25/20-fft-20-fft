@@ -15,7 +15,7 @@ namespace fft::algorithms::cooley_tukey {
      *
      * @param input The input vector of complex numbers.
      */
-    void computeCooleyTurkeyInverseFFT(std::vector<std::complex<double>>& input);
+    void computeInverseFFT(std::vector<std::complex<double>>& input);
 }
 
 #endif //COOLEY_TURKEY_INVERSE_FFT_HPP
