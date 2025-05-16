@@ -1,14 +1,12 @@
 #include <iostream>
 #include <vector>
-#include <string>
-#include "Haart1D.cpp"    //include 1D Haar transform
-#include "Haart2D.cpp"    //include 2D Haar transform
-#include "imgWL.cpp"      //include wavelet-based image compression
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"    //library to load images
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb/stb_image_write.h"    //library to save images
+#include "stb/stb_image.h"
+#include "stb/stb_image_write.h"
+
+#include "signal_processing/compression/image_compression_haar_wavelet/image_compression_haar_wavelet.hpp"
+#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_1d.hpp"
+#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_2d.hpp"
 
 int main(){
 
@@ -22,9 +20,12 @@ int main(){
         std::cout << input[i] << "  ";
     std::cout << "]" << std::endl;
 
-    HaarWaveletTransform1D waveletT1D(input);  //create object for 1D transform
-    waveletT1D.compute();                     //compute the transform
-    std::vector<double> vecSolution = waveletT1D.getSolution(); //get the solution
+    //create object for 1D transform
+    signal_processing::hwt::solver::HaarWaveletTransform1D waveletT1D(input);
+    //compute the transform
+    waveletT1D.compute();
+    //get the solution
+    std::vector<double> vecSolution = waveletT1D.getSolution();
 
     std::cout << "Solution vector: [";
     for(int i = 0; i < input.size(); i++)
@@ -57,7 +58,7 @@ int main(){
     }
     std::cout << std::endl;
 
-    HaarWaveletTransform2D waveletT2D(matrix); //create object for 2D transform
+    signal_processing::hwt::solver::HaarWaveletTransform2D waveletT2D(matrix); //create object for 2D transform
     waveletT2D.compute();                      //compute the transform
     std::vector<std::vector<double>> matSolution = waveletT2D.getSolution(); //get the solution
     std::vector<std::vector<double>> Hn = waveletT2D.getHnMatrix();          //get Hn matrix
@@ -100,7 +101,7 @@ int main(){
 
     std::cout << "Image: 'cat-original.png' loaded" << std::endl;
 
-    ImgWLComp imgWL(image); //create object for image compression
+    signal_processing::compression::hwt::ImgWLComp imgWL(image); //create object for image compression
     imgWL.compress();       //compress the image
 
     std::vector<std::vector<double>> solution(h, std::vector<double>(w));

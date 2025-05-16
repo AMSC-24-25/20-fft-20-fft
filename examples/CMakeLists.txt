@@ -81,13 +81,25 @@ add_executable(
         example-haar_wavelet_transform_solver_1d
         haar_wavelet_transform_1d.cpp
 )
+target_link_libraries(
+        example-haar_wavelet_transform_solver_1d
+        PRIVATE signal_processing
+)
 # Basic 2D Haar Wavelet Transform example
 add_executable(
         example-haar_wavelet_transform_solver_2d
         haar_wavelet_transform_2d.cpp
 )
+target_link_libraries(
+        example-haar_wavelet_transform_solver_2d
+        PRIVATE signal_processing
+)
 # Harr Wavelet Transform
 add_executable(
         example-haar_wavelet_transform_solver
         haar_wavelet_transform.cpp
+)
+target_link_libraries(
+        example-haar_wavelet_transform_solver
+        PRIVATE signal_processing
 )

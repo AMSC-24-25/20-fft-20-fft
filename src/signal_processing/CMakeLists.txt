@@ -6,6 +6,7 @@ add_library(
         compression/jpeg_image_compression/image/image.cpp
         compression/jpeg_image_compression/compressed_image/compressed_image.hpp
         compression/jpeg_image_compression/compressed_image/compressed_image.cpp
+        compression/image_compression_haar_wavelet/image_compression_haar_wavelet.hpp
         compression/image_compression_haar_wavelet/image_compression_haar_wavelet.cpp
 
         # config_loader
@@ -59,7 +60,9 @@ add_library(
         transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp
 
         # haar_wavelet_transform
+        transforms/haar_wavelet_transform/haar_wavelet_1d.hpp
         transforms/haar_wavelet_transform/haar_wavelet_1d.cpp
+        transforms/haar_wavelet_transform/haar_wavelet_2d.hpp
         transforms/haar_wavelet_transform/haar_wavelet_2d.cpp
 
         # utils

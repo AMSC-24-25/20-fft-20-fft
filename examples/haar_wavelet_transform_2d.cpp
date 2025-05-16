@@ -3,7 +3,7 @@
 #include <random>
 #include <cmath>
 
-#include "Haart2D.cpp"
+#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_2d.hpp"
 
 int main() {
     std::random_device rd;
@@ -24,7 +24,7 @@ int main() {
         std::cout << "\n";
     }
 
-    HaarWaveletTransform2D transform(matrix);
+    signal_processing::hwt::solver::HaarWaveletTransform2D transform(matrix);
     transform.compute();
     auto result = transform.getSolution();
 

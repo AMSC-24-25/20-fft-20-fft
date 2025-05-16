@@ -2,7 +2,8 @@
 #include <vector>
 #include <random>
 #include <cmath>
-#include "Haart1D.cpp"
+
+#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_1d.hpp"
 
 int main() {
     // Random: scegli un'esponente da 3 a 6 → lunghezze 8, 16, 32, 64
@@ -20,7 +21,7 @@ int main() {
     for (double v : input) std::cout << v << " ";
     std::cout << "\n\n";
 
-    HaarWaveletTransform1D wavelet(input);
+    signal_processing::hwt::solver::HaarWaveletTransform1D wavelet(input);
     wavelet.compute();
     auto output = wavelet.getSolution();
 
