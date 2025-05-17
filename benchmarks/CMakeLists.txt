@@ -12,4 +12,8 @@ if (NOT benchmark_FOUND)
     )
 endif ()
 
+if (NOT HAS_CUDA)
+    message(STATUS "CUDA not found: benchmarks will not be built")
+    return()
+endif ()
 add_subdirectory(fourier_transform)

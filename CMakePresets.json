@@ -41,7 +41,7 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_BUILD_TYPE": "Release",
         "BUILD_EXAMPLES": "ON",
-        "HAS_CUDA": "OFF",
+        "HAS_CUDA": "ON",
         "BUILD_BENCHMARKS": "ON"
       }
     },

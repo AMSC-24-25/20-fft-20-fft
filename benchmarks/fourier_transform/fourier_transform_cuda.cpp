@@ -1,3 +1,7 @@
+#ifndef HAS_CUDA // if CUDA is not available, exit
+#error "CUDA is not available. Please compile with CUDA support."
+#endif
+
 #include <benchmark/benchmark.h>
 #include <random>
 #include <cuda_runtime_api.h>

@@ -14,7 +14,7 @@ then
     git clone https://github.com/google/benchmark.git
     cd benchmark || exit 1
     cmake -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON -DBENCHMARK_ENABLE_TESTING=OFF -S . -B build
-    cmake --build build --config Release -j $(nproc)
+    cmake --build build --config Release -j "$(nproc)"
     sudo cmake --install build
     cd ../.. || exit 1
     rm -rf tmp-google-benchmark-build
@@ -27,7 +27,7 @@ fi
 echo -e "${GREEN}~ Compile CMakeLists.txt in $(pwd)/build ~${NC}"
 mkdir -p "build" && cd "build" || exit 1
 cmake .. --preset ninja-dev-benchmark --log-level=ERROR || exit 1
-cd ninja-dev-benchmark
+cd ninja-dev-benchmark || exit 1
 echo ""
 
 
