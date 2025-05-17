@@ -8,6 +8,7 @@
  */
 
 #include <complex>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -31,6 +32,11 @@ int main() {
     filepath_out_oss << "examples/output/fft-"
                      << signal_processing::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
                      << ".avi";
+    // check if the output folder exists
+    if (!std::filesystem::exists("examples/output")) {
+        std::cerr << "Output folder does not exist. Creating it..." << std::endl;
+        std::filesystem::create_directory("examples/output");
+    }
     cv::VideoCapture cap(input_file);
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file." << std::endl;

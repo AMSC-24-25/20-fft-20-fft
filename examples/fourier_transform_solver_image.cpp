@@ -50,6 +50,12 @@ int main() {
     filepath_out_oss << "examples/output/fft-" << choice
                      << signal_processing::utils::timestamp::createReadableTimestamp("_%Y%m%d_%H%M%S")
                      << ".png";
+    // check if the output folder exists
+    if (!std::filesystem::exists("examples/output")) {
+        std::cerr << "Output folder does not exist. Creating it..." << std::endl;
+        std::filesystem::create_directory("examples/output");
+    }
+    // create the output file path
     const std::string filepath_out = filepath_out_oss.str();
     // load the image
     unsigned char* image = stbi_load(
