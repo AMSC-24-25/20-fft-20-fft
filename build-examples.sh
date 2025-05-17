@@ -5,15 +5,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}~ Install ninja-build ~${NC}"
-if ! command -v ninja &> /dev/null
-then
-    sudo apt install -y ninja-build || exit 1
-else
-    echo "Ninja is already installed."
-fi
-echo ""
-
+./build-essential.sh || exit 1
 
 echo -e "${GREEN}~ Install OpenCV ~${NC}"
 if ! dpkg -l | grep 'libopencv-dev' &> /dev/null

@@ -5,10 +5,13 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+./build-essential.sh || exit 1
 
 echo -e "${GREEN}~ Install Google Benchmark ~${NC}"
-if ! dpkg -l | grep 'libbenchmark' &> /dev/null
+if ls /usr/local/lib/libbenchmark* &> /dev/null && ls /usr/local/include/benchmark/ &> /dev/null
 then
+    echo "Google Benchmark is already installed. Skipping installation..."
+else
     echo -e "${YELLOW}Google Benchmark is not installed. Installing...${NC}"
     mkdir -p "tmp-google-benchmark-build" && cd "tmp-google-benchmark-build" || exit 1
     git clone https://github.com/google/benchmark.git
@@ -19,9 +22,8 @@ then
     cd ../.. || exit 1
     rm -rf tmp-google-benchmark-build
     echo -e "${GREEN}Google Benchmark installed successfully!${NC}"
-else
-    echo "Google Benchmark is already installed."
 fi
+echo ""
 
 
 echo -e "${GREEN}~ Compile CMakeLists.txt in $(pwd)/build ~${NC}"
