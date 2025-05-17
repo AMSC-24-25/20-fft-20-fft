@@ -103,3 +103,16 @@ target_link_libraries(
         example-haar_wavelet_transform_solver
         PRIVATE signal_processing
 )
+
+###################################
+# JPEG Image Compression Examples #
+###################################
+# Basic JPEG image compression example
+add_executable(
+        example-jpeg_image_compression
+        jpeg_image_compression.cpp
+)
+target_link_libraries(
+        example-jpeg_image_compression
+        PRIVATE signal_processing
+)
