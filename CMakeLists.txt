@@ -39,3 +39,10 @@ if(BUILD_EXAMPLES)
     # Add examples
     add_subdirectory(examples)
 endif()
+
+# Optionally add benchmarks
+option(BUILD_BENCHMARKS "Build benchmark programs" ON)
+if(BUILD_BENCHMARKS)
+    # Add benchmarks
+    add_subdirectory(benchmarks)
+endif ()

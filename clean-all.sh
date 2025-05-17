@@ -53,4 +53,10 @@ if [ -e ./build/ninja-lib-cuda/build.ninja ]; then
     cd ../..
 fi
 
+if [ -e ./build/ninja-dev-benchmark/build.ninja ]; then
+    cd build/ninja-dev-benchmark || exit 1
+    ninja clean
+    cd ../..
+fi
+
 echo -e "${GREEN}All cleaned up, good!${NC}"
