@@ -1,3 +1,13 @@
+##########
+# OpenCV #
+##########
+find_package(OpenCV REQUIRED)
+if (NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
+endif()
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
+
 ###################################
 # Fast Fourier Transform Examples #
 ###################################
@@ -18,6 +28,7 @@ add_executable(
         example-fourier_transform_solver_image
         fourier_transform_solver_image.cpp
 )
+
 
 if (HAS_CUDA)
     message(STATUS "CUDA found: the examples will be running on GPU")
@@ -103,6 +114,7 @@ target_link_libraries(
         example-haar_wavelet_transform_solver
         PRIVATE signal_processing
 )
+
 
 ###################################
 # JPEG Image Compression Examples #

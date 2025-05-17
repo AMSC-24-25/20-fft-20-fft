@@ -17,11 +17,4 @@ if (BUILD_EXAMPLES)
                 "git submodule update --init --recursive"
         )
     endif()
-
-    # Detect if OpenCV is installed
-    find_package(OpenCV REQUIRED)
-    if (NOT OpenCV_FOUND)
-        message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
-    endif()
-    include_directories( ${OpenCV_INCLUDE_DIRS} )
 endif ()
