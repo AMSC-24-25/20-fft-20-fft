@@ -45,7 +45,7 @@ int main(const int argc, char** argv) {
 
     std::ostringstream oss;
     // use the format provided by the user
-    oss << "--benchmark_out=output/results_openmp_"
+    oss << "--benchmark_out=results_openmp_"
         << signal_processing::utils::timestamp::createReadableTimestamp("%Y-%m-%d_%H-%M-%S")
         << ".json";
     const std::string benchmark_out = oss.str();
