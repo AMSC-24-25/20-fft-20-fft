@@ -84,10 +84,10 @@ int main(){
     //=======================================2D Haar wavelet transform for image compression example=======================================
 
     int w, h, channels;
-    unsigned char* image_data = stbi_load("cat-original.png", &w, &h, &channels, 0); //load image
+    unsigned char* image_data = stbi_load("examples/resources/cat-original.png", &w, &h, &channels, 0); //load image
 
     if(!image_data){
-        std::cout << "could not load image cat-original" << std::endl;
+        std::cout << "could not load image examples/resources/cat-original" << std::endl;
         return 1; //if loading fails, terminate program
     }
 
@@ -114,12 +114,12 @@ int main(){
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
 
     //save compressed image
-    if (stbi_write_png("compressed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
-        std::cerr << "Error: Could not save image to compressed-cat.png" << std::endl;
+    if (stbi_write_png("examples/output/compressed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
+        std::cerr << "Error: Could not save image to examples/output/compressed-cat.png" << std::endl;
         return 1;
     }
 
-    std::cout << "Image compressed and saved as compressed-cat.png" << std::endl;
+    std::cout << "Image compressed and saved as examples/output/compressed-cat.png" << std::endl;
     std::cout << "Reconstructing image" << std::endl;
 
     imgWL.reconstruct();    //decompress the image
@@ -131,7 +131,7 @@ int main(){
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
 
     //save decompressed image
-    if (stbi_write_png("reconstructed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
+    if (stbi_write_png("examples/output/reconstructed-cat.png", w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to reconstructed-cat.png" << std::endl;
         return 1;
     }
