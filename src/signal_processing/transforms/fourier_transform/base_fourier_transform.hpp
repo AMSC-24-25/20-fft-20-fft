@@ -4,6 +4,8 @@
 #include <vector>
 #include <numeric>
 #include <functional>
+#include <optional>
+#include <omp.h>
 
 namespace signal_processing::fft::solver
 {
@@ -84,12 +86,16 @@ namespace signal_processing::fft::solver
          *
          * @param input The input vector to be transformed.
          * @param mode The mode of computation.
+         * @param threads The number of CPU threads to use for parallel computation (if applicable).
+         *                If not specified, the default number of threads will be used.
+         *                It is ignored for sequential and CUDA modes.
          * @throws std::invalid_argument if the input vector size does not match the expected size (based on dimensions).
          * @throws std::runtime_error if CUDA is not available and the mode is set to CUDA.
          */
         void compute(
             std::vector<std::complex<double>> &input,
-            const ComputationMode mode
+            const ComputationMode mode,
+            const std::optional<int> threads = std::nullopt
         ) {
             // check if the size of the input vector corresponds to the multiplication of each element of dims
             const size_t expected_size = std::accumulate(
@@ -105,7 +111,18 @@ namespace signal_processing::fft::solver
             if (mode == ComputationMode::SEQUENTIAL) {
                 this->computeND(input, this->getSequentialTransform());
             } else if (mode == ComputationMode::OPENMP) {
+                // save the number of threads before calling the OpenMP function
+                const int numThreads = omp_get_max_threads();
+                // if numberOfThreads is specified, set the number of threads
+                if (threads.has_value()) {
+                    omp_set_num_threads(threads.value());
+                }
+                // compute the Fourier Transform using OpenMP
                 this->computeND(input, this->getOpenMPTransform());
+                // restore the number of threads to the original value;
+                // note: If numberOfThreads is not specified,
+                //       it is not a problem because the same value will be set again
+                omp_set_num_threads(numThreads);
             } else if (mode == ComputationMode::CUDA) {
                 #ifdef HAS_CUDA
                 this->getCudaTransform()(input);
@@ -125,14 +142,18 @@ namespace signal_processing::fft::solver
          * @param input The input vector to be transformed.
          * @param output The output vector after transformation.
          * @param mode The mode of computation.
+         * @param threads The number of CPU threads to use for parallel computation (if applicable).
+         *                If not specified, the default number of threads will be used.
+         *                It is ignored for sequential and CUDA modes.
          */
         void compute(
             const std::vector<std::complex<double>> &input,
             std::vector<std::complex<double>> &output,
-            const ComputationMode mode
+            const ComputationMode mode,
+            const std::optional<int> threads = std::nullopt
         ) {
             output = input;
-            this->compute(output, mode);
+            this->compute(output, mode, threads);
         }
 
     protected:
