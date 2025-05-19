@@ -11,20 +11,8 @@ if [ -e ./build/make-dev/Makefile ]; then
     cd ../..
 fi
 
-if [ -e ./build/make-dev-cuda/Makefile ]; then
-    cd build/make-dev-cuda || exit 1
-    make -f ./Makefile -C . clean
-    cd ../..
-fi
-
 if [ -e ./build/make-lib/Makefile ]; then
     cd build/make-lib || exit 1
-    make -f ./Makefile -C . clean
-    cd ../..
-fi
-
-if [ -e ./build/make-lib-cuda/Makefile ]; then
-    cd build/make-lib-cuda || exit 1
     make -f ./Makefile -C . clean
     cd ../..
 fi
@@ -35,20 +23,8 @@ if [ -e ./build/ninja-dev/build.ninja ]; then
     cd ../..
 fi
 
-if [ -e ./build/ninja-dev-cuda/build.ninja ]; then
-    cd build/ninja-dev-cuda || exit 1
-    ninja clean
-    cd ../..
-fi
-
 if [ -e ./build/ninja-lib/build.ninja ]; then
     cd build/ninja-lib || exit 1
-    ninja clean
-    cd ../..
-fi
-
-if [ -e ./build/ninja-lib-cuda/build.ninja ]; then
-    cd build/ninja-lib-cuda || exit 1
     ninja clean
     cd ../..
 fi

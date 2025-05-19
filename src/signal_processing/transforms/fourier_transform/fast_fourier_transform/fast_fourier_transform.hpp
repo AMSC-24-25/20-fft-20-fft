@@ -4,9 +4,6 @@
 #include "transforms/fourier_transform/base_fourier_transform.hpp"
 #include "transforms/fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.hpp"
 #include "transforms/fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_fft_openmp.hpp"
-#ifdef HAS_CUDA
-#include "transforms/fourier_transform/algorithms/cooley_tukey/cuda/cooley_tukey_fft_cuda.hpp"
-#endif // HAS_CUDA
 
 
 namespace signal_processing::fft::solver {
@@ -53,24 +50,6 @@ namespace signal_processing::fft::solver {
         [[nodiscard]] typename FastFourierTransform::transform_t getOpenMPTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
                 algorithms::cooley_tukey::computeFFTOpenMP(data);
-            };
-        }
-
-        /**
-         * Get the CUDA transform function.
-         *
-         * This method provides the specific implementation of the Fast Fourier Transform
-         * using CUDA for parallel execution.
-         *
-         * @throws std::runtime_error if CUDA is not available on the machine.
-         */
-        [[nodiscard]] typename FastFourierTransform::transform_t getCudaTransform() const override {
-            return [](std::vector<std::complex<double>>& data) {
-                #ifdef HAS_CUDA
-                algorithms::cooley_tukey::computeFFTCuda(data);
-                #else // HAS_CUDA
-                throw std::runtime_error("CUDA is not available in this machine, please use another mode.");
-                #endif // HAS_CUDA
             };
         }
     };

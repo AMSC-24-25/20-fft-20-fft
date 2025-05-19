@@ -104,42 +104,42 @@ int main() {
     );
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::OPENMP);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("R FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("R IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::CUDA);
+    i_solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B IFFT: %f seconds\n", elapsed.count());

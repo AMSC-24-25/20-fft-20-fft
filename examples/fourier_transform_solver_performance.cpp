@@ -11,9 +11,6 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
-#ifdef HAS_CUDA
-#include <cuda_runtime.h>
-#endif // HAS_CUDA
 
 #include "handlers/config_loader/json_configuration_loader.hpp"
 #include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
@@ -51,33 +48,12 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
         "Time taken for parallel (OpenMP, CPU) FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
-    #ifdef HAS_CUDA
-    const auto start_time_cuda = std::chrono::high_resolution_clock::now();
-    solver.compute(signal, parallel_fft, signal_processing::fft::solver::ComputationMode::CUDA);
-    const auto end_time_cuda = std::chrono::high_resolution_clock::now();
-    printf(
-        "Time taken for parallel (CUDA, GPU) FFT: %ld ms\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    #endif // HAS_CUDA
     printf(
         "With %d threads (CPU), the speedup is: %ld\n",
         omp_get_max_threads(),
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
-    #ifdef HAS_CUDA
-    printf(
-        "With CUDA (GPU), the speedup (vs. Sequential) is: %ld\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
-           std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    printf(
-        "With CUDA (GPU), the speedup (vs. Parallel) is: %ld\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count() /
-           std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    #endif // HAS_CUDA
     // uncomment the following lines to save the result to a file
     // const CsvSignalSaver csv_signal_saver;
     // csv_signal_saver.saveToFile(sequential_fft, "examples/output/sequential_fft_signal");
@@ -115,33 +91,12 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
         "Time taken for parallel (OpenMP, CPU) Inverse FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
-    #ifdef HAS_CUDA
-    const auto start_time_cuda = std::chrono::high_resolution_clock::now();
-    inverse_solver.compute(signal, parallel_ifft, signal_processing::fft::solver::ComputationMode::CUDA);
-    const auto end_time_cuda = std::chrono::high_resolution_clock::now();
-    printf(
-        "Time taken for parallel (CUDA, GPU) Inverse FFT: %ld ms\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    #endif // HAS_CUDA
     printf(
         "With %d threads (CPU), the speedup is: %ld\n",
         omp_get_max_threads(),
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
            std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
-    #ifdef HAS_CUDA
-    printf(
-        "With CUDA (GPU), the speedup (vs. Sequential) is: %ld\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count() /
-           std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    printf(
-        "With CUDA (GPU), the speedup (vs. Parallel) is: %ld\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count() /
-           std::chrono::duration_cast<std::chrono::milliseconds>(end_time_cuda - start_time_cuda).count()
-    );
-    #endif // HAS_CUDA
     // uncomment the following lines to save the result to a file
     // const CsvSignalSaver csv_signal_saver;
     // csv_signal_saver.saveToFile(sequential_ifft, "examples/output/sequential_ifft_signal");
@@ -150,38 +105,6 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
 
 
 int main() {
-    // ================================================== Detect CUDA ==================================================
-    // check if CUDA is available
-    #ifdef HAS_CUDA
-
-    int device_count = 0;
-    cudaError_t error_id = cudaGetDeviceCount(&device_count);
-    if (error_id != cudaSuccess) {
-        std::cerr << "cudaGetDeviceCount failed: " << cudaGetErrorString(error_id) << "\n";
-    }
-
-    std::cout << "Detected " << device_count << " CUDA device(s)\n";
-
-    for (int i = 0; i < device_count; i++) {
-        cudaDeviceProp prop;
-        cudaGetDeviceProperties(&prop, i);
-        printf("Device Number: %d\n", i);
-        printf("  CUDA Capability: %d.%d\n", prop.major, prop.minor);
-        printf("  Device name: %s\n", prop.name);
-        printf("  Memory Clock Rate (KHz): %d\n", prop.memoryClockRate);
-        printf("  Memory Bus Width (bits): %d\n", prop.memoryBusWidth);
-        printf("  Peak Memory Bandwidth (GB/s): %f\n\n", 2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
-        printf("  Total Global Memory: %f GB\n", prop.totalGlobalMem / (1024.0 * 1024.0 * 1024.0));
-        printf("  Shared Memory per Block: %f KB\n", prop.sharedMemPerBlock / 1024.0);
-        printf("  Registers per Block: %d\n", prop.regsPerBlock);
-        printf("  Warp Size: %d\n", prop.warpSize);
-        printf("  Max Threads per Block: %d\n", prop.maxThreadsPerBlock);
-        printf("  Multiprocessor Count: %d\n", prop.multiProcessorCount);
-        printf("  Clock Rate: %f GHz\n", prop.clockRate / 1.0e6);
-    }
-    #else
-    printf("CUDA is not available.\n");
-    #endif // HAS_CUDA
     // ============================================= Configuration Loading =============================================
     // load the configuration from the sample file
     // print number of threads used by OpenMP
@@ -233,11 +156,6 @@ int main() {
     // pass the fft result as input
     std::vector<std::complex<double>> fft_res(signal_length);
     signal_processing::fft::solver::FastFourierTransform<1> tmp_solver(std::array{static_cast<size_t>(signal_length)});
-    #ifdef HAS_CUDA
-    tmp_solver.compute(signal, fft_res, signal_processing::fft::solver::ComputationMode::CUDA);
-    #else // HAS_CUDA
-    tmp_solver.compute(signal, fft_res, signal_processing::fft::solver::ComputationMode::OPENMP);
-    #endif // HAS_CUDA
     sequential_vs_parallel_inverse_fft(fft_res);
 
     return 0;

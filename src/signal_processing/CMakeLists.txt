@@ -76,16 +76,5 @@ add_library(
         utils/zigzag_scan.cpp
 )
 
-if (HAS_CUDA)
-    # cuda support
-    add_library(
-            signal_processing_cuda STATIC
-            # - algorithms
-            transforms/fourier_transform/algorithms/cooley_tukey/cuda/cooley_tukey_fft_cuda.cu
-            transforms/fourier_transform/algorithms/cooley_tukey/cuda/cooley_tukey_fft_cuda.hpp
-    )
-    target_include_directories(signal_processing_cuda PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
-
 target_include_directories(signal_processing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(signal_processing PUBLIC OpenMP::OpenMP_CXX)

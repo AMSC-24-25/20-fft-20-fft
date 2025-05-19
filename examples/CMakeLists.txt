@@ -30,58 +30,16 @@ add_executable(
 )
 
 
-if (HAS_CUDA)
-    message(STATUS "CUDA found: the examples will be running on GPU")
-    # Basic 1D FFT example with matplot++
-    target_link_libraries(example-fourier_transform_solver
-            PUBLIC matplot
-            PRIVATE signal_processing
-            PRIVATE signal_processing_cuda
-    )
-    # 1D FFT example to compare performance of different FFT libraries
-    target_link_libraries(example-fourier_transform_solver_performance
-            PRIVATE signal_processing
-            PRIVATE signal_processing_cuda
-    )
-    # Application of 2D FFT to image processing
-    target_link_libraries(example-fourier_transform_solver_image
-            PRIVATE signal_processing
-            PRIVATE signal_processing_cuda
-    )
-    # Application of 3D FFT to video processing
-    add_executable(
-            example-fourier_transform_solver_video
-            fourier_transform_solver_video.cpp
-    )
-    target_link_libraries(
-            example-fourier_transform_solver_video
-            PRIVATE ${OpenCV_LIBS}
-            PRIVATE signal_processing
-            PRIVATE signal_processing_cuda
-    )
-    # Application of 3D FFT to video processing with RGB channels
-    add_executable(
-            example-fourier_transform_solver_video_rgb
-            fourier_transform_solver_video_rgb.cpp
-    )
-    target_link_libraries(
-            example-fourier_transform_solver_video_rgb
-            PRIVATE ${OpenCV_LIBS}
-            PRIVATE signal_processing
-            PRIVATE signal_processing_cuda
-    )
-else ()
-    target_link_libraries(example-fourier_transform_solver
-            PUBLIC matplot
-            PRIVATE signal_processing
-    )
-    target_link_libraries(example-fourier_transform_solver_image
-            PRIVATE signal_processing
-    )
-    target_link_libraries(example-fourier_transform_solver_performance
-            PRIVATE signal_processing
-    )
-endif ()
+target_link_libraries(example-fourier_transform_solver
+        PRIVATE matplot
+        PRIVATE signal_processing
+)
+target_link_libraries(example-fourier_transform_solver_image
+        PRIVATE signal_processing
+)
+target_link_libraries(example-fourier_transform_solver_performance
+        PRIVATE signal_processing
+)
 
 
 ###################################

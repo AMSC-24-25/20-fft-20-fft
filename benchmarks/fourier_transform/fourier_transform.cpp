@@ -3,10 +3,6 @@
 #include <string>
 #include <sstream>
 
-#ifdef HAS_CUDA
-#include <cuda_runtime_api.h>
-#endif // HAS_CUDA
-
 #include "utils.hpp"
 #include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
 #include "utils/timestamp.hpp"
@@ -25,7 +21,7 @@ constexpr size_t MAX_TOTAL_SIZE = 8388608;
  * for the given maximum total size. This means that it will
  * generate shapes unbalanced in terms of dimensions, e.g.: <2, 4194304>
  * @tparam N Number of dimensions for the FFT solver.
- * @param mode The computation mode to be used (SEQUENTIAL, OPENMP, CUDA).
+ * @param mode The computation mode to be used (SEQUENTIAL, OPENMP).
  * @param min Optional minimum value for the dimensions.
  */
 template <size_t N>
@@ -49,9 +45,6 @@ void combinatorialBenchmark(ComputationMode mode, const std::optional<int> min =
             for (auto _ : state) {
                 auto copy = input;
                 fft.compute(copy, mode);
-                if (mode == ComputationMode::CUDA) {
-                    cudaDeviceSynchronize();
-                }
                 benchmark::DoNotOptimize(copy);
             }
         });
@@ -63,7 +56,7 @@ int main(const int argc, char** argv) {
         getArgValue(argc, argv, "h").has_value() ||
         getArgValue(argc, argv, "help", true).has_value()
     ) {
-        std::cout << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp|cuda>\n";
+        std::cout << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp>\n";
         return 0;
     }
 
@@ -72,7 +65,7 @@ int main(const int argc, char** argv) {
     const auto mode_opt = getArgValue(argc, argv, "mode");
 
     if (!dim_opt || !type_opt || !mode_opt) {
-        std::cerr << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp|cuda>\n";
+        std::cerr << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp>\n";
         return 1;
     }
 
@@ -90,16 +83,9 @@ int main(const int argc, char** argv) {
         return 1;
     }
 
-    if (rawMode != "sequential" && rawMode != "openmp" && rawMode != "cuda") {
-        std::cerr << "Invalid mode. Must be 'sequential', 'openmp' or 'cuda'.\n";
+    if (rawMode != "sequential" && rawMode != "openmp") {
+        std::cerr << "Invalid mode. Must be 'sequential', 'openmp'.\n";
         return 1;
-    }
-
-    if (rawMode == "cuda") {
-        #ifndef HAS_CUDA
-        std::cerr << "CUDA is not available in this build.\n";
-        return 1;
-        #endif // HAS_CUDA
     }
 
     std::ostringstream oss;
@@ -117,8 +103,7 @@ int main(const int argc, char** argv) {
     };
     int custom_argc = sizeof(args) / sizeof(char*);
 
-    const ComputationMode mode = (rawMode == "sequential") ? ComputationMode::SEQUENTIAL :
-        (rawMode == "openmp") ? ComputationMode::OPENMP : ComputationMode::CUDA;
+    const ComputationMode mode = (rawMode == "sequential") ? ComputationMode::SEQUENTIAL : ComputationMode::OPENMP;
 
     if (type == "balanced") {
         if (dim == 1) {

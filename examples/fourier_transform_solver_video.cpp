@@ -94,8 +94,8 @@ int main() {
     signal_processing::fft::solver::InverseFastFourierTransform<3> i_solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::CUDA);
-    i_solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::CUDA);
+    solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::OPENMP);
+    i_solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::OPENMP);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("FFT and IFFT applied.\n");

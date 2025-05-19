@@ -33,8 +33,6 @@ def implementation_from_name(filename: str) -> str:
         return "Sequential"
     elif "openmp" in filename:
         return "OpenMP"
-    elif "cuda" in filename:
-        return "CUDA"
     else:
         return "Unknown"
 
@@ -87,7 +85,7 @@ def compute_speedup(data: pd.DataFrame) -> pd.DataFrame:
         base = data[(data["dimension"] == dim) & (data["implementation"] == "Sequential")]
         for _, base_row in base.iterrows():
             base_time = base_row["time_ns"]
-            for impl in ["OpenMP", "CUDA"]:
+            for impl in ["OpenMP"]:
                 match = data[
                     (data["dimension"] == dim) &
                     (data["implementation"] == impl) &
