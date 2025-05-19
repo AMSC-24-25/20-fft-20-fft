@@ -69,9 +69,11 @@ target_link_libraries(example-fourier_transform_solver_performance
         PRIVATE signal_processing
 )
 target_link_libraries(example-fourier_transform_solver_video
+        PRIVATE ${OpenCV_LIBS}
         PRIVATE signal_processing
 )
 target_link_libraries(example-fourier_transform_solver_video_rgb
+        PRIVATE ${OpenCV_LIBS}
         PRIVATE signal_processing
 )
 
