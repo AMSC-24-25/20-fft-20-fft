@@ -4,6 +4,7 @@
 #include <vector>
 #include <complex>
 #include <functional>
+#include <optional>
 #include <random>
 
 /**
@@ -76,10 +77,14 @@ std::vector<std::complex<double>> generateInput(const std::array<size_t, N>& dim
  *
  * @tparam N The number of dimensions.
  * @param max_total_size The maximum total size for the shapes.
+ * @param min The minimum value for the dimensions (optional).
  * @return A vector of arrays representing the valid shapes.
  */
 template <size_t N>
-std::vector<std::array<size_t, N>> generateValidShapes(const size_t max_total_size) {
+std::vector<std::array<size_t, N>> generateValidShapes(
+    const size_t max_total_size,
+    const std::optional<size_t> min = std::nullopt
+) {
     std::vector<std::array<size_t, N>> results;
     // generate the powers of two up to the maximum total size
     const std::vector<size_t> powers = generatePowersOfTwo();
@@ -120,6 +125,8 @@ std::vector<std::array<size_t, N>> generateValidShapes(const size_t max_total_si
         }
         // recursive case: iterate over all powers of two
         for (size_t p : powers) {
+            // skip values minus of min
+            if (min.has_value() && p < min) continue;
             // check if the product exceeds the maximum total size
             // if it does, break the loop to avoid unnecessary calculations
             if (product * p > max_total_size) break;
@@ -138,6 +145,33 @@ std::vector<std::array<size_t, N>> generateValidShapes(const size_t max_total_si
     // (1 is the multiplicative identity, so it doesn't affect the product)
     backtrack(0, 1);
     return results;
+}
+
+/**
+ * Retrieves the value of a command-line argument.
+ *
+ * The argument should be in the format "-key=value".
+ * If the key is found, the value is returned; otherwise, std::nullopt is returned.
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv The command-line arguments.
+ * @param key The key to search for (without the leading '-').
+ * @param double_dash Whether to use "--" instead of "-" for the key.
+ * @return An optional string containing the value if found, or std::nullopt if not found.
+ */
+inline std::optional<std::string> getArgValue(
+    const int argc,
+    char** argv,
+    const std::string& key,
+    const bool double_dash = false
+) {
+    const std::string prefix = (double_dash ? "--" : "-") + key + "=";
+    for (int i = 1; i < argc; ++i) {
+        if (std::string arg = argv[i]; arg.find(prefix) == 0) {
+            return arg.substr(prefix.size());
+        }
+    }
+    return std::nullopt;
 }
 
 
