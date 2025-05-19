@@ -109,7 +109,14 @@ namespace signal_processing::fft::solver
                 );
             }
             if (mode == ComputationMode::SEQUENTIAL) {
+		        // save the number of threads before calling the OpenMP function
+		        const int numThreads = omp_get_max_threads();
+		        // force sequential mode (1 thread)
+		        omp_set_num_threads(1);
+                // print how many threads are used
                 this->computeND(input, this->getSequentialTransform());
+		        // restore number of threads
+		        omp_set_num_threads(numThreads);
             } else if (mode == ComputationMode::OPENMP) {
                 // save the number of threads before calling the OpenMP function
                 const int numThreads = omp_get_max_threads();
@@ -212,6 +219,9 @@ namespace signal_processing::fft::solver
                 const size_t numSlices = totalSize / axisSize;
 
                 // parallelize the loop over slices if OpenMP is enabled
+                // but only if the number of slices is greater than 1
+                // this is to avoid overhead of parallelization for small arrays
+                # pragma omp parallel for if(numSlices > 1)
                 for (size_t slice = 0; slice < numSlices; ++slice) {
                     // prepare the coordinates for the current slice
                     std::vector<std::complex<double>> line(axisSize);
