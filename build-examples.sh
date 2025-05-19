@@ -19,9 +19,24 @@ fi
 echo ""
 
 
+echo -e "${GREEN}~ Checking for Matplot++ ~${NC}"
+if [ ! -d "examples/external/matplotplusplus" ]; then
+    echo -e "${YELLOW}Matplot++ was not found. Cloning...${NC}"
+    git submodule update --init --recursive
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to clone Matplot++. Please check your internet connection.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}Matplot++ cloned successfully!${NC}"
+else
+    echo "Matplot++ is already cloned."
+fi
+echo ""
+
+
 echo -e "${GREEN}~ Compile CMakeLists.txt in $(pwd)/build ~${NC}"
 mkdir -p "build" && cd "build" || exit 1
-cmake .. --preset ninja-dev --log-level=ERROR || exit 1
+cmake .. --preset ninja-dev --log-level=WARNING || exit 1
 cd ninja-dev || exit 1
 echo ""
 

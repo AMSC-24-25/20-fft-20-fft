@@ -6,6 +6,22 @@ if (NOT OpenCV_FOUND)
     message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
 endif()
 include_directories( ${OpenCV_INCLUDE_DIRS} )
+message(STATUS "OpenCV found: ${OpenCV_VERSION}")
+
+#############
+# Matplot++ #
+#############
+# Detect if gnuplot is installed (required by matplot++)
+find_program(GNUPLOT_EXECUTABLE gnuplot)
+if (NOT GNUPLOT_EXECUTABLE)
+    message(FATAL_ERROR "Gnuplot not found. Please install it with 'sudo apt-get install gnuplot'.")
+endif()
+# Detect if matplot++ is installed
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/examples/external/matplotplusplus")
+    message(FATAL_ERROR "Matplot++ not found. Please clone it with 'git submodule update --init --recursive'.")
+endif()
+add_subdirectory(external/matplotplusplus)
+message(STATUS "Matplot++ found: ${MATPLOT_VERSION}")
 
 
 ###################################
@@ -29,6 +45,18 @@ add_executable(
         fourier_transform_solver_image.cpp
 )
 
+# Application of 3D FFT to video processing
+add_executable(
+        example-fourier_transform_solver_video
+        fourier_transform_solver_video.cpp
+)
+
+# Application of 3D FFT to video processing (RGB)
+add_executable(
+        example-fourier_transform_solver_video_rgb
+        fourier_transform_solver_video_rgb.cpp
+)
+
 
 target_link_libraries(example-fourier_transform_solver
         PRIVATE matplot
@@ -38,6 +66,12 @@ target_link_libraries(example-fourier_transform_solver_image
         PRIVATE signal_processing
 )
 target_link_libraries(example-fourier_transform_solver_performance
+        PRIVATE signal_processing
+)
+target_link_libraries(example-fourier_transform_solver_video
+        PRIVATE signal_processing
+)
+target_link_libraries(example-fourier_transform_solver_video_rgb
         PRIVATE signal_processing
 )
 

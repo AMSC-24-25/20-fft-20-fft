@@ -28,7 +28,7 @@ echo ""
 
 echo -e "${GREEN}~ Compile CMakeLists.txt in $(pwd)/build ~${NC}"
 mkdir -p "build" && cd "build" || exit 1
-cmake .. --preset ninja-dev-benchmark --log-level=ERROR || exit 1
+cmake .. --preset ninja-dev-benchmark --log-level=WARNING || exit 1
 cd ninja-dev-benchmark || exit 1
 echo ""
 

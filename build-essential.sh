@@ -51,3 +51,4 @@ then
 else
     echo "Gnuplot is already installed."
 fi
+echo ""
