@@ -4,9 +4,7 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
-#include "signal_processing/compression/image_compression_haar_wavelet/image_compression_haar_wavelet.hpp"
-#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_1d.hpp"
-#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_2d.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 int main(){
 

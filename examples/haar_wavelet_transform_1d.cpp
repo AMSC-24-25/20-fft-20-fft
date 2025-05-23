@@ -3,7 +3,7 @@
 #include <random>
 #include <cmath>
 
-#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_1d.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 int main() {
     // Random: scegli un'esponente da 3 a 6 → lunghezze 8, 16, 32, 64

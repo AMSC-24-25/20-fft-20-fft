@@ -3,7 +3,7 @@
 #include <random>
 #include <cmath>
 
-#include "signal_processing/transforms/haar_wavelet_transform/haar_wavelet_2d.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 int main() {
     std::random_device rd;

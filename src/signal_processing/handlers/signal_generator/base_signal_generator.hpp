@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <random>
+#include <complex>
 
 /**
  * Signal Generator module.

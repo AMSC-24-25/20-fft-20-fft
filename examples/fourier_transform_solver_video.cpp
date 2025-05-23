@@ -18,10 +18,7 @@
 #include "opencv2/core/types.hpp"
 #include "opencv2/core/hal/interface.h"
 
-#include "transforms/fourier_transform/base_fourier_transform.hpp"
-#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
-#include "utils/timestamp.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 int main() {
     /**

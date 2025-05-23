@@ -1,6 +1,8 @@
 add_library(
         signal_processing
 
+        signal_processing.hpp
+
         # jpeg-image-compression
         compression/jpeg_image_compression/image/image.hpp
         compression/jpeg_image_compression/image/image.cpp

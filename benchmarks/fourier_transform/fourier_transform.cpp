@@ -3,9 +3,9 @@
 #include <string>
 #include <sstream>
 
+#include "signal_processing/signal_processing.hpp"
+
 #include "utils.hpp"
-#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "utils/timestamp.hpp"
 
 using namespace signal_processing::fft::solver;
 

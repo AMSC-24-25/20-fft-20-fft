@@ -12,14 +12,7 @@
 #include <cmath>
 #include <omp.h>
 
-#include "handlers/config_loader/json_configuration_loader.hpp"
-#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
-#include "handlers/signal_generator/space_domain_signal_generator.hpp"
-#include "handlers/signal_generator/time_domain_signal_generator.hpp"
-#include "handlers/signal_saver/csv_signal_saver.hpp"
-#include "transforms/fourier_transform/base_fourier_transform.hpp"
-#include "utils/timestamp.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 /**
  * This demo measures the performance of the FFT solver in sequential and parallel modes.

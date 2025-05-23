@@ -10,10 +10,7 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
-#include "handlers/config_loader/json_configuration_loader.hpp"
-#include "transforms/fourier_transform/fast_fourier_transform/fast_fourier_transform.hpp"
-#include "transforms/fourier_transform/inverse_fast_fourier_transform/inverse_fast_fourier_transform.hpp"
-#include "utils/timestamp.hpp"
+#include "signal_processing/signal_processing.hpp"
 
 
 int main() {
