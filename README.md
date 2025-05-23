@@ -227,15 +227,15 @@ $$
 The transform produces two outputs:
 1. **Averages** (_low_-frequency content):
 
-   $$
-   a_i = \frac{x_{2i} + x_{2i+1}}{\sqrt{2}}
-   $$
+$$
+a_i = \frac{x_{2i} + x_{2i+1}}{\sqrt{2}}
+$$
 
 2. **Details** (_high_-frequency content):
 
-   $$
-   d_i = \frac{x_{2i} - x_{2i+1}}{\sqrt{2}}
-   $$
+$$
+d_i = \frac{x_{2i} - x_{2i+1}}{\sqrt{2}}
+$$
 
 
 > [!TIP]
@@ -348,10 +348,10 @@ A = \begin{bmatrix}
 > [ LH | HH ]
 > ```
 > Where:
-> - LL: low frequency in both directions (**approximation**)
-> - HL: high frequency in rows, low in columns (**horizontal details**)
-> - LH: low frequency in rows, high in columns (**vertical details**)
-> - HH: high frequency in both directions (**diagonal details**)
+> - `LL`: low frequency in both directions (**approximation**).
+> - `HL`: high frequency in rows, low in columns (**horizontal details**).
+> - `LH`: low frequency in rows, high in columns (**vertical details**).
+> - `HH`: high frequency in both directions (**diagonal details**).
 
 
 ---
