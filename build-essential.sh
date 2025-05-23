@@ -40,15 +40,3 @@ else
     echo "Ninja is already installed."
 fi
 echo ""
-
-echo -e "${GREEN} ~ Install gnuplot ~${NC}"
-if ! dpkg -l | grep 'gnuplot' &> /dev/null
-then
-    echo -e "${YELLOW}Gnuplot is not installed. Installing...${NC}"
-    sudo apt-get update
-    sudo apt-get install -y gnuplot
-    echo -e "${GREEN}Gnuplot installed successfully!${NC}"
-else
-    echo "Gnuplot is already installed."
-fi
-echo ""
