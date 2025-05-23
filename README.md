@@ -126,16 +126,16 @@ which involve two elements $a$ and $b$, using a twiddle factor $W\_N^k$.
 Finally, for the **inverse FFT**, the algorithm is similar but with a few differences:
 1. The **direction of the twiddle factor** in the inverse FFT is reversed.
 
-   $$
-   W_N^{-k} = e^{(2\pi i k) \div N}
-   $$
+$$
+W_N^{-k} = e^{(2\pi i k) \div N}
+$$
 
 2. After computing the inverse FFT using Cooley-Tukey, we **normalize the result**.
    Each element is divided by $N$, the size of the input.
 
-   $$
-   x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{(2\pi i kn) \div N}
-   $$
+$$
+x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{(2\pi i kn) \div N}
+$$
 
    This scaling ensures that the inverse transform truly inverts the original FFT and restores the original signal.
 
@@ -158,18 +158,18 @@ X_k = \alpha_k \sum_{n=0}^{N-1} x_n \cos\left(\dfrac{\pi(2n+1)k}{2N}\right), \qu
 $$
 
 Where:
-- $ x_n $: input signal (spatial or time domain)
-- $ X_k $: DCT coefficient (frequency domain)
-- $ N $: number of input samples
-- $ \alpha_k $: normalization factor:
+- $x_n$: input signal (spatial or time domain)
+- $X_k$: DCT coefficient (frequency domain)
+- $N$: number of input samples
+- $\alpha_k$: normalization factor:
   
-  $$
-  \alpha_k =
-  \begin{cases}
-  \sqrt{\frac{1}{N}} & \text{if } k = 0 \\
-  \sqrt{\frac{2}{N}} & \text{if } k > 0
-  \end{cases}
-  $$
+$$
+\alpha_k =
+\begin{cases}
+\sqrt{\frac{1}{N}} & \text{if } k = 0 \\
+\sqrt{\frac{2}{N}} & \text{if } k > 0
+\end{cases}
+$$
 
 
 The cosine argument determines the basis functions. It’s the **heart of the transform**:
@@ -267,8 +267,7 @@ This is known as the **Haar wavelet decomposition**, and it outputs are:
 > Taking in account the example above, the first level of the Haar transform (level 1) gives:
 > 
 > $$
-[\underbrace{a_0, a_1}_{\text{averages}}, \underbrace{d_0, d_1}_{\text{details}}]
-= \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
+[\underbrace{a_0, a_1}\_{\text{averages}}, \underbrace{d_0, d_1}\_{\text{details}}] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
   $$
 > 
 > Then, you can apply the Haar transform again on the averages from level 1:
@@ -289,7 +288,7 @@ d_{00} &= \frac{\frac{10}{\sqrt{2}} - \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{-12
 > After **2 levels**, we get:
 > 
 > $$
-[\underbrace{a_{00}}_{\text{lowest frequency}}, \underbrace{d_{00}}_{\text{medium detail}}, \underbrace{d_0, d_1}_{\text{finest details}}] = [16, -6, -\frac{2}{\sqrt{2}}, -\frac{2}{\sqrt{2}}]
+[\underbrace{a_{00}}\_{\text{lowest frequency}}, \underbrace{d_{00}}\_{\text{medium detail}}, \underbrace{d_0, d_1}\_{\text{finest details}}] = [16, -6, -\frac{2}{\sqrt{2}}, -\frac{2}{\sqrt{2}}]
   $$
 > 
 > Where $a_{00}$ is the overall average of the signal (very low frequency),
