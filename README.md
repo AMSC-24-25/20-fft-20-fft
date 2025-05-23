@@ -7,31 +7,29 @@
 [![C++20](https://img.shields.io/badge/C++-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
----
-
 ### For the impatient
 
 Only OpenMP, CMake 3.22 and C++20 are required.
-- For who wants to use the library:
+- For those who want to use the library:
     ```bash
     git clone --recursive-submodules https://github.com/AMSC-24-25/20-fft-20-fft.git
     # rename folder clone
     mv 20-fft-20-fft signal_processing
     ```
-  And in CMakeLists.txt you can add the following lines:
+  You can add the following lines to `CMakeLists.txt`:
     ```cmake
-    # suppose you have cloned the repository under the external folder
+    # suppose you have cloned the repository into an external folder
     add_subdirectory(external/signal_processing)
     target_link_libraries(your_executable_name PRIVATE signal_processing)
     ```
-- For who wants to run examples or benchmark:
+- For those who want to run examples or benchmarks:
     ```bash
     git clone --recursive-submodules https://github.com/AMSC-24-25/20-fft-20-fft.git
     # rename folder clone
     mv 20-fft-20-fft signal_processing && cd signal_processing
     ./build-essentials.sh # to install the dependencies
     ./build-examples.sh   # to build the examples
-    ./build-benchmark.sh  # to build the benchmark
+    ./build-benchmarks.sh  # to build the benchmarks
     ```
 
 ---
@@ -101,13 +99,15 @@ Under the hood, the Cooley-Tukey algorithm uses the **divide-and-conquer** strat
 It recursively breaks a DFT of size $N$ into several smaller DFTs, computes them, and then combines the results.
 Precisely, it decomposes a DFT of size $N$ into two smaller DFTs: $N = N_1 \cdot N_2$;
 then it reuses the results with **twiddle factors** (complex exponential factors) to combine them:
+
 $$
-X(k) = \sum_{n=0}^{N-1} x(n) e^{-\frac{2\pi i k n}{N}} = \sum_{m=0}^{N_1-1} X_1(m) W_N^{km} + \sum_{m=0}^{N_2-1} X_2(m) W_N^{km}
+X(k) = \sum_{n=0}^{N-1} x(n) e^{(-2\pi i k n) \div N} = \sum_{m=0}^{N_1-1} X_1(m) W_N^{km} + \sum_{m=0}^{N_2-1} X_2(m) W_N^{km}
 $$
+
 - $X(k)$ is the $k$-th component of the Discrete Fourier Transform (DFT), representing the frequency domain.
 - $\displaystyle\sum_{n=0}^{N-1}$ is the summation over all $N$ input samples.
 - $x(n)$ is the $n$-th sample of the input signal in the time (or spatial) domain.
-- $e^{-\frac{2\pi i k n}{N}} = \exp(-\frac{2\pi i k n}{N})$ is the complex exponential
+- $e^{(-2\pi i k n) \div N} = \exp((-2\pi i k n) \div N)$ is the complex exponential
   (**twiddle factor**) that maps the time-domain signal
   to the frequency domain. It introduces a phase shift and scales the input signal.
 
@@ -125,15 +125,20 @@ which involve two elements $a$ and $b$, using a twiddle factor $W\_N^k$.
 
 Finally, for the **inverse FFT**, the algorithm is similar but with a few differences:
 1. The **direction of the twiddle factor** in the inverse FFT is reversed.
+
    $$
-   W_N^{-k} = e^{\frac{2\pi i k}{N}}
+   W_N^{-k} = e^{(2\pi i k) \div N}
    $$
+
 2. After computing the inverse FFT using Cooley-Tukey, we **normalize the result**.
    Each element is divided by $N$, the size of the input.
+
    $$
-   x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{\frac{2\pi i kn}{N}}
+   x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{(2\pi i kn) \div N}
    $$
+
    This scaling ensures that the inverse transform truly inverts the original FFT and restores the original signal.
+
 
 > [!WARNING]
 > The Cooley-Tukey algorithm implemented in this repository is the **Radix-2** case.
@@ -147,6 +152,7 @@ Finally, for the **inverse FFT**, the algorithm is similar but with a few differ
 
 The **Discrete Cosine Transform Type-II (DCT-II)** is the most commonly used variant of the DCT,
 particularly in image and video compression (e.g. JPEG). It is defined as:
+
 $$
 X_k = \alpha_k \sum_{n=0}^{N-1} x_n \cos\left(\dfrac{\pi(2n+1)k}{2N}\right), \quad k = 0, 1, ..., N-1
 $$
@@ -156,6 +162,7 @@ Where:
 - $ X_k $: DCT coefficient (frequency domain)
 - $ N $: number of input samples
 - $ \alpha_k $: normalization factor:
+  
   $$
   \alpha_k =
   \begin{cases}
@@ -164,26 +171,35 @@ Where:
   \end{cases}
   $$
 
+
 The cosine argument determines the basis functions. It’s the **heart of the transform**:
+
 - $k$ determines the **frequency** of the cosine wave: higher $k$ means more oscillations.
 - $(2n+1)$ causes the cosine to **sample at odd intervals**,
   which makes it suitable for even symmetry extension
   (fundamental for avoiding boundary discontinuities in signals/images).
 
+
 In other words, the DCT basis functions are cosine waves of increasing frequency.
+
 
 The summation is an **inner product** between the input signal and the cosine basis function of frequency $k$.
 It measures "how much of that frequency" is present in the signal.
 
+
 Finally, the **normalization factor** $\alpha_k$ ensures **energy preservation** and
 makes the transform **orthonormal**:
+
 - $\alpha_0 = \sqrt{\frac{1}{N}}$ gives the DC term (average value) less weight.
 - $\alpha_k = \sqrt{\frac{2}{N}}$ for $k > 0$ keeps other frequencies properly scaled.
 
+
 Finally, the **DCT-III**, which is the inverse of the DCT-II, is defined as:
+
 $$
 x_n = \sum_{k=0}^{N-1} \alpha_k X_k \cos\left[\frac{\pi(2n+1)k}{2N}\right]
 $$
+
 
 In general, the DCT is used for compression because it focuses the signal's energy into a few coefficients.
 This allows for efficient representation and storage.
@@ -203,22 +219,29 @@ The Haar transform converts a sequence of values into **averages and differences
 capturing both **low-frequency (smooth)** and **high-frequency (detail)** information.
 
 The 1D Haar transform is defined as follows. Given an input vector:
+
 $$
 x = [x_0, x_1, x_2, x_3, \dots, x_{N-2}, x_{N-1}]
 $$
+
 The transform produces two outputs:
 1. **Averages** (_low_-frequency content):
+
    $$
    a_i = \frac{x_{2i} + x_{2i+1}}{\sqrt{2}}
    $$
+
 2. **Details** (_high_-frequency content):
+
    $$
    d_i = \frac{x_{2i} - x_{2i+1}}{\sqrt{2}}
    $$
 
+
 > [!TIP]
 > For example, for $x = [4, 6, 10, 12]$:
-  $$
+>
+> $$
   \begin{aligned}
   a_0 &= \frac{4 + 6}{\sqrt{2}} = \frac{10}{\sqrt{2}} \\
   a_1 &= \frac{10 + 12}{\sqrt{2}} = \frac{22}{\sqrt{2}} \\
@@ -226,7 +249,9 @@ The transform produces two outputs:
   d_1 &= \frac{10 - 12}{\sqrt{2}} = \frac{-2}{\sqrt{2}} \\
   \end{aligned}
   $$
+>
 > So the Haar transform of `x` is:
+> 
 > $$
   \text{HWT}(x) = [a_0, a_1, d_0, d_1] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
   $$
@@ -237,27 +262,36 @@ This is known as the **Haar wavelet decomposition**, and it outputs are:
 * low-frequency coefficients (averages)
 * high-frequency coefficients (details)
 
+
 > [!TIP]
 > Taking in account the example above, the first level of the Haar transform (level 1) gives:
+> 
 > $$
 [\underbrace{a_0, a_1}_{\text{averages}}, \underbrace{d_0, d_1}_{\text{details}}]
 = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
   $$
+> 
 > Then, you can apply the Haar transform again on the averages from level 1:
+> 
 > $$
 \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}\right]
   $$
+> 
 > Again, compute average and detail (level 2):
+> 
 > $$
 \begin{aligned}
 a_{00} &= \frac{\frac{10}{\sqrt{2}} + \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{32}{2} = 16 \\
 d_{00} &= \frac{\frac{10}{\sqrt{2}} - \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{-12}{2} = -6
 \end{aligned}
   $$
+> 
 > After **2 levels**, we get:
+> 
 > $$
 [\underbrace{a_{00}}_{\text{lowest frequency}}, \underbrace{d_{00}}_{\text{medium detail}}, \underbrace{d_0, d_1}_{\text{finest details}}] = [16, -6, -\frac{2}{\sqrt{2}}, -\frac{2}{\sqrt{2}}]
   $$
+> 
 > Where $a_{00}$ is the overall average of the signal (very low frequency),
 > $d_{00}$ is the change between the first and second halves of the signal (medium detail),
 > and $d_0, d_1$ are the local fluctuations (finest details, highest frequencies).
@@ -281,6 +315,7 @@ Finally, we apply the multilevel Haar transform recursively on each block to get
 
 > [!TIP]
 > For example, suppose we have a 4x4 matrix $A$:
+> 
 > $$
 A = \begin{bmatrix}
 4 & 6 & 10 & 12 \\
@@ -289,7 +324,9 @@ A = \begin{bmatrix}
 8 & 10 & 14 & 16
 \end{bmatrix}
   $$
+> 
 > We apply the 1D Haar transform to each row:
+> 
 > $$
   \begin{bmatrix}
   \frac{4+6}{\sqrt{2}} & \frac{10+12}{\sqrt{2}} & \frac{4-6}{\sqrt{2}} & \frac{10-12}{\sqrt{2}} \\
@@ -298,6 +335,7 @@ A = \begin{bmatrix}
   \frac{8+10}{\sqrt{2}} & \frac{14+16}{\sqrt{2}} & \frac{8-10}{\sqrt{2}} & \frac{14-16}{\sqrt{2}}
   \end{bmatrix}
   $$
+> 
 > This gives us a new matrix with:
 >
 > - Left half: row averages
