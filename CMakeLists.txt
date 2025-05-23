@@ -116,8 +116,10 @@ set (
         src/rle_compressor/rle_compressor.cpp
 
         # jpeg-image-compression
-        src/jpeg_image_compression/imageJPEG.hpp
-        src/jpeg_image_compression/imageJPEG.cpp
+        src/jpeg_image_compression/image/image.hpp
+        src/jpeg_image_compression/image/image.cpp
+        src/jpeg_image_compression/compressed_image/compressed_image.hpp
+        src/jpeg_image_compression/compressed_image/compressed_image.cpp
 )
 
 # Add the default executable
