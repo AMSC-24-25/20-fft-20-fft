@@ -1,4 +1,4 @@
-#include "zigzag_scan/zigzag_scan.hpp"
+#include "zigzag_scan.hpp"
 #include <vector>
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "rle_compressor/rle_compressor.hpp"
+#include "rle_compressor.hpp"
 #include <vector>
 #include <iostream>
 
