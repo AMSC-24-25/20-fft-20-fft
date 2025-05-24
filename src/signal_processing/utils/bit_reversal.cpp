@@ -1,6 +1,6 @@
 #include "utils/bit_reversal.hpp"
 
-namespace signal_processing::utils::bit_reversal
+namespace sp::utils::bit_rev
 {
      std::vector<std::complex<double>> & sequentialBitReversal(std::vector<std::complex<double>> &data) {
         // size of the input data

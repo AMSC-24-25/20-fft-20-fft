@@ -4,7 +4,7 @@
 #include <complex>
 #include <vector>
 
-namespace signal_processing::fft::algorithms::cooley_tukey {
+namespace sp::fft::algo::cooley_tukey {
     /**
      * Parallel Cooley-Tukey Inverse Fast Fourier Transform (IFFT) Algorithm using OpenMP (1D).
      *

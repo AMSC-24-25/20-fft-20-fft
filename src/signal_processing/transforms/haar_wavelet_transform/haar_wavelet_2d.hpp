@@ -1,7 +1,7 @@
 #ifndef HAAR_WAVELET_2D_HPP
 #define HAAR_WAVELET_2D_HPP
 
-namespace signal_processing::hwt::solver {
+namespace sp::hwt::solver {
     class HaarWaveletTransform2D {
     public:
         std::vector<std::vector<double>> input;     //input matrix

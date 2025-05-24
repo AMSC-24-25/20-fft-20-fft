@@ -4,7 +4,7 @@
 #include <complex>
 #include <vector>
 
-namespace signal_processing::fft::algorithms::cooley_tukey {
+namespace sp::fft::algo::cooley_tukey {
     /**
     * Sequential Cooley-Tukey Fast Fourier Transform (FFT) Algorithm (1D).
     *

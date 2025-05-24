@@ -3,7 +3,7 @@
 
 #include "rle_compressor.hpp"
 
-namespace signal_processing::utils::rle_compressor
+namespace sp::utils::rle
 {
     const std::vector<std::pair<int, int>> RLECompressor::compress(const std::vector<double>& input) {
         // (#value_repetitions, value)

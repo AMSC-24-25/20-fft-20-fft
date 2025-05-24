@@ -26,7 +26,7 @@ int main() {
      */
     std::ostringstream filepath_out_oss;
     filepath_out_oss << "examples/output/fft-"
-                     << signal_processing::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
+                     << sp::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
                      << ".avi";
     // check if the output folder exists
     if (!std::filesystem::exists("examples/output")) {
@@ -85,14 +85,14 @@ int main() {
      * 4. Apply Cooley-Tukey 3D FFT
      */
     auto start_time = std::chrono::high_resolution_clock::now();
-    signal_processing::fft::solver::FastFourierTransform<3> solver(
+    sp::fft::solver::FastFourierTransform<3> solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    signal_processing::fft::solver::InverseFastFourierTransform<3> i_solver(
+    sp::fft::solver::InverseFastFourierTransform<3> i_solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::OPENMP);
-    i_solver.compute(volume_data, signal_processing::fft::solver::ComputationMode::OPENMP);
+    solver.compute(volume_data, sp::fft::solver::ComputationMode::OPENMP);
+    i_solver.compute(volume_data, sp::fft::solver::ComputationMode::OPENMP);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("FFT and IFFT applied.\n");

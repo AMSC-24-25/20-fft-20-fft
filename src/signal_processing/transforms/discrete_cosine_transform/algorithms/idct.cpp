@@ -2,7 +2,7 @@
 
 #include "transforms/discrete_cosine_transform/algorithms/idct.hpp"
 
-namespace signal_processing::dct::algorithms {
+namespace sp::dct::algo {
     void computeIDCT1d(std::vector<double> &input){
         const size_t N = input.size();
         std::vector<double> dct_coefficients = input;

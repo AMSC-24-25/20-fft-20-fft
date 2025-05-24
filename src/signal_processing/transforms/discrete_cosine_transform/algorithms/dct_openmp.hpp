@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace signal_processing::dct::algorithms {
+namespace sp::dct::algo {
 
     /**
     * Parallel Discrete Cosine Transform (DCT) Algorithm (1D).

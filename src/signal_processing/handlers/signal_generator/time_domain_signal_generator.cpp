@@ -2,7 +2,7 @@
 
 #include "handlers/signal_generator/time_domain_signal_generator.hpp"
 
-namespace signal_processing::handlers::signal_generator
+namespace sp::signal_gen
 {
     std::vector<std::complex<double> > TimeDomainSignalGenerator::generate1DSignal(
        const int length, const double frequency, const double phase, const double noise

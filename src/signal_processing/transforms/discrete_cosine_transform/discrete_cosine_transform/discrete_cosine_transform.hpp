@@ -5,7 +5,7 @@
 
 #include "transforms/discrete_cosine_transform/base_discrete_cosine_transform.hpp"
 
-namespace signal_processing::dct::solver {
+namespace sp::dct::solver {
     /**
      * Discrete Cosine Transform (DCT) class.
      *

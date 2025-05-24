@@ -1,7 +1,7 @@
 #include "cooley_tukey_fft_openmp.hpp"
 #include "utils/bit_reversal.hpp"
 
-namespace signal_processing::fft::algorithms::cooley_tukey {
+namespace sp::fft::algo::cooley_tukey {
     void computeFFTOpenMP(std::vector<std::complex<double>>& input)
     {
         /**
@@ -15,7 +15,7 @@ namespace signal_processing::fft::algorithms::cooley_tukey {
         constexpr double angle = -2 * M_PI;
 
         // 1. Bit-Reversal Permutation
-        utils::bit_reversal::parallelBitReversal(input);
+        utils::bit_rev::parallelBitReversal(input);
 
         // 2. Iterative Cooley-Tukey FFT
         // 2.1. Main loop - Stages: iterate log2(N) times.

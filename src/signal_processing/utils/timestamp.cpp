@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace signal_processing::utils::timestamp
+namespace sp::utils::timestamp
 {
     std::string createReadableTimestamp(const std::string &format) {
         // get the timestamp

@@ -217,9 +217,9 @@ int main() {
        {13.0, 0.0}, {14.0, 0.0}, {15.0, 0.0}, {16.0, 0.0}
     };
     // solver, where dims is the number of dimensions and it is a template parameter
-    signal_processing::fft::solver::FastFourierTransform<dims> solver(std::array{rows, cols});
+    sp::fft::solver::FastFourierTransform<dims> solver(std::array{rows, cols});
     // solve in-place (sequential)
-    solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+    solver.compute(rand_signal, sp::fft::solver::ComputationMode::SEQUENTIAL);
     // print the result
     for (const auto& s : rand_signal) {
         printf("(%.2f + %.2fi)", s.real(), s.imag());
@@ -236,7 +236,7 @@ int main() {
 You can also use the parallel version of the FFT solver:
 
 ```cpp
-solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::OPENMP);
+solver.compute(rand_signal, sp::fft::solver::ComputationMode::OPENMP);
 ```
 
 Or solve the FFT not in-place:
@@ -244,15 +244,15 @@ Or solve the FFT not in-place:
 ```cpp
 std::vector<std::complex<double>> result(rand_signal.size());
 // rand_signal will not be modified
-solver.compute(rand_signal, result, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+solver.compute(rand_signal, result, sp::fft::solver::ComputationMode::SEQUENTIAL);
 ```
 
 To restore the original signal, use the inverse FFT solver:
 
 ```cpp
-signal_processing::fft::solver::InverseFastFourierTransform<dims> inverse_solver(std::array{rows, cols});
+sp::fft::solver::InverseFastFourierTransform<dims> inverse_solver(std::array{rows, cols});
 // solve in-place
-inverse_solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+inverse_solver.compute(rand_signal, sp::fft::solver::ComputationMode::SEQUENTIAL);
 // print the result
 for (const auto& s : rand_signal) {
     printf("(%.2f + %.2fi)", s.real(), s.imag());

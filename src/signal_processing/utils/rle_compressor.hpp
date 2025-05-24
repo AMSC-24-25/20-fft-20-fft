@@ -8,7 +8,7 @@
  * This module provides functions to perform run-length encoding (RLE) compression
  * and decompression on a vector of doubles.
  */
-namespace signal_processing::utils::rle_compressor
+namespace sp::utils::rle
 {
     class RLECompressor{
     public:

@@ -5,7 +5,7 @@
 
 #include "compression/image_compression_haar_wavelet/image_compression_haar_wavelet.hpp"
 
-namespace signal_processing::compression::hwt {
+namespace sp::hwt {
     // Compresses the input image matrix using Haar wavelet transform and thresholding
     std::vector<std::vector<double>> ImgWLComp::compress(std::vector<std::vector<double>> input){
 

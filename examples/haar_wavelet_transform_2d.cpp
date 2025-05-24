@@ -24,7 +24,7 @@ int main() {
         std::cout << "\n";
     }
 
-    signal_processing::hwt::solver::HaarWaveletTransform2D transform(matrix);
+    sp::hwt::solver::HaarWaveletTransform2D transform(matrix);
     transform.compute();
     auto result = transform.getSolution();
 

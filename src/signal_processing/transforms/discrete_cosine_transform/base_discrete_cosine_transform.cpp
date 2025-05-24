@@ -2,7 +2,7 @@
 
 #include "base_discrete_cosine_transform.hpp"
 
-namespace signal_processing::dct::solver {
+namespace sp::dct::solver {
     /**
      * Compute the Discrete Cosine Transform of the input vector (in-place).
      *

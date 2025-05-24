@@ -8,7 +8,7 @@
  * This module provides methods and classes for loading and managing configuration data
  * for signal processing applications.
  */
-namespace signal_processing::config
+namespace sp::config
 {
     /**
     * BaseConfigurationLoader is an abstract class that defines the interface for loading configuration

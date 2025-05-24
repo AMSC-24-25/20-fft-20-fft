@@ -7,7 +7,7 @@
 
 #include "nlohmann/json.hpp"
 
-namespace signal_processing::config
+namespace sp::config
 {
    /**
    * JsonFieldHandler class is a utility class that provides field names for the JSON configuration file.

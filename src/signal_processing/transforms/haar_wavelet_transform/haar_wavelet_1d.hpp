@@ -1,7 +1,7 @@
 #ifndef HAAR_WAVELET_1D_HPP
 #define HAAR_WAVELET_1D_HPP
 
-namespace signal_processing::hwt::solver {
+namespace sp::hwt::solver {
     class HaarWaveletTransform1D {
     public:
         std::vector<double> input;     //input vector

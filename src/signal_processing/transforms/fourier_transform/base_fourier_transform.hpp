@@ -7,7 +7,7 @@
 #include <optional>
 #include <omp.h>
 
-namespace signal_processing::fft::solver
+namespace sp::fft::solver
 {
     /**
      * Enumeration for the modes of computation.

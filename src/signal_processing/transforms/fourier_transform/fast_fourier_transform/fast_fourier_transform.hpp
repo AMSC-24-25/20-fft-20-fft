@@ -2,11 +2,8 @@
 #define FAST_FOURIER_TRANSFORM_HPP
 
 #include "transforms/fourier_transform/base_fourier_transform.hpp"
-#include "transforms/fourier_transform/algorithms/cooley_tukey/cooley_tukey_fft.hpp"
-#include "transforms/fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_fft_openmp.hpp"
 
-
-namespace signal_processing::fft::solver {
+namespace sp::fft::solver {
     /**
     * Fast Fourier Transform (FFT) class.
     *
@@ -37,7 +34,7 @@ namespace signal_processing::fft::solver {
          */
         [[nodiscard]] typename FastFourierTransform::transform_t getSequentialTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeFFT(data);
+                algo::cooley_tukey::computeFFT(data);
             };
         }
 
@@ -49,7 +46,7 @@ namespace signal_processing::fft::solver {
          */
         [[nodiscard]] typename FastFourierTransform::transform_t getOpenMPTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeFFTOpenMP(data);
+                algo::cooley_tukey::computeFFTOpenMP(data);
             };
         }
     };

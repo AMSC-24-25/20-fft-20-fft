@@ -6,7 +6,7 @@
 #include "json_field_handler.hpp"
 #include "handlers/config_loader/base_configuration_loader.hpp"
 
-namespace signal_processing::config
+namespace sp::config
 {
     /**
     * JSONConfigurationLoader is a concrete class that implements the BaseConfigurationLoader interface.

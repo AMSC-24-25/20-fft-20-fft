@@ -12,7 +12,7 @@
  *
  * It is a utility module that provides a way to create synthetic signals for testing and analysis.
  */
-namespace signal_processing::handlers::signal_generator
+namespace sp::signal_gen
 {
     /**
      * BaseSignalGenerator is an abstract class that defines the interface for generating signals.

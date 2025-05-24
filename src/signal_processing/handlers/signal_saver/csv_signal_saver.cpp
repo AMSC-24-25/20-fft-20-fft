@@ -5,7 +5,7 @@
 #include "handlers/signal_saver/csv_signal_saver.hpp"
 #include "utils/timestamp.hpp"
 
-namespace signal_processing::handlers::signal_saver
+namespace sp::saver
 {
     void CsvSignalSaver::saveToFile(
         const std::vector<std::complex<double>> &signal,

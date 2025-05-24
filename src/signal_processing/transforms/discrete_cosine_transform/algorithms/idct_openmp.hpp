@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace signal_processing::dct::algorithms {
+namespace sp::dct::algo {
     /**
     * Parallel Inverse Discrete Cosine Transform (IDCT) Algorithm (1D).
     *

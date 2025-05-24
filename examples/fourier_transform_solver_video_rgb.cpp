@@ -27,7 +27,7 @@ int main() {
     const std::string input_file = "examples/resources/cats-resize.mp4";
     std::ostringstream filepath_out_oss;
     filepath_out_oss << "examples/output/fft-"
-                     << signal_processing::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
+                     << sp::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
                      << ".avi";
     // check if the output folder exists
     if (!std::filesystem::exists("examples/output")) {
@@ -93,50 +93,50 @@ int main() {
     /**
      * 4. Apply Cooley-Tukey 3D FFT
      */
-    signal_processing::fft::solver::FastFourierTransform<3> solver(
+    sp::fft::solver::FastFourierTransform<3> solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    signal_processing::fft::solver::InverseFastFourierTransform<3> i_solver(
+    sp::fft::solver::InverseFastFourierTransform<3> i_solver(
         {static_cast<size_t>(depth), static_cast<size_t>(height), static_cast<size_t>(width)}
     );
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::OPENMP);
+    solver.compute(volume_r, sp::fft::solver::ComputationMode::OPENMP);
     auto end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end_time - start_time;
     printf("R FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_r, signal_processing::fft::solver::ComputationMode::OPENMP);
+    i_solver.compute(volume_r, sp::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("R IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::OPENMP);
+    solver.compute(volume_g, sp::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_g, signal_processing::fft::solver::ComputationMode::OPENMP);
+    i_solver.compute(volume_g, sp::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("G IFFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::OPENMP);
+    solver.compute(volume_b, sp::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B FFT: %f seconds\n", elapsed.count());
 
 
     start_time = std::chrono::high_resolution_clock::now();
-    i_solver.compute(volume_b, signal_processing::fft::solver::ComputationMode::OPENMP);
+    i_solver.compute(volume_b, sp::fft::solver::ComputationMode::OPENMP);
     end_time = std::chrono::high_resolution_clock::now();
     elapsed = end_time - start_time;
     printf("B IFFT: %f seconds\n", elapsed.count());

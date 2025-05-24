@@ -5,7 +5,7 @@
 /**
  * Naive timestamp handler.
  */
-namespace signal_processing::utils::timestamp
+namespace sp::utils::timestamp
 {
     /**
     * Create a timestamp string with the format provided.

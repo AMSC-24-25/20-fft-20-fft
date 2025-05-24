@@ -3,7 +3,7 @@
 
 #include "handlers/config_loader/json_field_handler.hpp"
 
-namespace signal_processing::config
+namespace sp::config
 {
     const std::unordered_map<JsonFieldHandler::Field, std::string> JsonFieldHandler::fieldNames = {
         {Field::SignalDomain, "signal_domain"},

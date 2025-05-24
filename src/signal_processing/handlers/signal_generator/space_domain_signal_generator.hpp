@@ -5,7 +5,7 @@
 
 #include "base_signal_generator.hpp"
 
-namespace signal_processing::handlers::signal_generator
+namespace sp::signal_gen
 {
     class SpaceDomainSignalGenerator final : public BaseSignalGenerator {
     public:

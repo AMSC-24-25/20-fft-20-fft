@@ -2,7 +2,7 @@
 #define CSV_SIGNAL_SAVER_HPP
 #include "base_file_signal_saver.hpp"
 
-namespace signal_processing::handlers::signal_saver
+namespace sp::saver
 {
     class CsvSignalSaver final : public BaseFileSignalSaver {
     public:

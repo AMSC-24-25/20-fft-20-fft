@@ -2,7 +2,7 @@
 #include "transforms/discrete_cosine_transform/algorithms/dct.hpp"
 #include "transforms/discrete_cosine_transform/algorithms/dct_openmp.hpp"
 
-namespace signal_processing::dct::solver {
+namespace sp::dct::solver {
     /**
      * Internal method to compute the Discrete Cosine Transform in sequential mode.
      *
@@ -11,7 +11,7 @@ namespace signal_processing::dct::solver {
      * @param input The input vector to be transformed.
      */
     void DiscreteCosineTransform::computeSequential(std::vector<double> &input){
-        return algorithms::computeDCT1d(input);
+        return algo::computeDCT1d(input);
     };
 
     /**
@@ -22,7 +22,7 @@ namespace signal_processing::dct::solver {
      * @param input The input vector to be transformed.
      */
     void DiscreteCosineTransform::computeOpenMP(std::vector<double> &input){
-        return algorithms::computeDCT1dOpenMP(input);
+        return algo::computeDCT1dOpenMP(input);
     };
 
     /**
@@ -33,7 +33,7 @@ namespace signal_processing::dct::solver {
      * @param input The input matrix to be transformed.
      */
     void DiscreteCosineTransform::computeSequential(std::vector<std::vector<double>> &input){
-        return algorithms::computeDCT2d(input);
+        return algo::computeDCT2d(input);
     };
 
     /**
@@ -44,6 +44,6 @@ namespace signal_processing::dct::solver {
      * @param input The input matrix to be transformed.
      */
     void DiscreteCosineTransform::computeOpenMP(std::vector<std::vector<double>> &input){
-        return algorithms::computeDCT2dOpenMP(input);
+        return algo::computeDCT2dOpenMP(input);
     };
 }

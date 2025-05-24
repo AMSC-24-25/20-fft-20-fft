@@ -5,7 +5,7 @@
 #include "transforms/fourier_transform/algorithms/cooley_tukey/openmp/cooley_tukey_inverse_fft_openmp.hpp"
 #include "transforms/fourier_transform/algorithms/cooley_tukey/cooley_tukey_inverse_fft.hpp"
 
-namespace signal_processing::fft::solver {
+namespace sp::fft::solver {
     /**
      * Inverse Fast Fourier Transform (IFFT) class.
      *
@@ -36,7 +36,7 @@ namespace signal_processing::fft::solver {
          */
         [[nodiscard]] typename InverseFastFourierTransform::transform_t getSequentialTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeInverseFFT(data);
+                algo::cooley_tukey::computeInverseFFT(data);
             };
         }
 
@@ -48,7 +48,7 @@ namespace signal_processing::fft::solver {
          */
         [[nodiscard]] typename InverseFastFourierTransform::transform_t getOpenMPTransform() const override {
             return [](std::vector<std::complex<double>>& data) {
-                algorithms::cooley_tukey::computeInverseFFTOpenMP(data);
+                algo::cooley_tukey::computeInverseFFTOpenMP(data);
             };
         }
     };

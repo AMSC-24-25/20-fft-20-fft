@@ -22,20 +22,20 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
     // prepare the vectors for the FFT
     std::vector<std::complex<double>> sequential_fft(signal_length);
     std::vector<std::complex<double>> parallel_fft(signal_length);
-    signal_processing::fft::solver::FastFourierTransform<1> solver(std::array{static_cast<size_t>(signal_length)});
+    sp::fft::solver::FastFourierTransform<1> solver(std::array{static_cast<size_t>(signal_length)});
     // you can use the solver in two modes:
     // 1. in-place computation (default): the input vector is modified in place and
     //                                    the result is stored in the same vector
     // 2. out-of-place computation: the input vector is not modified and the result is stored in a new vector
     const auto start_time_seq = std::chrono::high_resolution_clock::now();
-    solver.compute(signal, sequential_fft, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+    solver.compute(signal, sequential_fft, sp::fft::solver::ComputationMode::SEQUENTIAL);
     const auto end_time_seq = std::chrono::high_resolution_clock::now();
     printf(
         "Time taken for sequential FFT: %ld ms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count()
     );
     const auto start_time_par = std::chrono::high_resolution_clock::now();
-    solver.compute(signal, parallel_fft, signal_processing::fft::solver::ComputationMode::OPENMP);
+    solver.compute(signal, parallel_fft, sp::fft::solver::ComputationMode::OPENMP);
     const auto end_time_par = std::chrono::high_resolution_clock::now();
     printf(
         "Time taken for parallel (OpenMP, CPU) FFT: %ld ms\n",
@@ -62,13 +62,13 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     std::vector<std::complex<double>> sequential_ifft(signal_length);
     std::vector<std::complex<double>> parallel_ifft(signal_length);
     // prepare the solver
-    signal_processing::fft::solver::InverseFastFourierTransform<1> inverse_solver(
+    sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(
         std::array{static_cast<size_t>(signal_length)}
     );
     // sequential Inverse FFT
     const auto start_time_seq = std::chrono::high_resolution_clock::now();
     inverse_solver.compute(
-        signal, sequential_ifft, signal_processing::fft::solver::ComputationMode::SEQUENTIAL
+        signal, sequential_ifft, sp::fft::solver::ComputationMode::SEQUENTIAL
     );
     const auto end_time_seq = std::chrono::high_resolution_clock::now();
     printf(
@@ -77,7 +77,7 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     );
     const auto start_time_par = std::chrono::high_resolution_clock::now();
     inverse_solver.compute(
-        signal, parallel_ifft, signal_processing::fft::solver::ComputationMode::OPENMP
+        signal, parallel_ifft, sp::fft::solver::ComputationMode::OPENMP
     );
     const auto end_time_par = std::chrono::high_resolution_clock::now();
     printf(
@@ -103,9 +103,9 @@ int main() {
     // print number of threads used by OpenMP
     const std::string file_path = "examples/resources/performance_fft_config.json";
     // load the configuration from the file
-    const auto loader = new signal_processing::config::JSONConfigurationLoader();
+    const auto loader = new sp::config::JSONConfigurationLoader();
     loader->loadConfigurationFromFile(file_path);
-    const auto json_loaded = new signal_processing::config::JsonFieldHandler(loader->getConfigurationData());
+    const auto json_loaded = new sp::config::JsonFieldHandler(loader->getConfigurationData());
     // get the simulation parameters
     const int signal_length = json_loaded->getSignalLength();
     const double *frequency = new double(json_loaded->getHzFrequency());
@@ -115,7 +115,7 @@ int main() {
     // get the seed if it exists, otherwise set it to nullopt
     const std::optional<int> seed = json_loaded->hasSeed() ? std::optional(json_loaded->getSeed()) : std::nullopt;
     // prepare the signal saver and use the unique pointer to manage the memory
-    const auto csv_signal_saver = std::make_unique<signal_processing::handlers::signal_saver::CsvSignalSaver>();
+    const auto csv_signal_saver = std::make_unique<sp::saver::CsvSignalSaver>();
     // free unused memory
     delete loader;
     delete json_loaded;
@@ -127,12 +127,12 @@ int main() {
     if (*signal_domain == "time") {
         // time domain
         printf("Generating time domain signal of length: %d.\n", signal_length);
-        signal_processing::handlers::signal_generator::TimeDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(seed);
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     } else {
         // space domain
         printf("Generating space domain signal of length: %d.\n", signal_length);
-        signal_processing::handlers::signal_generator::SpaceDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(seed);
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     }
     // uncomment the following line to save the generated signal to a file
@@ -148,7 +148,7 @@ int main() {
     printf("\n\nSequential vs. Parallel Inverse FFT\n");
     // pass the fft result as input
     std::vector<std::complex<double>> fft_res(signal_length);
-    signal_processing::fft::solver::FastFourierTransform<1> tmp_solver(std::array{static_cast<size_t>(signal_length)});
+    sp::fft::solver::FastFourierTransform<1> tmp_solver(std::array{static_cast<size_t>(signal_length)});
     sequential_vs_parallel_inverse_fft(fft_res);
 
     return 0;

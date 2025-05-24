@@ -58,7 +58,7 @@ int main(){
     std::cout << "]" << std::endl;
 
     //create object for 1D transform
-    signal_processing::hwt::solver::HaarWaveletTransform1D waveletT1D(input);
+    sp::hwt::solver::HaarWaveletTransform1D waveletT1D(input);
     //compute the transform
     waveletT1D.compute();
     //get the solution
@@ -91,7 +91,7 @@ int main(){
     }
     std::cout << std::endl;
 
-    signal_processing::hwt::solver::HaarWaveletTransform2D waveletT2D(matrix); //create object for 2D transform
+    sp::hwt::solver::HaarWaveletTransform2D waveletT2D(matrix); //create object for 2D transform
     waveletT2D.compute();                      //compute the transform
     std::vector<std::vector<double>> matSolution = waveletT2D.getSolution(); //get the solution
     std::vector<std::vector<double>> Hn = waveletT2D.getHnMatrix();          //get Hn matrix
@@ -138,7 +138,7 @@ int main(){
 
     std::cout << "Image: " << img_path << " loaded" << std::endl;
 
-    signal_processing::compression::hwt::ImgWLComp imgWL; //create object for image compression
+    sp::hwt::ImgWLComp imgWL; //create object for image compression
 
     std::vector<std::vector<double>> solution =  imgWL.compress(image); //get compressed image
 

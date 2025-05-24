@@ -4,7 +4,7 @@
 
 #include "haar_wavelet_1d.hpp"
 
-namespace signal_processing::hwt::solver
+namespace sp::hwt::solver
 {
     void HaarWaveletTransform1D::compute() {
         int size = input.size();

@@ -2,7 +2,7 @@
 
 #include "transforms/discrete_cosine_transform/algorithms/dct_openmp.hpp"
 
-namespace signal_processing::dct::algorithms{
+namespace sp::dct::algo{
     void computeDCT1dOpenMP(std::vector<double> &input){
         const size_t N = input.size();
         const std::vector<double> data = input;

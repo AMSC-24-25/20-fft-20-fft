@@ -10,7 +10,7 @@
  *
  * This module provides an interface for saving signals to a file.
  */
-namespace signal_processing::handlers::signal_saver
+namespace sp::saver
 {
     /**
      * Abstract class for saving signals to a file.

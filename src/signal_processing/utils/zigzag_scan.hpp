@@ -8,7 +8,7 @@
  * This module provides functions to perform zigzag scanning on a 2D matrix
  * and to reconstruct the original matrix from the zigzag-scanned vector.
  */
-namespace signal_processing::utils::zigzag_scan
+namespace sp::utils::zigzag
 {
     class ZigZagScan {
     public:

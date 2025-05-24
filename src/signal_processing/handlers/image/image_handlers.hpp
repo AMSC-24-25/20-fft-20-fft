@@ -7,7 +7,7 @@
 /**
  * Image handling utilities for loading, converting to grayscale, and saving images.
  */
-namespace signal_processing::utils::image_handlers
+namespace sp::img
 {
     /**
      * Load an image from the specified path.

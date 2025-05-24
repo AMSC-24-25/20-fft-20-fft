@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-namespace signal_processing::utils::zigzag_scan
+namespace sp::utils::zigzag
 {
     const std::vector<double> ZigZagScan::scan(const std::vector<std::vector<double>>& matrix) {
         std::vector<double> result;

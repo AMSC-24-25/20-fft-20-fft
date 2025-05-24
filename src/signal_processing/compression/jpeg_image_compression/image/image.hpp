@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace signal_processing::compression::jpeg_image_compression
+namespace sp::jpeg
 {
     class CompressedImage;
 

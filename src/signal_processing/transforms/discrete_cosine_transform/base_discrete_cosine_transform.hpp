@@ -2,7 +2,7 @@
 #define BASE_DISCRETE_COSINE_TRANSFORM_HPP
 #include <vector>
 
-namespace signal_processing::dct::solver {
+namespace sp::dct::solver {
     /**
      * Enumeration for the modes of computation.
      *

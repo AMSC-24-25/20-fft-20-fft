@@ -8,7 +8,7 @@
  *
  * This module provides functions to perform bit-reversal on a vector of complex numbers.
  */
-namespace signal_processing::utils::bit_reversal
+namespace sp::utils::bit_rev
 {
     /**
     * Perform a sequential bit-reversal on the input data vector.

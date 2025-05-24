@@ -33,7 +33,7 @@ int main() {
     const std::string filepath_in = choice == 'd' ? "examples/resources/dog.png" : "examples/resources/eiffel-tower.png";
     std::ostringstream filepath_out_oss;
     filepath_out_oss << "examples/output/fft-" << choice
-                     << signal_processing::utils::timestamp::createReadableTimestamp("_%Y%m%d_%H%M%S")
+                     << sp::utils::timestamp::createReadableTimestamp("_%Y%m%d_%H%M%S")
                      << ".png";
     // check if the output folder exists
     if (!std::filesystem::exists("examples/output")) {
@@ -43,7 +43,7 @@ int main() {
     // create the output file path
     const std::string filepath_out = filepath_out_oss.str();
     // load the image
-    unsigned char* image = signal_processing::utils::image_handlers::loadImage(
+    unsigned char* image = sp::img::loadImage(
         filepath_in.c_str(),
         width, height, channels
     );
@@ -73,13 +73,13 @@ int main() {
     printf("Starting FFT computation...\n");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
-    signal_processing::fft::solver::FastFourierTransform<2> solver(
+    sp::fft::solver::FastFourierTransform<2> solver(
         std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    signal_processing::fft::solver::InverseFastFourierTransform<2> inverse_solver(
+    sp::fft::solver::InverseFastFourierTransform<2> inverse_solver(
         std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
-    auto computation_mode = signal_processing::fft::solver::ComputationMode::OPENMP;
+    auto computation_mode = sp::fft::solver::ComputationMode::OPENMP;
     solver.compute(R, computation_mode);
     printf("R FFT computed\n");
     solver.compute(G, computation_mode);
@@ -108,7 +108,7 @@ int main() {
     }
     printf("Image converted back to unsigned char\n");
     // check if the image was saved successfully
-    signal_processing::utils::image_handlers::saveRGBImage(filepath_out.c_str(), output, width, height);
+    sp::img::saveRGBImage(filepath_out.c_str(), output, width, height);
     printf("Image saved successfully in %s\n", filepath_out.c_str());
 
     return 0;

@@ -5,7 +5,7 @@
 
 #include "image_handlers.hpp"
 
-namespace signal_processing::utils::image_handlers
+namespace sp::img
 {
     unsigned char* loadImage(const std::string& path, int& width, int& height, int& channels) {
         unsigned char* data = stbi_load(

@@ -9,7 +9,7 @@
 
 using json = nlohmann::json;
 
-namespace signal_processing::config
+namespace sp::config
 {
     const JsonFieldHandler &JSONConfigurationLoader::getConfigurationData() const {
         if (configurationData.has_value()) {

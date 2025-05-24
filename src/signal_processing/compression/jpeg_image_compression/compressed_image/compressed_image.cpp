@@ -10,7 +10,7 @@
 #include "utils/rle_compressor.hpp"
 #include "utils/zigzag_scan.hpp"
 
-namespace signal_processing::compression::jpeg_image_compression
+namespace sp::jpeg
 {
     // #################### CONSTRUCTORS ####################
     CompressedImage::CompressedImage(std::vector<std::vector<double>> inputMatrix): compressed(inputMatrix) {}
@@ -92,7 +92,7 @@ namespace signal_processing::compression::jpeg_image_compression
                     for (int j = 0; j < submatrixSize; ++j)
                         submatrix[i][j] = this->compressed[r+i][c+j];
                 // Apply zigzag scan to the submatrix
-                std::vector<double> zzVector = utils::zigzag_scan::ZigZagScan::scan(submatrix);
+                std::vector<double> zzVector = utils::zigzag::ZigZagScan::scan(submatrix);
                 //save the submatrix in the binary file (using rle compression)
                 save_compressed_submatrix(file, zzVector);
             }
@@ -175,7 +175,7 @@ namespace signal_processing::compression::jpeg_image_compression
     }
 
     const void CompressedImage::save_compressed_submatrix(std::ofstream& file, const std::vector<double>& zzVector) {
-        std::vector<std::pair<int, int>> rleVector = utils::rle_compressor::RLECompressor::compress(zzVector);
+        std::vector<std::pair<int, int>> rleVector = utils::rle::RLECompressor::compress(zzVector);
         /*
         uint8_t rle_size = rle.size();
         file.write(reinterpret_cast<const char*>(&rle_size), sizeof(uint8_t));*/
@@ -258,7 +258,7 @@ namespace signal_processing::compression::jpeg_image_compression
         for (int r = 0; r < rows; r += submatrixSize) {
             for (int c = 0; c < cols; c += submatrixSize) {
                 std::vector<double>  zzVector = load_compressed_submatrix(file, submatrixSize*submatrixSize);
-                std::vector<std::vector<double>> submatrix = utils::zigzag_scan::ZigZagScan::inverse_scan(
+                std::vector<std::vector<double>> submatrix = utils::zigzag::ZigZagScan::inverse_scan(
                     zzVector, submatrixSize, submatrixSize
                 );
                 for (int i = 0; i < submatrixSize; ++i)
@@ -296,7 +296,7 @@ namespace signal_processing::compression::jpeg_image_compression
             }
         }
 
-        return utils::rle_compressor::RLECompressor::decompress(zzVector);
+        return utils::rle::RLECompressor::decompress(zzVector);
 
         /* Version that read always value as couple (#repetitions, value)
         while(i < vectorSize){

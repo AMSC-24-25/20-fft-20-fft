@@ -21,7 +21,7 @@ int main() {
     for (double v : input) std::cout << v << " ";
     std::cout << "\n\n";
 
-    signal_processing::hwt::solver::HaarWaveletTransform1D wavelet(input);
+    sp::hwt::solver::HaarWaveletTransform1D wavelet(input);
     wavelet.compute();
     auto output = wavelet.getSolution();
 

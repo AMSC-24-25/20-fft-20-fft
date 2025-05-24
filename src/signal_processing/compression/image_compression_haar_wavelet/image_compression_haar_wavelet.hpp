@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace signal_processing::compression::hwt {
+namespace sp::hwt {
     class ImgWLComp {
     public:
         //constructor: initialize input, compressed, and decompressed matrices

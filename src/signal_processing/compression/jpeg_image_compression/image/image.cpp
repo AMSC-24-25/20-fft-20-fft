@@ -9,10 +9,9 @@
 
 #include "compression/jpeg_image_compression/image/image.hpp"
 #include "compression/jpeg_image_compression/compressed_image/compressed_image.hpp"
-#include "transforms/discrete_cosine_transform/base_discrete_cosine_transform.hpp"
 #include "transforms/discrete_cosine_transform/discrete_cosine_transform/discrete_cosine_transform.hpp"
 
-namespace signal_processing::compression::jpeg_image_compression
+namespace sp::jpeg
 {
     // #################### CONSTRUCTORS ####################
 
