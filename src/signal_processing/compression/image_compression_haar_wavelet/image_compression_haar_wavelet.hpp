@@ -6,55 +6,35 @@
 namespace signal_processing::compression::hwt {
     class ImgWLComp {
     public:
-        std::vector<std::vector<double>> input;         //input matrix (original image)
-        std::vector<std::vector<double>> compressed;    //compressed image matrix
-        std::vector<std::vector<double>> decompressed;  //decompressed (reconstructed) image matrix
-        std::vector<std::vector<double>> HaarMatrix = {{1, 1}, {1, -1}}; // Basic 2x2 Haar matrix
-
         //constructor: initialize input, compressed, and decompressed matrices
-        explicit ImgWLComp(std::vector<std::vector<double>> inputMatrix):
-            input(inputMatrix),
-            compressed(inputMatrix),
-            decompressed(inputMatrix)
-        {}
+        explicit ImgWLComp(){}
 
-        //getter for compressed matrix
-        std::vector<std::vector<double>> getCompressed() {
-            return compressed;
-        }
+        // Compresses the input image matrix using Haar wavelet transform and thresholding
+        std::vector<std::vector<double>> compress(std::vector<std::vector<double>> input);
 
-        //getter for decompressed matrix
-        std::vector<std::vector<double>> getDecompressed() {
-            return decompressed;
-        }
+        // Reconstructs the original image matrix from its compressed (transformed) version
+        std::vector<std::vector<double>> reconstruct(std::vector<std::vector<double>> input);
 
-        //function to compress the image
-        void compress();
+        // Saves the transformed image matrix to a binary file with basic RLE compression
+        void save_as_binary(std::vector<std::vector<double>> img_matrix, const std::string& path);
 
-        //function to reconstruct the image from compressed data
-        //note: still under development (marked as "Non funziona" = not working)
-        void reconstruct();
+        // Loads a matrix from a binary file and reconstructs the image data with scaling
+        std::vector<std::vector<double>> load_img_from_binary(std::string compressed_image_path);
 
-        //helper function to transpose a matrix
+        // Transposes a given matrix (rows become columns and vice versa)
         void transpose(std::vector<std::vector<double>>& mat);
 
-        //function to reconstruct all rows of the matrix
-        void reconstructRows();
+        // Applies inverse Haar wavelet transform to each row of the matrix
+        void reconstructRows(std::vector<std::vector<double>>& input);
 
-        //perform one inverse step of the Haar transform for a row
-        std::vector<double> invertStep(int size, std::vector<double> data);
+        // Performs one step of inverse Haar wavelet transform on a single row
+        std::vector<double> invertStep(int size, std::vector<double>& data);
 
-        //apply the Haar transform to all rows
-        void transformRows();
+        // Applies forward Haar wavelet transform to each row of the matrix
+        void transformRows(std::vector<std::vector<double>>& input);
 
-        //perform one Haar transform step on a row
-        std::vector<double> haartStep(int step, std::vector<double> data);
-
-        //utility to print a vector
-        void showV(std::vector<double> vec);
-
-        //utility to print a matrix
-        void showM(std::vector<std::vector<double>> mat);
+        // Performs one step of forward Haar wavelet transform on a single row
+        std::vector<double> haartStep(int step, std::vector<double>& data);
     };
 }
 
