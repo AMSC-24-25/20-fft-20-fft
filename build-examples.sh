@@ -33,7 +33,7 @@ echo ""
 
 
 echo -e "${GREEN}~ Checking for Matplot++ ~${NC}"
-if [ ! -d "examples/external/matplotplusplus" ]; then
+if [ ! -d "examples/external/matplotplusplus/CMakeLists.txt" ]; then
     echo -e "${YELLOW}Matplot++ was not found. Cloning...${NC}"
     git submodule update --init --recursive
     if [ $? -ne 0 ]; then
