@@ -43,15 +43,10 @@ int main() {
     // create the output file path
     const std::string filepath_out = filepath_out_oss.str();
     // load the image
-    unsigned char* image = stbi_load(
+    unsigned char* image = signal_processing::utils::image_handlers::loadImage(
         filepath_in.c_str(),
-        &width, &height, &channels, 3
+        width, height, channels
     );
-    // check if the image was loaded successfully
-    if (image == nullptr) {
-        std::cerr << "Error loading image" << std::endl;
-        return 1;
-    }
     printf("Image loaded successfully: (h: %d, w: %d), %d channel(s)\n", height, width, channels);
 
     /**
@@ -113,15 +108,7 @@ int main() {
     }
     printf("Image converted back to unsigned char\n");
     // check if the image was saved successfully
-    if (
-        stbi_write_png(
-            filepath_out.c_str(),
-            width, height, 3, output.data(), width * 3
-        ) == 0
-    ) {
-        std::cerr << "Error saving image, make sure the path is correct or you have write permissions" << std::endl;
-        return 1;
-    }
+    signal_processing::utils::image_handlers::saveRGBImage(filepath_out.c_str(), output, width, height);
     printf("Image saved successfully in %s\n", filepath_out.c_str());
 
     return 0;

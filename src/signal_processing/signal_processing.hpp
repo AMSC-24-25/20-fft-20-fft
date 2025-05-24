@@ -10,6 +10,7 @@
 #include <handlers/config_loader/base_configuration_loader.hpp>
 #include <handlers/config_loader/json_configuration_loader.hpp>
 #include <handlers/config_loader/json_field_handler.hpp>
+#include <handlers/image/image_handlers.hpp>
 #include <handlers/signal_generator/base_signal_generator.hpp>
 #include <handlers/signal_generator/space_domain_signal_generator.hpp>
 #include <handlers/signal_generator/time_domain_signal_generator.hpp>

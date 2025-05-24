@@ -70,6 +70,8 @@ add_library(
         # utils
         utils/bit_reversal.cpp
         utils/bit_reversal.hpp
+        handlers/image/image_handlers.hpp
+        handlers/image/image_handlers.cpp
         utils/rle_compressor.hpp
         utils/rle_compressor.cpp
         utils/timestamp.cpp
