@@ -644,17 +644,22 @@ The FFT examples are:
   It uses the OpenCV library to read a video file and apply the FFT to each frame.
   The input video is RGB, and the output is grayscale. This avoids a long processing time.
 
-  The example video has a resolution of 512 x 1024 and 256 frames (60 fps).
-  Thus, the FFT solver is applied to a 3D signal with dimensions of 512 x 1024 x 256 (134,217,728 samples; 134 million).
+  The example video has a resolution of 512 x 1024 and contains 266 frames at 60 fps.
+  Since the FFT algorithm is designed to work with signals that are powers of two,
+  the video is cropped to 256 frames.
+  These frames are reshaped into a 3D signal with dimensions of 512 x 1024 x 256 (134,217,728 samples, or 134 million).
+
+  Note: The converted video on GitHub was compressed to reduce its size.
+  The original video is available here: [cats_fft_ifft.mp4](docs/_static/cats_fft_ifft.mp4).
 
   <table>
     <tr>
-      <th>Original Video (256 frames x 512 x 1024)</th>
+      <th>Original Video (266 frames x 512 x 1024)</th>
       <th>Video after FFT and IFFT (256 frames x 512 x 1024)</th>
     </tr>
     <tr>
-      <td><video src="docs/_static/cats_resize.mp4" alt="Original Video"></video></td>
-      <td><video src="docs/_static/cats_fft_ifft.avi" alt="Video after FFT and IFFT"></video></td>
+      <td><video src="https://github.com/user-attachments/assets/8dd38d9f-cef8-496b-a359-a059df297024" alt="Original Video"></video></td>
+      <td><video src="https://github.com/user-attachments/assets/ce8ea564-b21c-4d06-aa88-1cea8f654dd1" alt="Video after FFT and IFFT"></video></td>
     </tr>
   </table>
 
