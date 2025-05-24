@@ -36,37 +36,25 @@ Only OpenMP, CMake 3.22 and C++20 are required.
 
 ## Table of Contents
 
-  - [Description](#description)
-    - [Overview](#overview)
-    - [Fourier Transform and Cooley-Tukey Algorithm](#fourier-transform-and-cooley-tukey-algorithm)
-    - [Discrete Cosine Transform Type-II (DCT-II) and DCT-III (Inverse DCT)](#discrete-cosine-transform-type-ii-dct-ii-and-dct-iii-inverse-dct)
-    - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [1. Write a JSON Configuration File](#1-write-a-json-configuration-file)
-    - [2. Set the Environment Variable](#2-set-the-environment-variable)
-    - [3. Compile and Run the Code](#3-compile-and-run-the-code)
-  - [Internal Structure](#internal-structure)
-    - [Configuration Loader](#configuration-loader)
-    - [Signal Generator](#signal-generator-1)
-    - [Signal Saver](#signal-saver-1)
-    - [Fourier Transform Solver](#fourier-transform-solver)
-    - [Utils](#utils)
-    - [Main](#main)
-  - [Benchmark](#benchmark)
-    - [FFT Performance](#fft-performance)
-    - [Inverse FFT Performance](#inverse-fft-performance)
-    - [Standard Deviation](#standard-deviation)
-      - [FFT](#fft)
-      - [Inverse FFT](#inverse-fft)
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Building with CMake Presets](#building-with-cmake-presets)
+  - [How to Add `signal_processing` to Your Project](#how-to-add-signal_processing-to-your-project)
+- [How to Use the Library](#how-to-use-the-library)
+  - [Utils](#utils)
+- [Description](#description)
+  - [Fourier Transform and Cooley-Tukey Algorithm](#fourier-transform-and-cooley-tukey-algorithm)
+  - [Discrete Cosine Transform Type-II (DCT-II) and DCT-III (Inverse DCT)](#discrete-cosine-transform-type-ii-dct-ii-and-dct-iii-inverse-dct)
+  - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt)
+- [Examples](#examples)
+  - [FFT](#fft)
 
 
 ---
 
 
-## Description
-
-### Overview
+## Overview
 
 The Signal Processing library is a C++ educational project implementing famous transform algorithms.
 
@@ -84,280 +72,6 @@ The transforms implemented in this repository are:
 - The [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt) (only sequential).
 
 Furthermore, the DCT and the HWT are implemented for image compression.
-
-
----
-
-
-### Fourier Transform and Cooley-Tukey Algorithm
-
-The Fourier transform is a mathematical operation that transforms a function of time (or space) into a function of frequency.
-In this library, we implement the Fast Fourier Transform (FFT) algorithm,
-and its inverse (IFFT) using the Cooley-Tukey algorithm (Radix-2 case).
-
-The **Cooley-Tukey algorithm** is a (famous) algorithm for computing the **Fast Fourier Transform (FFT)** efficiently.
-It reduces the computational complexity of the **Discrete Fourier Transform (DFT)** from $O(N^2)$ to $O(N \log N)$,
-where $N$ is the number of data points.
-
-Under the hood, the Cooley-Tukey algorithm uses the **divide-and-conquer** strategy.
-It recursively breaks a DFT of size $N$ into several smaller DFTs, computes them, and then combines the results.
-Precisely, it decomposes a DFT of size $N$ into two smaller DFTs: $N = N_1 \cdot N_2$;
-then it reuses the results with **twiddle factors** (complex exponential factors) to combine them:
-
-$$
-X(k) = \sum_{n=0}^{N-1} x(n) e^{(-2\pi i k n) \div N} = \sum_{m=0}^{N_1-1} X_1(m) W_N^{km} + \sum_{m=0}^{N_2-1} X_2(m) W_N^{km}
-$$
-
-- $X(k)$ is the $k$-th component of the Discrete Fourier Transform (DFT), representing the frequency domain.
-- $\displaystyle\sum_{n=0}^{N-1}$ is the summation over all $N$ input samples.
-- $x(n)$ is the $n$-th sample of the input signal in the time (or spatial) domain.
-- $e^{(-2\pi i k n) \div N} = \exp((-2\pi i k n) \div N)$ is the complex exponential
-  (**twiddle factor**) that maps the time-domain signal
-  to the frequency domain. It introduces a phase shift and scales the input signal.
-
-When $N$ is a power of 2 ($N = 2^m$), the algorithm becomes very simple and efficient.
-And this is the case we implement in this repository. Also called **Radix-2 Cooley-Tukey FFT**.
-The algorithm is divided into two main steps:
-1. **Bit-reversal permutation**: reorder the input array based on the bit-reversed indices
-   (see also [Wikipedia][bit-reversal]).
-2. **Iteratively compute FFT**:
-   1. Start with 2-point DFTs.
-   2. Merge results into 4-point DFTs, then 8-point, and so on, up to $N$-point.
-
-Each stage computes [**butterfly operations**][butterfly],
-which involve two elements $a$ and $b$, using a twiddle factor $W\_N^k$.
-
-Finally, for the **inverse FFT**, the algorithm is similar but with a few differences:
-1. The **direction of the twiddle factor** in the inverse FFT is reversed.
-
-$$
-W_N^{-k} = e^{(2\pi i k) \div N}
-$$
-
-2. After computing the inverse FFT using Cooley-Tukey, we **normalize the result**.
-   Each element is divided by $N$, the size of the input.
-
-$$
-x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{(2\pi i kn) \div N}
-$$
-
-   This scaling ensures that the inverse transform truly inverts the original FFT and restores the original signal.
-
-
-> [!WARNING]
-> The Cooley-Tukey algorithm implemented in this repository is the **Radix-2** case.
-> So the signal length must be a power of 2.
-
-
----
-
-
-### Discrete Cosine Transform Type-II (DCT-II) and DCT-III (Inverse DCT)
-
-
-The **Discrete Cosine Transform Type-II (DCT-II)** is the most commonly used variant of the DCT,
-particularly in image and video compression (e.g. JPEG). It is defined as:
-
-$$
-X_k = \alpha_k \sum_{n=0}^{N-1} x_n \cos\left(\dfrac{\pi(2n+1)k}{2N}\right), \quad k = 0, 1, ..., N-1
-$$
-
-Where:
-- $x_n$: input signal (spatial or time domain)
-- $X_k$: DCT coefficient (frequency domain)
-- $N$: number of input samples
-- $\alpha_k$: normalization factor:
-  
-$$
-\alpha_k =
-\begin{cases}
-\sqrt{\frac{1}{N}} & \text{if } k = 0 \\
-\sqrt{\frac{2}{N}} & \text{if } k > 0
-\end{cases}
-$$
-
-
-The cosine argument determines the basis functions. It’s the **heart of the transform**:
-
-- $k$ determines the **frequency** of the cosine wave: higher $k$ means more oscillations.
-- $(2n+1)$ causes the cosine to **sample at odd intervals**,
-  which makes it suitable for even symmetry extension
-  (fundamental for avoiding boundary discontinuities in signals/images).
-
-
-In other words, the DCT basis functions are cosine waves of increasing frequency.
-
-
-The summation is an **inner product** between the input signal and the cosine basis function of frequency $k$.
-It measures "how much of that frequency" is present in the signal.
-
-
-Finally, the **normalization factor** $\alpha_k$ ensures **energy preservation** and
-makes the transform **orthonormal**:
-
-- $\alpha_0 = \sqrt{\frac{1}{N}}$ gives the DC term (average value) less weight.
-- $\alpha_k = \sqrt{\frac{2}{N}}$ for $k > 0$ keeps other frequencies properly scaled.
-
-
-Finally, the **DCT-III**, which is the inverse of the DCT-II, is defined as:
-
-$$
-x_n = \sum_{k=0}^{N-1} \alpha_k X_k \cos\left[\frac{\pi(2n+1)k}{2N}\right]
-$$
-
-
-In general, the DCT is used for compression because it focuses the signal's energy into a few coefficients.
-This allows for efficient representation and storage.
-In this library, we use DCT-II and DCT-III for image compression.
-These methods are supported by [quantization][quantization], [zigzag scanning][zigzag], and [RLE encoding][rle]
-(unfortunately [Huffman encoding][Huffman] is not implemented yet).
-
-
----
-
-
-### Haar Wavelet Transform (HWT)
-
-The **1D Haar Wavelet Transform** (HWT) is one of the simplest wavelet transforms.
-It is very useful for signal compression (our goal), denoising, and multi-resolution analysis.
-
-The Haar transform converts a sequence of values into **averages and differences**,
-capturing both **low-frequency (smooth)** and **high-frequency (detail)** information.
-
-The 1D Haar transform is defined as follows. Given an input vector:
-
-$$
-x = [x_0, x_1, x_2, x_3, \dots, x_{N-2}, x_{N-1}]
-$$
-
-The transform produces two outputs:
-1. **Averages** (_low_-frequency content):
-
-$$
-a_i = \frac{x_{2i} + x_{2i+1}}{\sqrt{2}}
-$$
-
-2. **Details** (_high_-frequency content):
-
-$$
-d_i = \frac{x_{2i} - x_{2i+1}}{\sqrt{2}}
-$$
-
-
-> [!TIP]
-> For example, for $x = [4, 6, 10, 12]$:
->
-> $$
-  \begin{aligned}
-  a_0 &= \frac{4 + 6}{\sqrt{2}} = \frac{10}{\sqrt{2}} \\
-  a_1 &= \frac{10 + 12}{\sqrt{2}} = \frac{22}{\sqrt{2}} \\
-  d_0 &= \frac{4 - 6}{\sqrt{2}} = \frac{-2}{\sqrt{2}} \\
-  d_1 &= \frac{10 - 12}{\sqrt{2}} = \frac{-2}{\sqrt{2}} \\
-  \end{aligned}
-  $$
->
-> So the Haar transform of `x` is:
-> 
-> $$
-  \text{HWT}(x) = [a_0, a_1, d_0, d_1] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
-  $$
-
-Our implementation is a multilevel Haar transform, which means it is recursive.
-We apply the transform to the **average coefficients only**, creating a **pyramid of resolutions**.
-This is known as the **Haar wavelet decomposition**, and it outputs are:
-* low-frequency coefficients (averages)
-* high-frequency coefficients (details)
-
-
-> [!TIP]
-> Taking in account the example above, the first level of the Haar transform (level 1) gives:
-> 
-> $$
-[\underbrace{a_0, a_1}\_{\text{averages}}, \underbrace{d_0, d_1}\_{\text{details}}] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
-  $$
-> 
-> Then, you can apply the Haar transform again on the averages from level 1:
-> 
-> $$
-\left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}\right]
-  $$
-> 
-> Again, compute average and detail (level 2):
-> 
-> $$
-\begin{aligned}
-a_{00} &= \frac{\frac{10}{\sqrt{2}} + \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{32}{2} = 16 \\
-d_{00} &= \frac{\frac{10}{\sqrt{2}} - \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{-12}{2} = -6
-\end{aligned}
-  $$
-> 
-> After **2 levels**, we get:
-> 
-> $$
-[\underbrace{a_{00}}\_{\text{lowest frequency}}, \underbrace{d_{00}}\_{\text{medium detail}}, \underbrace{d_0, d_1}\_{\text{finest details}}] = [16, -6, -\frac{2}{\sqrt{2}}, -\frac{2}{\sqrt{2}}]
-  $$
-> 
-> Where $a_{00}$ is the overall average of the signal (very low frequency),
-> $d_{00}$ is the change between the first and second halves of the signal (medium detail),
-> and $d_0, d_1$ are the local fluctuations (finest details, highest frequencies).
-> ```text
-> Level 2:      a00          <-- 1 value (most compressed)
->             /    \
-> Level 1:  a0      a1       <-- 2 values
->          / \    /  \
-> Input:  x0 x1  x2  x3      <-- 4 values
-> ```
-
-The **2D Haar Wavelet Transform** is essentially just the 1D version applied twice: first across rows,
-then across columns.
-Given a 2D matrix (e.g., a grayscale image), we apply the **1D Haar transform** to:
-
-1. Each **row**;
-2. Then each **column** of the result.
-
-This gives a decomposition of the image into components that describe **different frequency orientations**.
-Finally, we apply the multilevel Haar transform recursively on each block to get a compressed representation.
-
-> [!TIP]
-> For example, suppose we have a 4x4 matrix $A$:
-> 
-> $$
-A = \begin{bmatrix}
-4 & 6 & 10 & 12 \\
-4 & 6 & 10 & 12 \\
-8 & 10 & 14 & 16 \\
-8 & 10 & 14 & 16
-\end{bmatrix}
-  $$
-> 
-> We apply the 1D Haar transform to each row:
-> 
-> $$
-  \begin{bmatrix}
-  \frac{4+6}{\sqrt{2}} & \frac{10+12}{\sqrt{2}} & \frac{4-6}{\sqrt{2}} & \frac{10-12}{\sqrt{2}} \\
-  \frac{4+6}{\sqrt{2}} & \frac{10+12}{\sqrt{2}} & \frac{4-6}{\sqrt{2}} & \frac{10-12}{\sqrt{2}} \\
-  \frac{8+10}{\sqrt{2}} & \frac{14+16}{\sqrt{2}} & \frac{8-10}{\sqrt{2}} & \frac{14-16}{\sqrt{2}} \\
-  \frac{8+10}{\sqrt{2}} & \frac{14+16}{\sqrt{2}} & \frac{8-10}{\sqrt{2}} & \frac{14-16}{\sqrt{2}}
-  \end{bmatrix}
-  $$
-> 
-> This gives us a new matrix with:
->
-> - Left half: row averages
-> - Right half: row details
-> 
-> Now we take this result and apply the 1D Haar transform to each column.
-> This gives us a final matrix divided into **four blocks**:
-> ```text
-> [ LL | HL ]
-> [----+----]
-> [ LH | HH ]
-> ```
-> Where:
-> - `LL`: low frequency in both directions (**approximation**).
-> - `HL`: high frequency in rows, low in columns (**horizontal details**).
-> - `LH`: low frequency in rows, high in columns (**vertical details**).
-> - `HH`: high frequency in both directions (**diagonal details**).
 
 
 ---
@@ -470,6 +184,282 @@ target_link_libraries(your_executable_name PRIVATE signal_processing)
 ```
 It will add the library to your project and link it to your executable.
 During the build process, it will also automatically issue a warning if some dependencies are missing.
+
+
+---
+
+
+## Description
+
+### Fourier Transform and Cooley-Tukey Algorithm
+
+The Fourier transform is a mathematical operation that transforms a function of time (or space) into a function of frequency.
+In this library, we implement the Fast Fourier Transform (FFT) algorithm,
+and its inverse (IFFT) using the Cooley-Tukey algorithm (Radix-2 case).
+
+The **Cooley-Tukey algorithm** is a (famous) algorithm for computing the **Fast Fourier Transform (FFT)** efficiently.
+It reduces the computational complexity of the **Discrete Fourier Transform (DFT)** from $O(N^2)$ to $O(N \log N)$,
+where $N$ is the number of data points.
+
+Under the hood, the Cooley-Tukey algorithm uses the **divide-and-conquer** strategy.
+It recursively breaks a DFT of size $N$ into several smaller DFTs, computes them, and then combines the results.
+Precisely, it decomposes a DFT of size $N$ into two smaller DFTs: $N = N_1 \cdot N_2$;
+then it reuses the results with **twiddle factors** (complex exponential factors) to combine them:
+
+$$
+X(k) = \sum_{n=0}^{N-1} x(n) e^{(-2\pi i k n) \div N} = \sum_{m=0}^{N_1-1} X_1(m) W_N^{km} + \sum_{m=0}^{N_2-1} X_2(m) W_N^{km}
+$$
+
+- $X(k)$ is the $k$-th component of the Discrete Fourier Transform (DFT), representing the frequency domain.
+- $\displaystyle\sum_{n=0}^{N-1}$ is the summation over all $N$ input samples.
+- $x(n)$ is the $n$-th sample of the input signal in the time (or spatial) domain.
+- $e^{(-2\pi i k n) \div N} = \exp((-2\pi i k n) \div N)$ is the complex exponential
+  (**twiddle factor**) that maps the time-domain signal
+  to the frequency domain. It introduces a phase shift and scales the input signal.
+
+When $N$ is a power of 2 ($N = 2^m$), the algorithm becomes very simple and efficient.
+And this is the case we implement in this repository. Also called **Radix-2 Cooley-Tukey FFT**.
+The algorithm is divided into two main steps:
+1. **Bit-reversal permutation**: reorder the input array based on the bit-reversed indices
+   (see also [Wikipedia][bit-reversal]).
+2. **Iteratively compute FFT**:
+   1. Start with 2-point DFTs.
+   2. Merge results into 4-point DFTs, then 8-point, and so on, up to $N$-point.
+
+Each stage computes [**butterfly operations**][butterfly],
+which involve two elements $a$ and $b$, using a twiddle factor $W\_N^k$.
+
+Finally, for the **inverse FFT**, the algorithm is similar but with a few differences:
+1. The **direction of the twiddle factor** in the inverse FFT is reversed.
+
+$$
+W_N^{-k} = e^{(2\pi i k) \div N}
+$$
+
+2. After computing the inverse FFT using Cooley-Tukey, we **normalize the result**.
+   Each element is divided by $N$, the size of the input.
+
+$$
+x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \cdot e^{(2\pi i kn) \div N}
+$$
+
+This scaling ensures that the inverse transform truly inverts the original FFT and restores the original signal.
+
+
+> [!WARNING]
+> The Cooley-Tukey algorithm implemented in this repository is the **Radix-2** case.
+> So the signal length must be a power of 2.
+
+
+---
+
+
+### Discrete Cosine Transform Type-II (DCT-II) and DCT-III (Inverse DCT)
+
+
+The **Discrete Cosine Transform Type-II (DCT-II)** is the most commonly used variant of the DCT,
+particularly in image and video compression (e.g. JPEG). It is defined as:
+
+$$
+X_k = \alpha_k \sum_{n=0}^{N-1} x_n \cos\left(\dfrac{\pi(2n+1)k}{2N}\right), \quad k = 0, 1, ..., N-1
+$$
+
+Where:
+- $x_n$: input signal (spatial or time domain)
+- $X_k$: DCT coefficient (frequency domain)
+- $N$: number of input samples
+- $\alpha_k$: normalization factor:
+
+$$
+\alpha_k =
+\begin{cases}
+\sqrt{\frac{1}{N}} & \text{if } k = 0 \\
+\sqrt{\frac{2}{N}} & \text{if } k > 0
+\end{cases}
+$$
+
+
+The cosine argument determines the basis functions. It’s the **heart of the transform**:
+
+- $k$ determines the **frequency** of the cosine wave: higher $k$ means more oscillations.
+- $(2n+1)$ causes the cosine to **sample at odd intervals**,
+  which makes it suitable for even symmetry extension
+  (fundamental for avoiding boundary discontinuities in signals/images).
+
+
+In other words, the DCT basis functions are cosine waves of increasing frequency.
+
+
+The summation is an **inner product** between the input signal and the cosine basis function of frequency $k$.
+It measures "how much of that frequency" is present in the signal.
+
+
+Finally, the **normalization factor** $\alpha_k$ ensures **energy preservation** and
+makes the transform **orthonormal**:
+
+- $\alpha_0 = \sqrt{\frac{1}{N}}$ gives the DC term (average value) less weight.
+- $\alpha_k = \sqrt{\frac{2}{N}}$ for $k > 0$ keeps other frequencies properly scaled.
+
+
+Finally, the **DCT-III**, which is the inverse of the DCT-II, is defined as:
+
+$$
+x_n = \sum_{k=0}^{N-1} \alpha_k X_k \cos\left[\frac{\pi(2n+1)k}{2N}\right]
+$$
+
+
+In general, the DCT is used for compression because it focuses the signal's energy into a few coefficients.
+This allows for efficient representation and storage.
+In this library, we use DCT-II and DCT-III for image compression.
+These methods are supported by [quantization][quantization], [zigzag scanning][zigzag], and [RLE encoding][rle]
+(unfortunately [Huffman encoding][Huffman] is not implemented yet).
+
+
+---
+
+
+### Haar Wavelet Transform (HWT)
+
+The **1D Haar Wavelet Transform** (HWT) is one of the simplest wavelet transforms.
+It is very useful for signal compression (our goal), denoising, and multi-resolution analysis.
+
+The Haar transform converts a sequence of values into **averages and differences**,
+capturing both **low-frequency (smooth)** and **high-frequency (detail)** information.
+
+The 1D Haar transform is defined as follows. Given an input vector:
+
+$$
+x = [x_0, x_1, x_2, x_3, \dots, x_{N-2}, x_{N-1}]
+$$
+
+The transform produces two outputs:
+1. **Averages** (_low_-frequency content):
+
+$$
+a_i = \frac{x_{2i} + x_{2i+1}}{\sqrt{2}}
+$$
+
+2. **Details** (_high_-frequency content):
+
+$$
+d_i = \frac{x_{2i} - x_{2i+1}}{\sqrt{2}}
+$$
+
+
+> [!TIP]
+> For example, for $x = [4, 6, 10, 12]$:
+>
+> $$
+\begin{aligned}
+a_0 &= \frac{4 + 6}{\sqrt{2}} = \frac{10}{\sqrt{2}} \\
+a_1 &= \frac{10 + 12}{\sqrt{2}} = \frac{22}{\sqrt{2}} \\
+d_0 &= \frac{4 - 6}{\sqrt{2}} = \frac{-2}{\sqrt{2}} \\
+d_1 &= \frac{10 - 12}{\sqrt{2}} = \frac{-2}{\sqrt{2}} \\
+\end{aligned}
+$$
+>
+> So the Haar transform of `x` is:
+>
+> $$
+\text{HWT}(x) = [a_0, a_1, d_0, d_1] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
+$$
+
+Our implementation is a multilevel Haar transform, which means it is recursive.
+We apply the transform to the **average coefficients only**, creating a **pyramid of resolutions**.
+This is known as the **Haar wavelet decomposition**, and it outputs are:
+* low-frequency coefficients (averages)
+* high-frequency coefficients (details)
+
+
+> [!TIP]
+> Taking in account the example above, the first level of the Haar transform (level 1) gives:
+>
+> $$
+[\underbrace{a_0, a_1}\_{\text{averages}}, \underbrace{d_0, d_1}\_{\text{details}}] = \left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}, \frac{-2}{\sqrt{2}}, \frac{-2}{\sqrt{2}}\right]
+$$
+>
+> Then, you can apply the Haar transform again on the averages from level 1:
+>
+> $$
+\left[\frac{10}{\sqrt{2}}, \frac{22}{\sqrt{2}}\right]
+$$
+>
+> Again, compute average and detail (level 2):
+>
+> $$
+\begin{aligned}
+a_{00} &= \frac{\frac{10}{\sqrt{2}} + \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{32}{2} = 16 \\
+d_{00} &= \frac{\frac{10}{\sqrt{2}} - \frac{22}{\sqrt{2}}}{\sqrt{2}} = \frac{-12}{2} = -6
+\end{aligned}
+$$
+>
+> After **2 levels**, we get:
+>
+> $$
+[\underbrace{a_{00}}\_{\text{lowest frequency}}, \underbrace{d_{00}}\_{\text{medium detail}}, \underbrace{d_0, d_1}\_{\text{finest details}}] = [16, -6, -\frac{2}{\sqrt{2}}, -\frac{2}{\sqrt{2}}]
+$$
+>
+> Where $a_{00}$ is the overall average of the signal (very low frequency),
+> $d_{00}$ is the change between the first and second halves of the signal (medium detail),
+> and $d_0, d_1$ are the local fluctuations (finest details, highest frequencies).
+> ```text
+> Level 2:      a00          <-- 1 value (most compressed)
+>             /    \
+> Level 1:  a0      a1       <-- 2 values
+>          / \    /  \
+> Input:  x0 x1  x2  x3      <-- 4 values
+> ```
+
+The **2D Haar Wavelet Transform** is essentially just the 1D version applied twice: first across rows,
+then across columns.
+Given a 2D matrix (e.g., a grayscale image), we apply the **1D Haar transform** to:
+
+1. Each **row**;
+2. Then each **column** of the result.
+
+This gives a decomposition of the image into components that describe **different frequency orientations**.
+Finally, we apply the multilevel Haar transform recursively on each block to get a compressed representation.
+
+> [!TIP]
+> For example, suppose we have a 4x4 matrix $A$:
+>
+> $$
+A = \begin{bmatrix}
+4 & 6 & 10 & 12 \\
+4 & 6 & 10 & 12 \\
+8 & 10 & 14 & 16 \\
+8 & 10 & 14 & 16
+\end{bmatrix}
+$$
+>
+> We apply the 1D Haar transform to each row:
+>
+> $$
+\begin{bmatrix}
+\frac{4+6}{\sqrt{2}} & \frac{10+12}{\sqrt{2}} & \frac{4-6}{\sqrt{2}} & \frac{10-12}{\sqrt{2}} \\
+\frac{4+6}{\sqrt{2}} & \frac{10+12}{\sqrt{2}} & \frac{4-6}{\sqrt{2}} & \frac{10-12}{\sqrt{2}} \\
+\frac{8+10}{\sqrt{2}} & \frac{14+16}{\sqrt{2}} & \frac{8-10}{\sqrt{2}} & \frac{14-16}{\sqrt{2}} \\
+\frac{8+10}{\sqrt{2}} & \frac{14+16}{\sqrt{2}} & \frac{8-10}{\sqrt{2}} & \frac{14-16}{\sqrt{2}}
+\end{bmatrix}
+$$
+>
+> This gives us a new matrix with:
+>
+> - Left half: row averages
+> - Right half: row details
+>
+> Now we take this result and apply the 1D Haar transform to each column.
+> This gives us a final matrix divided into **four blocks**:
+> ```text
+> [ LL | HL ]
+> [----+----]
+> [ LH | HH ]
+> ```
+> Where:
+> - `LL`: low frequency in both directions (**approximation**).
+> - `HL`: high frequency in rows, low in columns (**horizontal details**).
+> - `LH`: low frequency in rows, high in columns (**vertical details**).
+> - `HH`: high frequency in both directions (**diagonal details**).
 
 
 ---
@@ -662,6 +652,31 @@ The FFT examples are:
       <td><video src="https://github.com/user-attachments/assets/ce8ea564-b21c-4d06-aa88-1cea8f654dd1" alt="Video after FFT and IFFT"></video></td>
     </tr>
   </table>
+- [fourier_transform_solver_video_rgb](examples/fourier_transform_solver_video_rgb.cpp)
+  is similar to the previous one, but it uses the RGB color space instead of grayscale.
+  
+  The FFT is applied to each frame of the video, and the result is saved as a new video file.
+
+  The input and output videos are both RGB.
+  The example video has a resolution of 512 x 1024 and contains 266 frames at 60 fps.
+  Since the FFT algorithm is designed to work with powers of two, the video is cropped to 256 frames.
+  The frames are then reshaped into a 3D signal with dimensions of 512 x 1024 x 256
+  (134,217,728 samples, or approximately 134 million).
+
+  Note: The converted video on GitHub was compressed to reduce its size.
+  The original video is available here: [cats_fft_ifft-rgb.mp4](docs/_static/cats_fft_ifft-rgb.mp4).
+
+  <table>
+    <tr>
+      <th>Original Video (266 frames x 512 x 1024)</th>
+      <th>Video after FFT and IFFT (256 frames x 512 x 1024)</th>
+    </tr>
+    <tr>
+      <td><video src="https://github.com/user-attachments/assets/8dd38d9f-cef8-496b-a359-a059df297024" alt="Original Video"></video></td>
+      <td><video src="https://github.com/user-attachments/assets/f361dcca-f860-4a2e-8032-236cdcfcb427" alt="Video after FFT and IFFT"></video></td>
+    </tr>
+  </table>
+
 
 ---
 
