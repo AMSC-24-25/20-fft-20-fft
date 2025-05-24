@@ -1,6 +1,8 @@
 #ifndef IMAGE_COMPRESSION_HAAR_WAVELET_HPP
 #define IMAGE_COMPRESSION_HAAR_WAVELET_HPP
 
+#include <vector>
+
 namespace signal_processing::compression::hwt {
     class ImgWLComp {
     public:
