@@ -529,7 +529,7 @@ Or solve the FFT not in-place:
 
 ```cpp
 std::vector<std::complex<double>> result(rand_signal.size());
-# rand_signal will not be modified
+// rand_signal will not be modified
 solver.compute(rand_signal, result, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
 ```
 
@@ -550,6 +550,9 @@ for (const auto& s : rand_signal) {
     }
 }
 ```
+
+Check the [examples](#examples) section for more examples.
+
 
 ### Utils
 
@@ -611,7 +614,49 @@ The FFT examples are:
   It computes the FFT and IFFT in parallel and sequentially.
   It saves each result in a CSV file and plots the results using Matplot++
   to demonstrate the difference between the FFT and IFFT.
-  <img src="docs/_static/fft_signal_comparison.svg" alt="FFT Example">
+  <img src="docs/_static/fft_signal_comparison.png" alt="FFT Example">
+- [fourier_transform_solver_image](examples/fourier_transform_solver_image.cpp)
+  is an example that shows **how to use the FFT solver with a two-dimensional (2D) signal**.
+
+  This time, instead of generating a random signal,
+  we will demonstrate how to load an RGB image from a file and apply the FFT to it.
+  The results show that the FFT implementation can handle two-dimensional (2D) signals.
+  We verified its correctness by comparing the results with the original image.
+
+  <table>
+    <tr>
+      <th>Original Image (2048 x 2048)</th>
+      <th>Image after FFT and IFFT (2048 x 2048)</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/dog.png" alt="Original Image"/></td>
+      <td><img src="docs/_static/dog_fft_ifft.png" alt="Image after FFT and IFFT"/></td>
+    </tr>
+  </table>
+- [fourier_transform_solver_performance](examples/fourier_transform_solver_performance.cpp)
+  is a simple example that demonstrates the performance of the FFT and inverse FFT algorithms.
+
+  Run it to see the performance of the FFT and inverse FFT algorithms.
+  It generates a random signal with 8,388,608 (8 million) samples and computes the FFT and inverse FFT.
+- [fourier_transform_solver_video](examples/fourier_transform_solver_video.cpp)
+  shows how the FFT solver works well with 3D signals, too.
+
+  It uses the OpenCV library to read a video file and apply the FFT to each frame.
+  The input video is RGB, and the output is grayscale. This avoids a long processing time.
+
+  The example video has a resolution of 512 x 1024 and 256 frames (60 fps).
+  Thus, the FFT solver is applied to a 3D signal with dimensions of 512 x 1024 x 256 (134,217,728 samples; 134 million).
+
+  <table>
+    <tr>
+      <th>Original Video (256 frames x 512 x 1024)</th>
+      <th>Video after FFT and IFFT (256 frames x 512 x 1024)</th>
+    </tr>
+    <tr>
+      <td><video src="docs/_static/cats_resize.mp4" alt="Original Video"></video></td>
+      <td><video src="docs/_static/cats_fft_ifft.avi" alt="Video after FFT and IFFT"></video></td>
+    </tr>
+  </table>
 
 ---
 
