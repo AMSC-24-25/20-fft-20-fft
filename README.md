@@ -189,6 +189,121 @@ During the build process, it will also automatically issue a warning if some dep
 ---
 
 
+## How to Use the Library
+
+The library is designed to be user-friendly.
+
+Simply import the main header file, and you're ready to start using it.
+
+For example, to use the FFT solver, follow these steps:
+
+```cpp
+#include <iostream>
+#include <cmath>
+#include <complex>
+#include <vector>
+
+#include <signal_processing/signal_processing.hpp>
+
+int main() {
+    // 2D signal, ordered in row-major order
+    const size_t dims = 2;
+    const size_t rows = 4;
+    const size_t cols = 4;
+    std::vector<std::complex<double>> rand_signal = {
+        {1.0, 0.0},  {2.0, 0.0},  {3.0, 0.0},  {4.0, 0.0},
+        {5.0, 0.0},  {6.0, 0.0},  {7.0, 0.0},  {8.0, 0.0},
+        {9.0, 0.0}, {10.0, 0.0}, {11.0, 0.0}, {12.0, 0.0},
+       {13.0, 0.0}, {14.0, 0.0}, {15.0, 0.0}, {16.0, 0.0}
+    };
+    // solver, where dims is the number of dimensions and it is a template parameter
+    signal_processing::fft::solver::FastFourierTransform<dims> solver(std::array{rows, cols});
+    // solve in-place (sequential)
+    solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+    // print the result
+    for (const auto& s : rand_signal) {
+        printf("(%.2f + %.2fi)", s.real(), s.imag());
+        // print a new line every 4 elements using the address of the element
+        if ((&s - &rand_signal[0] + 1) % 4 == 0) {
+            printf("\n");
+        } else {
+            printf(", ");
+        }
+    }
+}
+```
+
+You can also use the parallel version of the FFT solver:
+
+```cpp
+solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::OPENMP);
+```
+
+Or solve the FFT not in-place:
+
+```cpp
+std::vector<std::complex<double>> result(rand_signal.size());
+// rand_signal will not be modified
+solver.compute(rand_signal, result, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+```
+
+To restore the original signal, use the inverse FFT solver:
+
+```cpp
+signal_processing::fft::solver::InverseFastFourierTransform<dims> inverse_solver(std::array{rows, cols});
+// solve in-place
+inverse_solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
+// print the result
+for (const auto& s : rand_signal) {
+    printf("(%.2f + %.2fi)", s.real(), s.imag());
+    // print a new line every 4 elements using the address of the element
+    if ((&s - &rand_signal[0] + 1) % 4 == 0) {
+        printf("\n");
+    } else {
+        printf(", ");
+    }
+}
+```
+
+Check the [examples](#examples) section for more examples.
+
+
+### Utils
+
+The library also provides some utility functions to help you with the signal generation and saving.
+- The [signal_generator folder](src/signal_processing/handlers/signal_generator)
+  contains two classes that generate signals in the time and space domains.
+- The [signal_saver folder](src/signal_processing/handlers/signal_saver)
+  contains a class that saves the generated signal to a CSV file.
+- The [config_loader folder](src/signal_processing/handlers/config_loader)
+  contains a class that loads the configuration from a JSON file.
+  This class follows the JSON schema defined in the [resources](resources) folder.
+  > **Example: JSON Configuration File**
+  >
+  > ```json
+  > {
+  >   "signal_domain": "time",
+  >   "signal_length": 2048,
+  >   "hz_frequency": 5,
+  >   "phase": 0,
+  >   "noise": 5
+  > }
+  > ```
+  >
+  > An example of JSON file that describes a signal with the following characteristics:
+  > - **Signal Domain**: `"time"` - The signal is represented in the time domain.
+  > - **Signal Length**: `2048` - The duration or length of the signal (number of samples).
+  > - **Frequency**: `5 Hz` - The frequency of the signal in Hertz (cycles per second).
+  > - **Phase**: `0` - The phase shift of the signal, which is 0 in this case.
+  > - **Noise**: `5` - The noise level or amplitude of noise in the signal.
+  >
+  > In short, the configuration describes a time domain signal with a frequency of `5 Hz`,
+  > no phase shift, and an amount of noise (`5`).
+
+
+---
+
+
 ## Description
 
 ### Fourier Transform and Cooley-Tukey Algorithm
@@ -223,8 +338,8 @@ The algorithm is divided into two main steps:
 1. **Bit-reversal permutation**: reorder the input array based on the bit-reversed indices
    (see also [Wikipedia][bit-reversal]).
 2. **Iteratively compute FFT**:
-   1. Start with 2-point DFTs.
-   2. Merge results into 4-point DFTs, then 8-point, and so on, up to $N$-point.
+  1. Start with 2-point DFTs.
+  2. Merge results into 4-point DFTs, then 8-point, and so on, up to $N$-point.
 
 Each stage computes [**butterfly operations**][butterfly],
 which involve two elements $a$ and $b$, using a twiddle factor $W\_N^k$.
@@ -460,121 +575,6 @@ $$
 > - `HL`: high frequency in rows, low in columns (**horizontal details**).
 > - `LH`: low frequency in rows, high in columns (**vertical details**).
 > - `HH`: high frequency in both directions (**diagonal details**).
-
-
----
-
-
-## How to Use the Library
-
-The library is designed to be user-friendly.
-
-Simply import the main header file, and you're ready to start using it.
-
-For example, to use the FFT solver, follow these steps:
-
-```cpp
-#include <iostream>
-#include <cmath>
-#include <complex>
-#include <vector>
-
-#include <signal_processing/signal_processing.hpp>
-
-int main() {
-    // 2D signal, ordered in row-major order
-    const size_t dims = 2;
-    const size_t rows = 4;
-    const size_t cols = 4;
-    std::vector<std::complex<double>> rand_signal = {
-        {1.0, 0.0},  {2.0, 0.0},  {3.0, 0.0},  {4.0, 0.0},
-        {5.0, 0.0},  {6.0, 0.0},  {7.0, 0.0},  {8.0, 0.0},
-        {9.0, 0.0}, {10.0, 0.0}, {11.0, 0.0}, {12.0, 0.0},
-       {13.0, 0.0}, {14.0, 0.0}, {15.0, 0.0}, {16.0, 0.0}
-    };
-    // solver, where dims is the number of dimensions and it is a template parameter
-    signal_processing::fft::solver::FastFourierTransform<dims> solver(std::array{rows, cols});
-    // solve in-place (sequential)
-    solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
-    // print the result
-    for (const auto& s : rand_signal) {
-        printf("(%.2f + %.2fi)", s.real(), s.imag());
-        // print a new line every 4 elements using the address of the element
-        if ((&s - &rand_signal[0] + 1) % 4 == 0) {
-            printf("\n");
-        } else {
-            printf(", ");
-        }
-    }
-}
-```
-
-You can also use the parallel version of the FFT solver:
-
-```cpp
-solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::OPENMP);
-```
-
-Or solve the FFT not in-place:
-
-```cpp
-std::vector<std::complex<double>> result(rand_signal.size());
-// rand_signal will not be modified
-solver.compute(rand_signal, result, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
-```
-
-To restore the original signal, use the inverse FFT solver:
-
-```cpp
-signal_processing::fft::solver::InverseFastFourierTransform<dims> inverse_solver(std::array{rows, cols});
-// solve in-place
-inverse_solver.compute(rand_signal, signal_processing::fft::solver::ComputationMode::SEQUENTIAL);
-// print the result
-for (const auto& s : rand_signal) {
-    printf("(%.2f + %.2fi)", s.real(), s.imag());
-    // print a new line every 4 elements using the address of the element
-    if ((&s - &rand_signal[0] + 1) % 4 == 0) {
-        printf("\n");
-    } else {
-        printf(", ");
-    }
-}
-```
-
-Check the [examples](#examples) section for more examples.
-
-
-### Utils
-
-The library also provides some utility functions to help you with the signal generation and saving.
-- The [signal_generator folder](src/signal_processing/handlers/signal_generator)
-  contains two classes that generate signals in the time and space domains.
-- The [signal_saver folder](src/signal_processing/handlers/signal_saver)
-  contains a class that saves the generated signal to a CSV file.
-- The [config_loader folder](src/signal_processing/handlers/config_loader)
-  contains a class that loads the configuration from a JSON file.
-  This class follows the JSON schema defined in the [resources](resources) folder.
-  > **Example: JSON Configuration File**
-  >
-  > ```json
-  > {
-  >   "signal_domain": "time",
-  >   "signal_length": 2048,
-  >   "hz_frequency": 5,
-  >   "phase": 0,
-  >   "noise": 5
-  > }
-  > ```
-  >
-  > An example of JSON file that describes a signal with the following characteristics:
-  > - **Signal Domain**: `"time"` - The signal is represented in the time domain.
-  > - **Signal Length**: `2048` - The duration or length of the signal (number of samples).
-  > - **Frequency**: `5 Hz` - The frequency of the signal in Hertz (cycles per second).
-  > - **Phase**: `0` - The phase shift of the signal, which is 0 in this case.
-  > - **Noise**: `5` - The noise level or amplitude of noise in the signal.
-  >
-  > In short, the configuration describes a time domain signal with a frequency of `5 Hz`,
-  > no phase shift, and an amount of noise (`5`).
 
 
 ---
