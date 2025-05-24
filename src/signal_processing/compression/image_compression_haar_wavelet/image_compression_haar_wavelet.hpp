@@ -10,7 +10,7 @@ namespace sp::hwt {
         explicit ImgWLComp(){}
 
         // Compresses the input image matrix using Haar wavelet transform and thresholding
-        std::vector<std::vector<double>> compress(std::vector<std::vector<double>> input);
+        std::vector<std::vector<double>> compress(std::vector<std::vector<double>> input, double threshold = 4);
 
         // Reconstructs the original image matrix from its compressed (transformed) version
         std::vector<std::vector<double>> reconstruct(std::vector<std::vector<double>> input);
