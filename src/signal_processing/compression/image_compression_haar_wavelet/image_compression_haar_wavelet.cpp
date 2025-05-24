@@ -7,27 +7,29 @@
 
 namespace sp::hwt {
     // Compresses the input image matrix using Haar wavelet transform and thresholding
-    std::vector<std::vector<double>> ImgWLComp::compress(std::vector<std::vector<double>> input, double threshold){
-
+    std::vector<std::vector<double>> ImgWLComp::compress(
+        const std::vector<std::vector<double>>& input,
+        const double threshold
+    ){
+        const int rows = input.size();
+        const int cols = input[0].size();
         std::vector<std::vector<double>> compressed = input;
-        int rows = input.size();
-        int cols = input[0].size();
 
         transformRows(compressed);
         transpose(compressed);
         transformRows(compressed);
         transpose(compressed);
 
-        for(int i = 0; i < rows; i++)
-            for(int j = 0; j < cols; j++)
-                if(std::abs(compressed[i][j]) <= threshold) compressed[i][j] = 0;/**/
+        for(int i = 0; i < rows; ++i)
+            for(int j = 0; j < cols; ++j)
+                if(std::abs(compressed[i][j]) <= threshold) compressed[i][j] = 0;
 
         return compressed;
     }
 
 
     // Reconstructs the original image matrix from its compressed (transformed) version
-    std::vector<std::vector<double>> ImgWLComp::reconstruct(std::vector<std::vector<double>> input){
+    std::vector<std::vector<double>> ImgWLComp::reconstruct(const std::vector<std::vector<double>>& input){
 
         std::vector<std::vector<double>> decompressed = input;
 
@@ -86,7 +88,7 @@ namespace sp::hwt {
 
 
     // Loads a matrix from a binary file and reconstructs the image data with scaling
-    std::vector<std::vector<double>> ImgWLComp::load_img_from_binary(const std::string compressed_image_path){
+    std::vector<std::vector<double>> ImgWLComp::load_img_from_binary(const std::string& compressed_image_path){
 
         // Open the file in binary mode to read
         std::ifstream file(compressed_image_path, std::ios::binary);
@@ -132,83 +134,66 @@ namespace sp::hwt {
 
     // Transposes a given matrix (rows become columns and vice versa)
     void ImgWLComp::transpose(std::vector<std::vector<double>>& mat){
-
-        std::vector<std::vector<double>> temp(mat.size(), std::vector<double>(mat[0].size()));;
-        int r = mat.size(), c = mat[0].size();
-        for(int i = 0; i < r; i++)
-            for(int j = 0; j < c; j++)
-                temp[j][i] = mat[i][j];
-
-        mat = temp;
+        const int n = mat.size();
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                // Using std::swap because it is more efficient and cleaner
+                std::swap(mat[i][j], mat[j][i]);
+            }
+        }
     }
 
 
     // Applies inverse Haar wavelet transform to each row of the matrix
     void ImgWLComp::reconstructRows(std::vector<std::vector<double>>& input){
-
-        int rows = input.size();
-        int size;
-        int step = 1;
-
-        for(int i = 0; i < rows; i++){
-
-            size = 2;
+        const int rows = input.size();
+        for(int i = 0, size = 2; i < rows; ++i, size = 2){
             while(size <= rows){
-
                 input[i] = invertStep(size, input[i]);
-                size = size * 2;
+                size *= 2;
             }
         }
     }
 
 
     // Performs one step of inverse Haar wavelet transform on a single row
-    std::vector<double> ImgWLComp::invertStep(int size, std::vector<double>& data){
+    std::vector<double> ImgWLComp::invertStep(const int size, const std::vector<double>& data){
+        const int half = size / 2;
+        std::vector<double> tmp = data;
 
-        std::vector<double> temp = data;
-        int half = size/2;
-
-        for(int i = 0; i < half; i++){
-
-            temp[2*i] = data[half + i] + data[i];
-            temp[2*i + 1] = 2*data[i] - temp[2*i];
+        for(int i = 0, i2 = 0; i < half; ++i, i2 += 2){
+            tmp[i2] = data[half + i] + data[i];
+            tmp[i2 + 1] = 2*data[i] - tmp[i2];
         }
 
-        return temp;
+        return tmp;
     }
 
 
     // Applies forward Haar wavelet transform to each row of the matrix
     void ImgWLComp::transformRows(std::vector<std::vector<double>>& input){
+        const int rows = input.size();
 
-        int rows = input.size();
-        int size;
-
-        for(int i = 0; i < rows; i++){
-
-            size = input[0].size();
+        for(int i = 0; i < rows; ++i){
+            int size = input[0].size();
 
             while(size > 1){
-
                 input[i] = haartStep(size, input[i]);
-                size = size / 2;
-            }/**/
+                size /= 2;
+            }
         }
     }
 
 
     // Performs one step of forward Haar wavelet transform on a single row
-    std::vector<double> ImgWLComp::haartStep(int step, std::vector<double>& data){
+    std::vector<double> ImgWLComp::haartStep(const int step, const std::vector<double>& data){
+        const int half_step = step / 2;
+        std::vector<double> tmp = data;
 
-        int size = data.size();
-        std::vector<double> tmp(size);
-
-        for(int i = 0; i < size; i++)
-            tmp[i] = data[i];
-
-        for (int i=0 ; i < step/2 ; i++){
-            tmp[i] = (data[2*i + 1] + data[2*i] ) / 2;
-            tmp[step/2 + i] = (data[(2*i)] - data[(2*i + 1)]) / 2;
+        for (int i=0 ; i < half_step ; ++i){
+            const int i2 = 2*i;
+            tmp[i] = (data[i2 + 1] + data[i2] ) / 2;
+            tmp[half_step + i] = (data[i2] - data[(i2 + 1)]) / 2;
         }
 
         return tmp;

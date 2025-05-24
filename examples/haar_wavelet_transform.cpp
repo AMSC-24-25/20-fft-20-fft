@@ -116,12 +116,22 @@ int main(){
 
     //=======================================2D Haar wavelet transform for image compression example=======================================
 
+    // ask user for threshold
+    std::cout << "Enter threshold for image compression (0.0 - 5.0): ";
+    std::string threshold;
+    std::getline(std::cin, threshold);
+    if (threshold.empty()) {
+        std::cout << "No threshold provided, using default value of 0.5" << std::endl;
+        threshold = "0.5"; //default value
+    }
+
     int w, h, channels;
-    std::string path = "examples/resources/";
-    std::string name = "dog-bn";
-    std::string ext = ".png";
-    std::string img_path= path + name + ext;
-    unsigned char* image_data = stbi_load(img_path.c_str(), &w, &h, &channels, 0); //load image
+    const std::string path = "examples/resources/";
+    const std::string name = "dog-bw";
+    const std::string ext = ".png";
+    const std::string img_path= path + name + ext;
+    // load image
+    const unsigned char* image_data = stbi_load(img_path.c_str(), &w, &h, &channels, 0);
 
     if(!image_data){
         std::cout << "could not load image " << img_path << std::endl;
@@ -140,7 +150,13 @@ int main(){
 
     sp::hwt::ImgWLComp imgWL; //create object for image compression
 
-    std::vector<std::vector<double>> solution =  imgWL.compress(image); //get compressed image
+    // get compressed image
+    // measure time for compression
+    const auto start = std::chrono::high_resolution_clock::now();
+    const std::vector<std::vector<double>> solution = imgWL.compress(image, std::stod(threshold));
+    const auto end = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<double> duration = end - start;
+    printf("Image compressed in %.2f seconds\n", duration.count());
 
     //prepare vector to save compressed image
     std::vector<unsigned char> outputImage(h*w);
@@ -149,12 +165,14 @@ int main(){
             outputImage[j + i*w] = static_cast<unsigned char>(solution[i][j]);
 
     //save compressed image
-    std::string compressed_path = "examples/output/compressed-" + name + ext;
+    const std::string compressed_path = "examples/output/compressed-" + name + "-threshold-" + threshold + ext;
     if (stbi_write_png(compressed_path.c_str(), w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to " << compressed_path << std::endl;
         return 1;
     }
 
+    // TODO: bug with threshold 1
+    /*
     std::string binary_path = "examples/output/compressed-" + name + ".bin";
     imgWL.save_as_binary(solution, binary_path);
 
@@ -163,14 +181,25 @@ int main(){
 
     std::vector<std::vector<double>> reconstructed = imgWL.load_img_from_binary(binary_path);
     reconstructed = imgWL.reconstruct(reconstructed);
+    */
+
+    // measure time for reconstruction
+    printf("Reconstructing image...\n");
+    const auto start_reconstruct = std::chrono::high_resolution_clock::now();
+    std::vector<std::vector<double>> reconstructed = imgWL.reconstruct(solution);
+    const auto end_reconstruct = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<double> duration_reconstruct = end_reconstruct - start_reconstruct;
+    printf("Image reconstructed in %.2f seconds\n", duration_reconstruct.count());
 
     //prepare vector to save decompressed image
     for(int i = 0; i < h; i++)
-        for(int j = 0; j < w; j++)
+        for(int j = 0; j < w; j++){
+            reconstructed[i][j] = std::clamp(reconstructed[i][j], 0.0, 255.0); //clamp values to [0, 255] range
             outputImage[j + i*w] = static_cast<unsigned char>(reconstructed[i][j]);
+        }
 
     //save decompressed image
-    std::string reconstructed_path = "examples/output/reconstructed-" + name + ext;
+    const std::string reconstructed_path = "examples/output/reconstructed-" + name + "-threshold-" + threshold + ext;
     if (stbi_write_png(reconstructed_path.c_str(), w, h, channels, outputImage.data(), w) == 0) {
         std::cerr << "Error: Could not save image to " << reconstructed_path << std::endl;
         return 1;

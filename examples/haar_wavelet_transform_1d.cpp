@@ -6,13 +6,12 @@
 #include "signal_processing/signal_processing.hpp"
 
 int main() {
-    // Random: scegli un'esponente da 3 a 6 → lunghezze 8, 16, 32, 64
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> power_dist(3, 6); // 2^3 = 8 ... 2^6 = 64
-    std::uniform_real_distribution<> val_dist(-10.0, 10.0);
+    std::uniform_int_distribution power_dist(3, 6); // 2^3 = 8 ... 2^6 = 64
+    std::uniform_real_distribution val_dist(-10.0, 10.0);
 
-    int N = std::pow(2, power_dist(gen)); // lunghezza casuale potenza di 2
+    int N = std::pow(2, power_dist(gen));
     std::vector<double> input(N);
     for (int i = 0; i < N; ++i)
         input[i] = val_dist(gen);
