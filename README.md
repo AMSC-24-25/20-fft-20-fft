@@ -48,7 +48,8 @@ Only OpenMP, CMake 3.22 and C++20 are required.
   - [Discrete Cosine Transform Type-II (DCT-II) and DCT-III (Inverse DCT)](#discrete-cosine-transform-type-ii-dct-ii-and-dct-iii-inverse-dct)
   - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt)
 - [Examples](#examples)
-  - [FFT](#fft)
+  - [Fast Fourier Transform (FFT) and Inverse FFT](#fast-fourier-transform-fft-and-inverse-fft)
+  - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt-1)
 
 
 ---
@@ -594,7 +595,7 @@ The examples need the following dependencies:
 - [OpenCV](https://opencv.org/) (for image processing)
 - [Matplot++](https://alandefreitas.github.io/matplotplusplus/) (for plotting)
 
-### FFT
+### Fast Fourier Transform (FFT) and Inverse FFT
 
 The FFT examples are:
 - [fourier_transform_solver](examples/fourier_transform_solver.cpp)
@@ -675,6 +676,94 @@ The FFT examples are:
       <td><video src="https://github.com/user-attachments/assets/8dd38d9f-cef8-496b-a359-a059df297024" alt="Original Video"></video></td>
       <td><video src="https://github.com/user-attachments/assets/f361dcca-f860-4a2e-8032-236cdcfcb427" alt="Video after FFT and IFFT"></video></td>
     </tr>
+  </table>
+
+
+---
+
+
+### Haar Wavelet Transform (HWT)
+
+The Haar Wavelet Transform (HWT) examples are:
+- [haar_wavelet_transform_1d](examples/haar_wavelet_transform_1d.cpp)
+  is a simple example that shows how to use the Haar wavelet transform (HWT) solver with a one-dimensional signal.
+
+  A similar example is [haar_wavelet_transform_2d](examples/haar_wavelet_transform_2d.cpp).
+  This example shows how to use the HWT solver with a two-dimensional (2D) signal.
+
+  Both examples generate a random signal and print the original signal, compute the HWT, and print the result.
+- [haar_wavelet_transform](examples/haar_wavelet_transform.cpp)
+  is an example that shows how the HWT solver works with a two-dimensional (2D) signal, in this case an image.
+
+  It loads a grayscale image from a file and applies the HWT to it to compress the image.
+  Finally, it restores the original image using the inverse HWT and saves it to a file.
+  With different levels of compression, the image quality is preserved.
+
+  Compression is modified by adjusting the threshold for detail coefficients.
+  This threshold determines which coefficients in the Haar wavelet transform are set to zero during compression.
+    - A higher threshold removes more coefficients, resulting in greater compression and loss of detail in the image.
+      This can degrade the quality of the reconstructed image.
+    - A lower threshold retains more coefficients, preserving more detail but reducing the compression ratio.
+
+  <table>
+      <tr>
+          <th colspan="2">Original Image (2048 x 2048, 3.17 MB)</th>
+      </tr>
+      <tr>
+          <td colspan="2"><img src="docs/_static/dog-bw.png" alt="Original Image"/></td>
+      </tr>
+      <tr>
+          <th>Reconstructed Image</th>
+          <th>Haar Wavelet domain</th>
+      </tr>
+      <tr>
+          <th>Threshold = 7.5, 170.17 KB, size reduced by ~95%</th>
+          <th>Threshold = 7.5, 78.81 KB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-7.5.png" alt="dog-7.5"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-7.5.png" alt="dog-7.5"/></td>
+      </tr>
+      <tr>
+          <th>Threshold = 5, 392.33 KB, size reduced by ~88%</th>
+          <th>Threshold = 5, 161.2 KB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-5.png" alt="dog-5"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-5.png" alt="dog-5"/></td>
+      </tr>
+      <tr>
+          <th>Threshold = 3, 923.82 KB, size reduced by ~72%</th>
+          <th>Threshold = 3, 396.61 KB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-3.png" alt="dog-3"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-3.png" alt="dog-3"/></td>
+      </tr>
+      <tr>
+          <th>Threshold = 2, 1.48 MB, size reduced by ~53%</th>
+          <th>Threshold = 2, 682.06 KB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-2.png" alt="dog-2"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-2.png" alt="dog-2"/></td>
+      </tr>
+      <tr>
+          <th>Threshold = 1, 2.37 MB, size reduced by ~25%</th>
+          <th>Threshold = 1, 1.26 MB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-1.png" alt="dog-1"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-1.png" alt="dog-1"/></td>
+      </tr>
+      <tr>
+          <th>Threshold = 0.5, 2.96 MB, size reduced by ~7%</th>
+          <th>Threshold = 0.5, 1.35 MB</th>
+      </tr>
+      <tr>
+          <td><img src="docs/_static/reconstructed-dog-bw-threshold-0.5.png" alt="dog-0.5"/></td>
+          <td><img src="docs/_static/compressed-dog-bw-threshold-0.5.png" alt="dog-0.5"/></td>
+      </tr>
   </table>
 
 
