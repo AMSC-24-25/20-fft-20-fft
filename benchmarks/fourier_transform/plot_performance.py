@@ -17,18 +17,22 @@ def load_benchmark(file_path, label):
     data = []
     for b in raw["benchmarks"]:
         name = b["name"]
-        size_str = name.split("/")[1].replace("x", "")
-        try:
-            size = int(size_str)
-        except ValueError:
-            continue
+        size_str: list[str] = name.split("/")[1].split("x")
+        # size_str is a list of strings like ['1024', '1024', '']
+        size = 1
+        for s in size_str:
+            if s.isdigit():
+                size *= int(s)
+            else:
+                # if the string is not a digit, we skip it
+                continue
         # convert time from nanoseconds to milliseconds
         time_ms = b["real_time"] / 1e6
         data.append({"size": size, "time_ms": time_ms, "label": label})
     return pd.DataFrame(data)
 
 
-def plot_execution_time(df, title, output_file=None):
+def plot_execution_time(df, title, output_files: list | None):
     """
     Plot execution time for different benchmarks.
     The DataFrame should contain columns for size, time_ms, and label.
@@ -45,13 +49,13 @@ def plot_execution_time(df, title, output_file=None):
     plt.title(title)
     plt.grid(True)
     plt.legend()
-    if output_file:
-        plt.savefig(output_file)
-    else:
-        plt.show()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
 
 
-def plot_speedup(df_seq, df_omp, title, output_file=None):
+def plot_speedup(df_seq, df_omp, title, output_files: list | None):
     """
     Plot speedup of OpenMP over Sequential implementation.
     The DataFrame should contain columns for size, time_ms_seq, and time_ms_omp.
@@ -92,14 +96,13 @@ def plot_speedup(df_seq, df_omp, title, output_file=None):
     plt.title(title)
     plt.grid(True)
     plt.legend()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
 
-    if output_file:
-        plt.savefig(output_file)
-    else:
-        plt.show()
 
-
-def plot_speedup_bar(df_seq, df_omp, title, output_file=None):
+def plot_speedup_bar(df_seq, df_omp, title, output_files: list | None):
     sns.set(style="whitegrid")
 
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
@@ -139,14 +142,13 @@ def plot_speedup_bar(df_seq, df_omp, title, output_file=None):
         fontsize=8
     )
     plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
 
-    if output_file:
-        plt.savefig(output_file)
-    else:
-        plt.show()
 
-
-def plot_speedup_binned(df_seq, df_omp, title, output_file=None):
+def plot_speedup_binned(df_seq, df_omp, title, output_files: list | None):
     # Merge and compute speedup
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
     merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
@@ -169,13 +171,13 @@ def plot_speedup_binned(df_seq, df_omp, title, output_file=None):
     plt.title(title)
     plt.grid(True)
     plt.tight_layout()
-    if output_file:
-        plt.savefig(output_file)
-    else:
-        plt.show()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
 
 
-def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_file=None):
+def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_files: list | None):
     # Merge and compute speedup
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
     merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
@@ -225,10 +227,10 @@ def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_file=None):
     ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
 
     plt.tight_layout()
-    if output_file:
-        plt.savefig(output_file)
-    else:
-        plt.show()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -251,13 +253,19 @@ if __name__ == "__main__":
     plot_execution_time(
         df_all,
         f"1D FFT Execution Time ({specs})",
-        output_file="./thinkpad/1D_fft_execution_time.pdf"
+        output_files=[
+            "./thinkpad/1D_fft_execution_time.pdf",
+            "./thinkpad/1D_fft_execution_time.png"
+        ]
     )
     plot_speedup_bar(
         df_seq,
         df_omp,
         f"1D FFT Speedup Bar Chart ({specs})",
-        output_file="./thinkpad/1D_fft_speedup_bar.pdf"
+        output_files=[
+            "./thinkpad/1D_fft_speedup_bar.pdf",
+            "./thinkpad/1D_fft_speedup_bar.png"
+        ]
     )
 
     #### 2D FFT Performance Analysis
@@ -269,13 +277,19 @@ if __name__ == "__main__":
     plot_execution_time(
         df_all_2,
         f"2D FFT Execution Time ({specs})",
-        output_file="./thinkpad/2D_fft_execution_time.pdf"
+        output_files=[
+            "./thinkpad/2D_fft_execution_time.pdf",
+            "./thinkpad/2D_fft_execution_time.png"
+        ]
     )
-    plot_speedup_bar(
+    plot_speedup_binned_with_counts(
         df_seq_2,
         df_omp_2,
         f"2D FFT Speedup Bar Chart ({specs})",
-        output_file="./thinkpad/2D_fft_speedup_bar.pdf"
+        output_files=[
+            "./thinkpad/2D_fft_speedup_binned_with_counts.pdf",
+            "./thinkpad/2D_fft_speedup_binned_with_counts.png"
+        ]
     )
 
     #### 3D FFT Performance Analysis
@@ -287,11 +301,17 @@ if __name__ == "__main__":
     plot_execution_time(
         df_all_3,
         f"3D FFT Execution Time ({specs})",
-        output_file="./thinkpad/3D_fft_execution_time.pdf"
+        output_files=[
+            "./thinkpad/3D_fft_execution_time.pdf",
+            "./thinkpad/3D_fft_execution_time.png"
+        ]
     )
     plot_speedup_binned_with_counts(
         df_seq_3,
         df_omp_3,
         f"3D FFT Speedup Binned ({specs})",
-        output_file="./thinkpad/3D_fft_speedup_binned_with_counts.pdf"
+        output_files=[
+            "./thinkpad/3D_fft_speedup_binned_with_counts.pdf",
+            "./thinkpad/3D_fft_speedup_binned_with_counts.png"
+        ]
     )
