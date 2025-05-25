@@ -40,7 +40,7 @@
         "CMAKE_CXX_STANDARD": "20",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_BUILD_TYPE": "Release",
-        "BUILD_EXAMPLES": "ON",
+        "BUILD_EXAMPLES": "OFF",
         "BUILD_BENCHMARKS": "ON"
       }
     },
