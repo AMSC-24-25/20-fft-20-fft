@@ -32,7 +32,7 @@ def load_benchmark(file_path, label):
     return pd.DataFrame(data)
 
 
-def plot_execution_time(df, title, output_files: list | None):
+def plot_execution_time(df, title, output_files: list | None = None):
     """
     Plot execution time for different benchmarks.
     The DataFrame should contain columns for size, time_ms, and label.
@@ -55,7 +55,7 @@ def plot_execution_time(df, title, output_files: list | None):
     plt.show()
 
 
-def plot_speedup(df_seq, df_omp, title, output_files: list | None):
+def plot_speedup(df_seq, df_omp, title, output_files: list | None = None):
     """
     Plot speedup of OpenMP over Sequential implementation.
     The DataFrame should contain columns for size, time_ms_seq, and time_ms_omp.
@@ -102,7 +102,7 @@ def plot_speedup(df_seq, df_omp, title, output_files: list | None):
     plt.show()
 
 
-def plot_speedup_bar(df_seq, df_omp, title, output_files: list | None):
+def plot_speedup_bar(df_seq, df_omp, title, output_files: list | None = None):
     sns.set(style="whitegrid")
 
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
@@ -148,7 +148,7 @@ def plot_speedup_bar(df_seq, df_omp, title, output_files: list | None):
     plt.show()
 
 
-def plot_speedup_binned(df_seq, df_omp, title, output_files: list | None):
+def plot_speedup_binned(df_seq, df_omp, title, output_files: list | None = None):
     # Merge and compute speedup
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
     merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
@@ -177,7 +177,7 @@ def plot_speedup_binned(df_seq, df_omp, title, output_files: list | None):
     plt.show()
 
 
-def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_files: list | None):
+def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_files: list | None = None):
     # Merge and compute speedup
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
     merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
@@ -233,6 +233,33 @@ def plot_speedup_binned_with_counts(df_seq, df_omp, title, output_files: list | 
     plt.show()
 
 
+def plot_efficiency_bar(df_seq, df_omp, num_threads, title, output_files: list | None = None):
+    merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
+    merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
+    merged["efficiency"] = merged["speedup"] / num_threads
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(merged["size"].astype(str), merged["efficiency"], color='skyblue')
+
+    # Annotate each bar
+    for bar, val in zip(bars, merged["efficiency"]):
+        plt.text(bar.get_x() + bar.get_width()/2, val + 0.01, f'{val:.2f}', ha='center', va='bottom', fontsize=8)
+
+    plt.axhline(1.0, linestyle="--", color="red", label="100% Efficiency")
+    plt.xlabel("Input Size")
+    plt.ylabel("Efficiency (Speedup / Threads)")
+    plt.title(title)
+    plt.ylim(0, 1.0)
+    plt.xticks(rotation=45, ha='right')
+    plt.grid(True)
+    plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
+
+
 if __name__ == "__main__":
     specs = "Thinkpad, 8 threads, 1.20 GHz - 3.20 GHz"
     files = {
@@ -265,6 +292,16 @@ if __name__ == "__main__":
         output_files=[
             "./thinkpad/1D_fft_speedup_bar.pdf",
             "./thinkpad/1D_fft_speedup_bar.png"
+        ]
+    )
+    plot_efficiency_bar(
+        df_seq,
+        df_omp,
+        num_threads=8,
+        title=f"1D FFT Parallel Efficiency with 8 threads ({specs})",
+        output_files=[
+            "./thinkpad/1D_fft_parallel_efficiency.pdf",
+            "./thinkpad/1D_fft_parallel_efficiency.png"
         ]
     )
 
