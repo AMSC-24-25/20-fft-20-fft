@@ -38,7 +38,7 @@ public:
     virtual ~AbstractSignalGenerator() = default;
 
     /**
-     * Generate a random (thanks to noise) one-dimensional signal.
+     * Generate a random (thanks to noise) one-dimensional complex signal.
      *
      * The generation is based on a Gaussian distribution with a mean of 0 and a standard deviation equal to the noise.
      *  - The mean (mu) is 0, so the noise is centered around zero and does not distort the signal.
@@ -58,9 +58,36 @@ public:
      *              or the shift of the signal waveform.
      * @param noise Thanks to the noise parameter, the signal can be randomly distorted.
      *              In addition, the noise guarantees a more realistic signal generation.
-     * @return The generated signal.
+     * @return The generated signal (complex signal).
      */
     virtual std::vector<std::complex<double>> generate1DSignal(
+        int length, double frequency, double phase, double noise
+    ) = 0;
+
+    /**
+     * Generate a random (thanks to noise) one-dimensional real signal.
+     *
+     * The generation is based on a Gaussian distribution with a mean of 0 and a standard deviation equal to the noise.
+     *  - The mean (mu) is 0, so the noise is centered around zero and does not distort the signal.
+     *  - The standard deviation (sigma) is equal to the noise because it determines
+     *    how the noise values are spread around the mean.
+     *    Approximately 68% of the noise values will fall within +-sigma of the mean, 95% will fall within +-2*sigma,
+     *    and 99.7% will fall within +-3*sigma.
+     *
+     * @param length The length of the signal. Specifies the number of samples or data points in the signal.
+     * @param frequency Represents the frequency of the signal's oscillations. It depends on the signal domain.
+     *                  For example, it refers to the number of cycles per second (hertz) in the time domain,
+     *                  and it indicates spatial frequency (or the number of cycles per unit distance)
+     *                  in the spatial domain.
+     * @param phase The phase (radians) of the signal.
+     *              It allows you to move the signal along the time axis (i.e. to the left or right).
+     *              It represents the initial angle of the sine or cosine function at time t = 0,
+     *              or the shift of the signal waveform.
+     * @param noise Thanks to the noise parameter, the signal can be randomly distorted.
+     *              In addition, the noise guarantees a more realistic signal generation.
+     * @return The generated signal (real signal).
+     */
+    virtual std::vector<double> generateReal1DSignal(
         int length, double frequency, double phase, double noise
     ) = 0;
 
