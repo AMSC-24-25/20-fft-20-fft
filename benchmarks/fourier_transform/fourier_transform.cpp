@@ -72,7 +72,12 @@ int main(const int argc, char** argv) {
     const auto mode_opt = getArgValue(argc, argv, "mode");
 
     if (!dim_opt || !type_opt || !mode_opt) {
-        std::cerr << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp>\n";
+        std::cerr << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp> -threads=<1|2|4|...>\n"
+            << "  -dim: Dimension of the FFT (1, 2, or 3)\n"
+            << "  -type: Type of benchmark (combinatorial or balanced)\n"
+            << "  -mode: Computation mode (sequential or openmp)\n"
+            << "  -threads: Number of threads to use (only for openmp mode)\n"
+            << "  -h or --help: Show this help message\n";
         return 1;
     }
 
