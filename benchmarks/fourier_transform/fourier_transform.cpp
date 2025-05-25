@@ -53,10 +53,17 @@ void combinatorialBenchmark(ComputationMode mode, const std::optional<int> min =
 
 int main(const int argc, char** argv) {
     if (
-        getArgValue(argc, argv, "h").has_value() ||
-        getArgValue(argc, argv, "help", true).has_value()
+        getArgValue(argc, argv, "h", false, false).has_value() ||
+        getArgValue(argc, argv, "help", true, false).has_value()
     ) {
-        std::cout << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp>\n";
+        printf(
+            "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp> -threads=<1|2|4|...>\n"
+            "  -dim: Dimension of the FFT (1, 2, or 3)\n"
+            "  -type: Type of benchmark (combinatorial or balanced)\n"
+            "  -mode: Computation mode (sequential or openmp)\n"
+            "  -threads: Number of threads to use (only for openmp mode)\n"
+            "  -h or --help: Show this help message\n"
+        );
         return 0;
     }
 
@@ -88,9 +95,18 @@ int main(const int argc, char** argv) {
         return 1;
     }
 
+    const ComputationMode mode = (rawMode == "sequential") ? ComputationMode::SEQUENTIAL : ComputationMode::OPENMP;
+
+    // set number of threads if in openmp mode
+    if (mode == ComputationMode::OPENMP) {
+        const auto threads_opt = getArgValue(argc, argv, "threads");
+        omp_set_num_threads(threads_opt ? std::stoi(*threads_opt) : omp_get_max_threads());
+    }
+
     std::ostringstream oss;
     // use the format provided by the user
     oss << "--benchmark_out=" << dim << "D_results_" << rawMode << "_"
+        << "threads" << "_" << omp_get_max_threads() << "_"
         << sp::utils::timestamp::createReadableTimestamp("%Y-%m-%d_%H-%M-%S")
         << ".json";
     const std::string benchmark_out = oss.str();
@@ -102,8 +118,6 @@ int main(const int argc, char** argv) {
         "--benchmark_out_format=json"
     };
     int custom_argc = sizeof(args) / sizeof(char*);
-
-    const ComputationMode mode = (rawMode == "sequential") ? ComputationMode::SEQUENTIAL : ComputationMode::OPENMP;
 
     if (type == "balanced") {
         if (dim == 1) {
@@ -122,6 +136,13 @@ int main(const int argc, char** argv) {
             combinatorialBenchmark<3>(mode);
         }
     }
+
+    printf("Running benchmarks with the following parameters:\n");
+    printf("  Dimension: %zu\n", dim);
+    printf("  Type: %s\n", type.c_str());
+    printf("  Mode: %s\n", rawMode.c_str());
+    printf("  Output file: %s\n", benchmark_out.c_str());
+    printf("  Threads: %d\n", omp_get_max_threads());
 
     // Initialize with overridden args
     benchmark::Initialize(&custom_argc, const_cast<char**>(args));

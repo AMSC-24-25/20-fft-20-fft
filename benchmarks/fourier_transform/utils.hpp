@@ -148,7 +148,7 @@ std::vector<std::array<size_t, N>> generateValidShapes(
 }
 
 /**
- * Retrieves the value of a command-line argument.
+ * **Naive** function to get the value of a command-line argument.
  *
  * The argument should be in the format "-key=value".
  * If the key is found, the value is returned; otherwise, std::nullopt is returned.
@@ -157,15 +157,17 @@ std::vector<std::array<size_t, N>> generateValidShapes(
  * @param argv The command-line arguments.
  * @param key The key to search for (without the leading '-').
  * @param double_dash Whether to use "--" instead of "-" for the key.
+ * @param equals Whether the key-value pair is separated by "=" (default is true).
  * @return An optional string containing the value if found, or std::nullopt if not found.
  */
 inline std::optional<std::string> getArgValue(
     const int argc,
     char** argv,
     const std::string& key,
-    const bool double_dash = false
+    const bool double_dash = false,
+    const bool equals = true
 ) {
-    const std::string prefix = (double_dash ? "--" : "-") + key + "=";
+    const std::string prefix = (double_dash ? "--" : "-") + key + (equals ? "=" : "");
     for (int i = 1; i < argc; ++i) {
         if (std::string arg = argv[i]; arg.find(prefix) == 0) {
             return arg.substr(prefix.size());
