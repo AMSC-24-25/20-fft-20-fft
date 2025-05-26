@@ -25,10 +25,19 @@ namespace sp::saver
          * Save the signal to a file. The format of the file is defined by the implementation.
          * For example, the CsvSignalSaver saves the signal to a CSV file,
          * the BinarySignalSaver saves the signal to a binary file, etc.
-         * @param signal The signal to save.
+         * @param signal The signal to save (complex signal).
          * @param filePath The file path where the signal will be saved.
          */
         virtual void saveToFile(const std::vector<std::complex<double>>& signal, const std::string& filePath) const = 0;
+
+        /**
+         * Save the signal to a file. The format of the file is defined by the implementation.
+         * For example, the CsvSignalSaver saves the signal to a CSV file,
+         * the BinarySignalSaver saves the signal to a binary file, etc.
+         * @param signal The signal to save (real signal).
+         * @param filePath The file path where the signal will be saved.
+         */
+        virtual void saveToFile(const std::vector<double>& signal, const std::string& filePath) const = 0;
 
         /**
          * Get the extension of the file.

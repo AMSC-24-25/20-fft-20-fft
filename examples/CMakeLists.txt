@@ -115,10 +115,11 @@ target_link_libraries(
 ###################################
 # Basic JPEG image compression example
 add_executable(
-        example-jpeg_image_compression
-        jpeg_image_compression.cpp
+        example-jpeg_compression
+        jpeg_compression.cpp
 )
 target_link_libraries(
-        example-jpeg_image_compression
+        example-jpeg_compression
+        PRIVATE matplot
         PRIVATE signal_processing
 )
