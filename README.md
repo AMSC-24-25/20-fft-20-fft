@@ -4,12 +4,12 @@
 
 [![OpenMP](https://img.shields.io/badge/OpenMP-5.2-blue.svg)](https://www.openmp.org/)
 [![CMake](https://img.shields.io/badge/CMake-3.22-blue.svg)](https://cmake.org/)
-[![C++20](https://img.shields.io/badge/C++-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
+[![C++](https://img.shields.io/badge/C++-%2300599C.svg?logo=c%2B%2B&logoColor=white)](https://en.cppreference.com/w/cpp/11)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ### For the impatient
 
-Only OpenMP, CMake 3.22 and C++20 are required.
+Only `OpenMP`, `CMake 3.22` and `C++ >= 11` are required to build the library.
 - For those who want to use the library:
     ```bash
     git clone --recursive-submodules https://github.com/AMSC-24-25/20-fft-20-fft.git
@@ -97,9 +97,9 @@ mv 20-fft-20-fft signal_processing
 Now you are ready to go.
 
 However, some prerequisites are very common.
-The library is written in C++20 and uses the [OpenMP][OpenMP] framework for parallelization.
+The library is written in C++11 and uses the [OpenMP][OpenMP] framework for parallelization.
 In order to use it, you need to have:
-- A C++ compiler that supports the C++20 standard.
+- A C++ compiler that supports the C++11 standard.
 - Build tools are [CMake](https://cmake.org/) $\ge 3.22$, [Make](https://www.gnu.org/software/make/),
   or [Ninja](https://ninja-build.org/) (strongly recommended).
 - The [OpenMP](https://www.openmp.org/) framework.
