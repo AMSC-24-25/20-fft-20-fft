@@ -1,17 +1,16 @@
 #include <iostream>
 #include <vector>
 
-#include "signal_processing/signal_processing.hpp"
+#include "stb/stb_image.h"
+#include "stb/stb_image_write.h"
 #include "matplot/matplot.h"
+
+#include "signal_processing/signal_processing.hpp"
 
 /**
  * Environment variable name for the file path for the configuration file.
  */
 #define ENV_FILE_PATH "CONFIG_FILE_PATH_FFT"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb/stb_image_write.h"
 
 void print_vector(const std::vector<double>& vec) {
     for (int i=0; i<vec.size(); i++) {
@@ -89,21 +88,25 @@ void simple_dct_demo(){
 
 void jpeg_compression_demo(){
     // Create an Image object contining the image from image_path and save it as png
-    const char* image_path = "/home/valentina/20-fft-20-fft/src/dog-bw.png";
+    const char* image_path = "examples/resources/dog-bw.png";
     sp::jpeg::Image image = sp::jpeg::Image(image_path);
-    std::string path = "/home/valentina/20-fft-20-fft/src/image.png";
+    std::string path = "examples/output/dct/image.png";
+    // check if output directory exists, if not create it
+    if (!std::filesystem::exists("examples/output/dct")) {
+        std::filesystem::create_directories("examples/output/dct");
+    }
     image.save_as_png(path);
 
     // Compress image and save it first in a binay file and then in a compressed binary file (ZIGZAG+RLE)
     sp::jpeg::CompressedImage compressed = image.compress();
-    path = "/home/valentina/20-fft-20-fft/src/binary.bin";
+    path = "examples/output/dct/binary.bin";
     compressed.save_as_binary(path);
-    path = "/home/valentina/20-fft-20-fft/src/compressed_binary.bin";
+    path = "examples/output/dct/compressed_binary.bin";
     compressed.save_as_compressed_binary(path);
 
     // Decompress the compressed image and save the result as a png
     sp::jpeg::Image decompressed = compressed.decompress();
-    path = "/home/valentina/20-fft-20-fft/src/decompressed.png";
+    path = "examples/output/dct/decompressed.png";
     decompressed.save_as_png(path);
 }
 
@@ -158,7 +161,7 @@ void dct_demo(){
     delete noise;
     delete signal_domain;
     // and save it to a file
-    csv_signal_saver->saveToFile(signal, "output/input_signal_dct");
+    csv_signal_saver->saveToFile(signal, "examples/output/dct/input_signal_dct");
     // since the transformation is in-place, we need to keep a copy of the original signal
     std::vector<double> original_signal = signal;
     std::vector<double> sequential_dct_input(signal_length);
@@ -184,13 +187,13 @@ void dct_demo(){
     const sp::dct::solver::ComputationMode cm = sp::dct::solver::ComputationMode::SEQUENTIAL;
     std::vector<double> sequential_dct_output(signal_length);
     dct_solver->compute(sequential_dct_input, sequential_dct_output, sequential);
-    csv_signal_saver->saveToFile(sequential_dct_output, "output/dct_signal");
+    csv_signal_saver->saveToFile(sequential_dct_output, "examples/output/dct/dct_signal");
 
     // ================================================= Parallel FFT =================================================
     printf("\n\nParallel - DCT\n");
     std::vector<double> parallel_dct_output(signal_length);
     dct_solver->compute(parallel_dct_input, parallel_dct_output, parallel);
-    csv_signal_saver->saveToFile(parallel_dct_output, "output/parallel_dct_signal");
+    csv_signal_saver->saveToFile(parallel_dct_output, "examples/output/dct/parallel_dct_signal");
 
     // ============================================ Sequential Inverse FFT ============================================
     printf("\n\nSequential - Inverse DCT\n");
@@ -200,7 +203,7 @@ void dct_demo(){
     std::vector<double> sequential_idct_output(signal_length);
     // use the DCT result as input
     idct_solver->compute(sequential_idct_input, sequential_idct_output, sequential);
-    csv_signal_saver->saveToFile(sequential_idct_output, "output/seq_inverse_dct_signal");
+    csv_signal_saver->saveToFile(sequential_idct_output, "examples/output/dct/seq_inverse_dct_signal");
 
     // ============================================= Parallel Inverse FFT =============================================
     printf("\n\nParallel - Inverse DCT\n");
@@ -210,7 +213,7 @@ void dct_demo(){
     std::vector<double> parallel_idct_output(signal_length);
     // use the DCT result as input
     idct_solver->compute(parallel_idct_input, parallel_idct_output, parallel);
-    csv_signal_saver->saveToFile(parallel_idct_output, "output/parallel_inverse_dct_signal");
+    csv_signal_saver->saveToFile(parallel_idct_output, "examples/output/dct/parallel_inverse_dct_signal");
 
     // free the memory
     delete dct_solver;
@@ -235,13 +238,13 @@ void dct_demo(){
     magnitude_figure->x_position(0);
     magnitude_figure->y_position(0);
     // plot
-    magnitude_figure->add_subplot(3,1,1);
+    magnitude_figure->add_subplot(3,1,0);
     matplot::plot(x, original_signal);
     matplot::title("Original Signal");
-    magnitude_figure->add_subplot(3,1,2);
+    magnitude_figure->add_subplot(3,1,1);
     matplot::plot(x, sequential_dct_output);
     matplot::title("Sequential DCT");
-    magnitude_figure->add_subplot(3,1,3);
+    magnitude_figure->add_subplot(3,1,2);
     matplot::plot(x, parallel_dct_output);
     matplot::title("Parallel DCT");
     // show the plot and block the execution
@@ -259,13 +262,13 @@ void dct_demo(){
     comparison_idct_figure->x_position(0);
     comparison_idct_figure->y_position(0);
     // plot
-    comparison_idct_figure->add_subplot(3,1,1);
+    comparison_idct_figure->add_subplot(3,1,0);
     matplot::plot(x, original_signal);
     matplot::title("Original Signal");
-    comparison_idct_figure->add_subplot(3,1,2);
+    comparison_idct_figure->add_subplot(3,1,1);
     matplot::plot(x, sequential_idct_output);
     matplot::title("Sequential IDCT");
-    comparison_idct_figure->add_subplot(3,1,3);
+    comparison_idct_figure->add_subplot(3,1,2);
     matplot::plot(x, parallel_idct_output);
     matplot::title("Parallel IDCT");
     // show the plot and block the execution

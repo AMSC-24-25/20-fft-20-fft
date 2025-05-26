@@ -50,7 +50,8 @@ namespace sp::saver
 
     void CsvSignalSaver::saveToFile(const std::vector<double> &signal, const std::string &filePath) const {
         std::ostringstream stringStream;
-        stringStream << filePath << "_" << createReadableTimestamp("%Y%m%d_%H%M%S") << "." << getExtension();
+        stringStream << filePath << "_"
+                     << utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S") << "." << getExtension();
         const std::string output_file_path = stringStream.str();
         printf("Saving signal to file: %s\n", output_file_path.c_str());
         // validate the input
