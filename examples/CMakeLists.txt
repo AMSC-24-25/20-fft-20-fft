@@ -46,7 +46,9 @@ add_executable(
         fourier_transform_solver_image.cpp
 )
 
-
+target_link_libraries(example-fourier_transform_solver_performance
+        PRIVATE signal_processing
+)
 target_link_libraries(example-fourier_transform_solver
         PRIVATE matplot
         PRIVATE signal_processing
