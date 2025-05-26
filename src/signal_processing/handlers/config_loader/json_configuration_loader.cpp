@@ -20,7 +20,11 @@ namespace sp::config
 
     void JSONConfigurationLoader::loadConfigurationFromFile(const std::string &filePath) {
         // assert that the file have a .json extension
-        if (!filePath.ends_with(".json")) {
+        const std::string ext = ".json";
+        if (
+            ext.size() > filePath.size() ||
+            !std::equal(ext.rbegin(), ext.rend(), filePath.rbegin())
+        ) {
             throw std::runtime_error("File is not a JSON file: " + filePath);
         }
         // get the file stream

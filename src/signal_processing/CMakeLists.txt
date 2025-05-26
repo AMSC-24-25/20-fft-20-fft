@@ -17,13 +17,15 @@ add_library(
         handlers/config_loader/json_configuration_loader.hpp
         handlers/config_loader/json_field_handler.cpp
         handlers/config_loader/json_field_handler.hpp
+        # image
+        handlers/image/image_handlers.hpp
+        handlers/image/image_handlers.cpp
         # signal_generator
         handlers/signal_generator/base_signal_generator.hpp
         handlers/signal_generator/space_domain_signal_generator.cpp
         handlers/signal_generator/space_domain_signal_generator.hpp
         handlers/signal_generator/time_domain_signal_generator.cpp
         handlers/signal_generator/time_domain_signal_generator.hpp
-
         # signal_saver
         handlers/signal_saver/base_file_signal_saver.hpp
         handlers/signal_saver/csv_signal_saver.cpp
@@ -70,8 +72,6 @@ add_library(
         # utils
         utils/bit_reversal.cpp
         utils/bit_reversal.hpp
-        handlers/image/image_handlers.hpp
-        handlers/image/image_handlers.cpp
         utils/rle_compressor.hpp
         utils/rle_compressor.cpp
         utils/timestamp.cpp

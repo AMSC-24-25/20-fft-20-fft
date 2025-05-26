@@ -1,5 +1,6 @@
 #include <set>
 #include <stdexcept>
+#include <algorithm>
 
 #include "handlers/config_loader/json_field_handler.hpp"
 
@@ -19,14 +20,12 @@ namespace sp::config
         const std::set optional_fields = {
             fieldNames.at(Field::Seed),
         };
-        // documentation: https://en.cppreference.com/w/cpp/ranges
-        // "takes a view consisting of pair-like values
-        //  and produces a view of the second elements of each pair"
-        // so in this case, it produces a view of the field names
-        for (const auto &map_value: fieldNames | std::views::values) {
-            // check if the field is not optional and not loaded (not in the configuration)
-            if (!optional_fields.contains(map_value) && !configurationLoaded.contains(map_value)) {
-                throw std::invalid_argument("Field not found: " + map_value);
+        for (const auto & [field, value] : fieldNames) {
+            if (
+                optional_fields.find(value) == optional_fields.end() &&
+                configurationLoaded.find(value) == configurationLoaded.end()
+            ) {
+                throw std::invalid_argument("Field not found: " + value);
             }
         }
         // check allowed values for signal domain
@@ -54,14 +53,14 @@ namespace sp::config
         /**
          * Find at least one element in the range that satisfies the predicate (lambda function):
          * the value of the pair is equal to the field.
-         * - range: fieldNames is an unordered_map,
-         *          so it uses std::ranges::begin(fieldNames) and std::ranges::end(fieldNames)
-         * - pred: lambda function that checks whether the second element (the value)
-         *         of the pair is equal to the field
          */
-        return std::ranges::any_of(fieldNames, [&field](const std::pair<Field, std::string> &f) -> bool {
-            return f.second == field;
-        });
+        return std::any_of(
+            fieldNames.begin(),
+            fieldNames.end(),
+            [&field](const std::pair<Field, std::string> &f) {
+                return f.second == field;
+            }
+        );
     }
 
     std::string JsonFieldHandler::getFieldName(const Field field) {
