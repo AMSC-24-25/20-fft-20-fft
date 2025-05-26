@@ -25,8 +25,47 @@ constexpr size_t MAX_TOTAL_SIZE = 8388608;
  * @param min Optional minimum value for the dimensions.
  */
 template <size_t N>
-void combinatorialBenchmark(ComputationMode mode, const std::optional<int> min = std::nullopt) {
+void combinatorialBenchmark(ComputationMode mode, const int min) {
     auto shapes = generateValidShapes<N>(MAX_TOTAL_SIZE, min);
+    for (const auto& dims : shapes) {
+        // create a benchmark name based on the dimensions
+        // e.g. "2D/4x4x4"
+        std::ostringstream name;
+        name << N << "D/";
+        for (const size_t d : dims)
+            name << d << "x";
+        // remove the last 'x'
+        name.seekp(-1, std::ios_base::end);
+
+        // ReSharper disable once CppDFAUnusedValue
+        benchmark::RegisterBenchmark(name.str().c_str(), [=](benchmark::State& state) {
+            FastFourierTransform<N> fft(dims);
+            auto input = generateInput(dims);
+
+            for (auto _ : state) {
+                auto copy = input;
+                fft.compute(copy, mode);
+                benchmark::DoNotOptimize(copy);
+            }
+        });
+    }
+}
+
+/**
+ * Combinatorial benchmark for the Fast Fourier Transform (FFT) in N dimensions.
+ *
+ * This function generates all valid shapes for the FFT solver
+ * and registers a benchmark for each shape.
+ *
+ * Since it is combinatorial, it will generate all possible shapes
+ * for the given maximum total size. This means that it will
+ * generate shapes unbalanced in terms of dimensions, e.g.: <2, 4194304>
+ * @tparam N Number of dimensions for the FFT solver.
+ * @param mode The computation mode to be used (SEQUENTIAL, OPENMP).
+ */
+template <size_t N>
+void combinatorialBenchmark(ComputationMode mode) {
+    auto shapes = generateValidShapes<N>(MAX_TOTAL_SIZE);
     for (const auto& dims : shapes) {
         // create a benchmark name based on the dimensions
         // e.g. "2D/4x4x4"
@@ -53,8 +92,8 @@ void combinatorialBenchmark(ComputationMode mode, const std::optional<int> min =
 
 int main(const int argc, char** argv) {
     if (
-        getArgValue(argc, argv, "h", false, false).has_value() ||
-        getArgValue(argc, argv, "help", true, false).has_value()
+        getArgValue(argc, argv, "h", false, false) != "" ||
+        getArgValue(argc, argv, "help", true, false) != ""
     ) {
         printf(
             "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp> -threads=<1|2|4|...>\n"
@@ -71,7 +110,7 @@ int main(const int argc, char** argv) {
     const auto type_opt = getArgValue(argc, argv, "type");
     const auto mode_opt = getArgValue(argc, argv, "mode");
 
-    if (!dim_opt || !type_opt || !mode_opt) {
+    if (dim_opt == "" || type_opt == "" || mode_opt == "") {
         std::cerr << "Usage: ./program -dim=<1|2|3> -type=<combinatorial|balanced> -mode=<sequential|openmp> -threads=<1|2|4|...>\n"
             << "  -dim: Dimension of the FFT (1, 2, or 3)\n"
             << "  -type: Type of benchmark (combinatorial or balanced)\n"
@@ -81,9 +120,9 @@ int main(const int argc, char** argv) {
         return 1;
     }
 
-    const size_t dim = std::stoi(*dim_opt);
-    const std::string& type = *type_opt;
-    const std::string& rawMode = *mode_opt;
+    const size_t dim = std::stoi(dim_opt);
+    const std::string& type = type_opt;
+    const std::string& rawMode = mode_opt;
 
     if (dim < 1 || dim > 3) {
         std::cerr << "Invalid dimension. Must be 1, 2, or 3.\n";
@@ -105,7 +144,7 @@ int main(const int argc, char** argv) {
     // set number of threads if in openmp mode
     if (mode == ComputationMode::OPENMP) {
         const auto threads_opt = getArgValue(argc, argv, "threads");
-        omp_set_num_threads(threads_opt ? std::stoi(*threads_opt) : omp_get_max_threads());
+        omp_set_num_threads(threads_opt != "" ? std::stoi(threads_opt) : omp_get_max_threads());
     }
 
     std::ostringstream oss;

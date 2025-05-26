@@ -4,7 +4,6 @@
 #include <vector>
 #include <complex>
 #include <functional>
-#include <optional>
 #include <random>
 
 /**
@@ -17,7 +16,8 @@
 inline std::vector<size_t> generatePowersOfTwo(const size_t max_pow = 22) {
     // cache the powers of two to avoid recomputing them for each call
     static std::unordered_map<size_t, std::vector<size_t>> cache;
-    if (const auto it = cache.find(max_pow); it != cache.end()) {
+    const auto it = cache.find(max_pow);
+    if (it != cache.end()) {
         return it->second;
     }
     // generate the powers of two from 2^1 to 2^max_pow
@@ -56,7 +56,7 @@ std::vector<std::complex<double>> generateInput(const std::array<size_t, N>& dim
     // use a fixed seed for reproducibility
     std::mt19937 gen(seed);
     // uniform distribution in the range [-1.0, 1.0]
-    std::uniform_real_distribution dist(-1.0, 1.0);
+    std::uniform_real_distribution<> dist(-1.0, 1.0);
 
     // create a vector of complex numbers with the specified size
     std::vector<std::complex<double>> data(total);
@@ -83,7 +83,7 @@ std::vector<std::complex<double>> generateInput(const std::array<size_t, N>& dim
 template <size_t N>
 std::vector<std::array<size_t, N>> generateValidShapes(
     const size_t max_total_size,
-    const std::optional<size_t> min = std::nullopt
+    const size_t min
 ) {
     std::vector<std::array<size_t, N>> results;
     // generate the powers of two up to the maximum total size
@@ -126,7 +126,7 @@ std::vector<std::array<size_t, N>> generateValidShapes(
         // recursive case: iterate over all powers of two
         for (size_t p : powers) {
             // skip values minus of min
-            if (min.has_value() && p < min) continue;
+            if (p < min) continue;
             // check if the product exceeds the maximum total size
             // if it does, break the loop to avoid unnecessary calculations
             if (product * p > max_total_size) break;
@@ -148,6 +148,43 @@ std::vector<std::array<size_t, N>> generateValidShapes(
 }
 
 /**
+ * Generates all valid shapes for a given number of dimensions.
+ *
+ * A valid shape is defined as a combination of powers of two that do not exceed
+ * the specified maximum total size.
+ *
+ * The function uses backtracking to explore all combinations of powers of two
+ * for N dimensions, ensuring that the product of the dimensions does not exceed
+ * the maximum total size.
+ *
+ * @tparam N The number of dimensions.
+ * @param max_total_size The maximum total size for the shapes.
+ * @return A vector of arrays representing the valid shapes.
+ */
+template <size_t N>
+std::vector<std::array<size_t, N>> generateValidShapes(
+    const size_t max_total_size
+) {
+    std::vector<std::array<size_t, N>> results;
+    const std::vector<size_t> powers = generatePowersOfTwo();
+
+    std::array<size_t, N> current;
+    std::function<void(size_t, size_t)> backtrack = [&](size_t depth, const size_t product) {
+        if (depth == N) {
+            results.push_back(current);
+            return;
+        }
+        for (size_t p : powers) {
+            if (product * p > max_total_size) break;
+            current[depth] = p;
+            backtrack(depth + 1, product * p);
+        }
+    };
+    backtrack(0, 1);
+    return results;
+}
+
+/**
  * **Naive** function to get the value of a command-line argument.
  *
  * The argument should be in the format "-key=value".
@@ -158,9 +195,9 @@ std::vector<std::array<size_t, N>> generateValidShapes(
  * @param key The key to search for (without the leading '-').
  * @param double_dash Whether to use "--" instead of "-" for the key.
  * @param equals Whether the key-value pair is separated by "=" (default is true).
- * @return An optional string containing the value if found, or std::nullopt if not found.
+ * @return A string containing the value if found, or an empty string if not found.
  */
-inline std::optional<std::string> getArgValue(
+inline std::string getArgValue(
     const int argc,
     char** argv,
     const std::string& key,
@@ -169,11 +206,12 @@ inline std::optional<std::string> getArgValue(
 ) {
     const std::string prefix = (double_dash ? "--" : "-") + key + (equals ? "=" : "");
     for (int i = 1; i < argc; ++i) {
-        if (std::string arg = argv[i]; arg.find(prefix) == 0) {
+        std::string arg = argv[i];
+        if (arg.find(prefix) == 0) {
             return arg.substr(prefix.size());
         }
     }
-    return std::nullopt;
+    return "";
 }
 
 
