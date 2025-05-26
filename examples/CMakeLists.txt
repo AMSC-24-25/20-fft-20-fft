@@ -1,12 +1,13 @@
 ##########
 # OpenCV #
 ##########
-find_package(OpenCV REQUIRED)
+find_package(OpenCV)
 if (NOT OpenCV_FOUND)
-    message(FATAL_ERROR "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
-endif()
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-message(STATUS "OpenCV found: ${OpenCV_VERSION}")
+    message(WARNING "OpenCV not found. Please install it with 'sudo apt-get install libopencv-dev'.")
+else ()
+    include_directories( ${OpenCV_INCLUDE_DIRS} )
+    message(STATUS "OpenCV found: ${OpenCV_VERSION}")
+endif ()
 
 #############
 # Matplot++ #
@@ -65,17 +66,27 @@ target_link_libraries(example-fourier_transform_solver
 target_link_libraries(example-fourier_transform_solver_image
         PRIVATE signal_processing
 )
-target_link_libraries(example-fourier_transform_solver_performance
-        PRIVATE signal_processing
-)
-target_link_libraries(example-fourier_transform_solver_video
-        PRIVATE ${OpenCV_LIBS}
-        PRIVATE signal_processing
-)
-target_link_libraries(example-fourier_transform_solver_video_rgb
-        PRIVATE ${OpenCV_LIBS}
-        PRIVATE signal_processing
-)
+if (OpenCV_FOUND)
+    # Application of 3D FFT to video processing
+    add_executable(
+            example-fourier_transform_solver_video
+            fourier_transform_solver_video.cpp
+    )
+
+    # Application of 3D FFT to video processing (RGB)
+    add_executable(
+            example-fourier_transform_solver_video_rgb
+            fourier_transform_solver_video_rgb.cpp
+    )
+    target_link_libraries(example-fourier_transform_solver_video
+            PRIVATE ${OpenCV_LIBS}
+            PRIVATE signal_processing
+    )
+    target_link_libraries(example-fourier_transform_solver_video_rgb
+            PRIVATE ${OpenCV_LIBS}
+            PRIVATE signal_processing
+    )
+endif ()
 
 
 ###################################

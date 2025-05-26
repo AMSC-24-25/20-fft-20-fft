@@ -35,7 +35,7 @@ echo ""
 
 echo -e "${GREEN}~ Compile project + benchmarks ~${NC}"
 start_time=$(date +%s)
-ninja --quiet all || exit 1
+ninja all || exit 1
 end_time=$(date +%s)
 elapsed_time=$((end_time - start_time))
 echo "Built in ~$elapsed_time seconds"
