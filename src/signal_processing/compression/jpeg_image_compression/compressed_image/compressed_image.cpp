@@ -180,7 +180,9 @@ namespace sp::jpeg
         uint8_t rle_size = rle.size();
         file.write(reinterpret_cast<const char*>(&rle_size), sizeof(uint8_t));*/
 
-        for (const auto& [repetitions, value] : rleVector) {
+        for (auto it = rleVector.begin(); it != rleVector.end(); ++it) {
+            const int repetitions = it->first;
+            const int value = it->second;
             int16_t count = static_cast<int16_t>(repetitions);
             if (count == 1) {
                 //Write only the value and ignore repetitions

@@ -28,9 +28,12 @@ namespace sp::utils::rle
     const std::vector<double> RLECompressor::decompress(const std::vector<std::pair<int, int>>& compressed) {
         std::vector<double> decompressed;
 
-        for (const auto& [repetitions, value] : compressed) {
-            //vector.insert(pos, #repetitions, value) --> insert in position pos the #repetitions of value
-            decompressed.insert(decompressed.end(), repetitions, value);
+        for (auto it = compressed.begin(); it != compressed.end(); ++it) {
+            decompressed.insert(
+                decompressed.end(),
+                it->first,  // repetitions
+                it->second  // value
+            );
             //decompressed.push_back(value); //vector.push_back(value) --> insert element value at the end of the vector
         }
 

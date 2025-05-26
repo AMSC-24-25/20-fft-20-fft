@@ -46,18 +46,6 @@ add_executable(
         fourier_transform_solver_image.cpp
 )
 
-# Application of 3D FFT to video processing
-add_executable(
-        example-fourier_transform_solver_video
-        fourier_transform_solver_video.cpp
-)
-
-# Application of 3D FFT to video processing (RGB)
-add_executable(
-        example-fourier_transform_solver_video_rgb
-        fourier_transform_solver_video_rgb.cpp
-)
-
 
 target_link_libraries(example-fourier_transform_solver
         PRIVATE matplot
@@ -72,7 +60,6 @@ if (OpenCV_FOUND)
             example-fourier_transform_solver_video
             fourier_transform_solver_video.cpp
     )
-
     # Application of 3D FFT to video processing (RGB)
     add_executable(
             example-fourier_transform_solver_video_rgb
@@ -86,6 +73,8 @@ if (OpenCV_FOUND)
             PRIVATE ${OpenCV_LIBS}
             PRIVATE signal_processing
     )
+else ()
+    message(WARNING "OpenCV not found. Skipping video processing examples.")
 endif ()
 
 

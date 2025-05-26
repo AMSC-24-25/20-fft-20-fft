@@ -10,7 +10,9 @@
 
 namespace sp::saver
 {
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
+    const char SEP = '\\';
+#elif _WIN64
     const char SEP = '\\';
 #else
     constexpr char SEP = '/';
