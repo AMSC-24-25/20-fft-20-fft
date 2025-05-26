@@ -50,6 +50,8 @@ Only `OpenMP`, `CMake 3.22` and `C++ >= 11` are required to build the library.
 - [Examples](#examples)
   - [Fast Fourier Transform (FFT) and Inverse FFT](#fast-fourier-transform-fft-and-inverse-fft)
   - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt-1)
+- [Benchmark](#benchmark)
+  - [FFT and Inverse FFT Performance](#fft-and-inverse-fft-performance)
 
 
 ---
@@ -616,8 +618,8 @@ The FFT examples are:
 
   <table>
     <tr>
-      <th>Original Image (2048 x 2048)</th>
-      <th>Image after FFT and IFFT (2048 x 2048)</th>
+      <th style="width: 50%">Original Image (2048 x 2048)</th>
+      <th style="width: 50%">Image after FFT and IFFT (2048 x 2048)</th>
     </tr>
     <tr>
       <td><img src="docs/_static/dog.png" alt="Original Image"/></td>
@@ -645,8 +647,8 @@ The FFT examples are:
 
   <table>
     <tr>
-      <th>Original Video (266 frames x 512 x 1024)</th>
-      <th>Video after FFT and IFFT (256 frames x 512 x 1024)</th>
+      <th style="width: 50%">Original Video (266 frames x 512 x 1024)</th>
+      <th style="width: 50%">Video after FFT and IFFT (256 frames x 512 x 1024)</th>
     </tr>
     <tr>
       <td><video src="https://github.com/user-attachments/assets/8dd38d9f-cef8-496b-a359-a059df297024" alt="Original Video"></video></td>
@@ -669,8 +671,8 @@ The FFT examples are:
 
   <table>
     <tr>
-      <th>Original Video (266 frames x 512 x 1024)</th>
-      <th>Video after FFT and IFFT (256 frames x 512 x 1024)</th>
+      <th style="width: 50%">Original Video (266 frames x 512 x 1024)</th>
+      <th style="width: 50%">Video after FFT and IFFT (256 frames x 512 x 1024)</th>
     </tr>
     <tr>
       <td><video src="https://github.com/user-attachments/assets/8dd38d9f-cef8-496b-a359-a059df297024" alt="Original Video"></video></td>
@@ -713,8 +715,8 @@ The Haar Wavelet Transform (HWT) examples are:
           <td colspan="2"><img src="docs/_static/dog-bw.png" alt="Original Image"/></td>
       </tr>
       <tr>
-          <th>Reconstructed Image</th>
-          <th>Haar Wavelet domain</th>
+          <th style="width: 50%">Reconstructed Image</th>
+          <th style="width: 50%">Haar Wavelet domain</th>
       </tr>
       <tr>
           <th>Threshold = 7.5, 170.17 KB, size reduced by ~95%</th>
@@ -772,25 +774,75 @@ The Haar Wavelet Transform (HWT) examples are:
 
 ## Benchmark
 
-### FFT Performance
+### FFT and Inverse FFT Performance
 
-In the following figure, we show the execution time of the sequential and parallel versions of the FFT algorithm:
+We conducted a comprehensive set of benchmarks to evaluate the performance and scalability of our
+Fast Fourier Transform (FFT) implementation.
+These benchmarks cover 1D, 2D, and 3D FFTs and compare sequential and parallel (OpenMP)
+computation modes.
 
-<img src="docs/_static/fft_performance.png">
+- We generated random input signals of various sizes to ensure that the total number of elements
+  was always a power of two, as required by the radix-2 Cooley-Tukey FFT.
+- We tested a wide range of input shapes for each dimension, from small to very large,
+  to assess performance at both small and large scales.
+  
+  Using a [backtracking approach](https://en.wikipedia.org/wiki/Backtracking#Description_of_the_method),
+  we generated input shapes and benchmarked all possible combinations of sizes
+  for each dimension that were less than or equal to 8,388,608 $\left(2^{23}\right)$ elements.
+- Each benchmark was run in both sequential and OpenMP parallel modes with different thread counts to measure parallel speedup and efficiency.
+- The benchmarks were executed using the [Google Benchmark framework](https://github.com/google/benchmark),
+  which provides reliable and statistically sound timing results.
 
-The signal length is on a logarithmic scale (ranging from 10 to 10 million), and the execution time is also on a 
-logarithmic scale (ranging from 0.001 ms to 1000 ms).
-- For small signal lengths (up to about $10^2$), the Sequential FFT performs better,
-  and takes less time than the parallel FFT.
-  This is likely due to the overhead associated with parallel processing
-  which outweighs the benefits for smaller data sets.
-- As the signal length increases beyond $10^2$, the parallel FFT begins to show its advantages,
-  becomes more efficient and takes less time compared to the Sequential FFT.
-  This indicates that for larger data sets, the workload sharing in the Parallel FFT
-  effectively utilizes multiple processors and significantly reduces computation time.
-- The gap between the Sequential and Parallel FFTs widens as the signal length increases.
-  The Parallel FFT consistently outperforms the Sequential FFT for larger signal lengths,
-  demonstrating the scalability and efficiency of parallel processing for intensive computations.
+#### ThinkPad T430 Benchmarking Environment
+
+We benchmarked the performance of our FFT implementation on a Lenovo ThinkPad T430:
+- **CPU**: Intel(R) Core(TM) i7-3632QM CPU @ 2.20GHz
+  - Thread(s) per core:   2
+  - Core(s) per socket:   4
+  - Socket(s):            1
+  - Stepping:             9
+  - CPU(s) scaling MHz:   56%
+  - CPU max MHz:          3200.0000
+  - CPU min MHz:          1200.0000
+  - Caches (sum of all):      
+    - L1d: 128 KiB (4 instances)
+    - L1i: 128 KiB (4 instances)
+    - L2:  1 MiB (4 instances)
+    - L3:  6 MiB (1 instance)
+- **RAM**: 2 x 8 GB DDR3 1600 MHz
+- **OS**: Ubuntu 24.04 LTS
+
+<table>
+    <tr>
+        <th style="width: 50%">1D FFT Speedup</th>
+        <th style="width: 50%">1D FFT Efficiency</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/thinkpad/1D_fft_speedup_vs_threads.png" alt="1D FFT Speedup"/></td>
+        <td><img src="docs/_static/thinkpad/1D_fft_efficiency_vs_threads.png" alt="1D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+        <td>
+          <ul>
+            <li>2 threads: Modest speedup, peaks around 1.6x for large sizes ($\log_{2}(N) \ge 18$). Consistent scaling with increasing input.</li>
+            <li>4 threads: Speedup exceeds 2x from $\log_{2}(N) \approx 16$. Flatter scaling curve after that, reaching a maximum around 2.2x.</li>
+            <li>8 threads: Achieves the highest speedup (up to 2.75x) but is less stable. Sharp drop at $\log_{2}(N) = 14$ suggests overhead or thread contention. Gains taper off, indicating limited scalability beyond this point.</li>
+          </ul>
+          Speedup improves with input size for all thread counts. 8 threads offer the best speedup, but not proportionally to thread count.
+          Scaling is sublinear due to overhead, synchronization, and possibly thermal or hardware constraints.
+        </td>
+        <td>
+          <ul>
+            <li>2 threads perform best, reaching up to 80% efficiency for large input sizes ($log_{2}(N) \ge 17$).</li>
+            <li>4 threads show moderate scaling, peaking near 55%, but efficiency drops slightly at higher sizes.</li>
+            <li>8 threads have poor efficiency (max ~35%), likely due to overhead, thread contention, or hyperthreading limits.</li>
+          </ul>
+          Efficiency improves with input size but saturates beyond a point.
+          More threads don’t always mean better performance, overhead dominates with 8 threads.
+          Optimal thread count depends on input size; 2–4 threads offer the best trade-off on Intel i7-3632QM.
+        </td>
+    </tr>
+</table>
 
 
 
