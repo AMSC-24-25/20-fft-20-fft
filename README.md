@@ -814,33 +814,39 @@ We benchmarked the performance of our FFT implementation on a Lenovo ThinkPad T4
 
 <table>
     <tr>
-        <th style="width: 50%">1D FFT Speedup</th>
-        <th style="width: 50%">1D FFT Efficiency</th>
+        <th>1D FFT Speedup</th>
     </tr>
     <tr>
         <td><img src="docs/_static/thinkpad/1D_fft_speedup_vs_threads.png" alt="1D FFT Speedup"/></td>
-        <td><img src="docs/_static/thinkpad/1D_fft_efficiency_vs_threads.png" alt="1D FFT Efficiency"/></td>
     </tr>
     <tr>
-        <td>
-          <ul>
-            <li>2 threads: Modest speedup, peaks around 1.6x for large sizes ($\log_{2}(N) \ge 18$). Consistent scaling with increasing input.</li>
-            <li>4 threads: Speedup exceeds 2x from $\log_{2}(N) \approx 16$. Flatter scaling curve after that, reaching a maximum around 2.2x.</li>
-            <li>8 threads: Achieves the highest speedup (up to 2.75x) but is less stable. Sharp drop at $\log_{2}(N) = 14$ suggests overhead or thread contention. Gains taper off, indicating limited scalability beyond this point.</li>
-          </ul>
-          Speedup improves with input size for all thread counts. 8 threads offer the best speedup, but not proportionally to thread count.
-          Scaling is sublinear due to overhead, synchronization, and possibly thermal or hardware constraints.
-        </td>
-        <td>
-          <ul>
-            <li>2 threads perform best, reaching up to 80% efficiency for large input sizes ($log_{2}(N) \ge 17$).</li>
-            <li>4 threads show moderate scaling, peaking near 55%, but efficiency drops slightly at higher sizes.</li>
-            <li>8 threads have poor efficiency (max ~35%), likely due to overhead, thread contention, or hyperthreading limits.</li>
-          </ul>
-          Efficiency improves with input size but saturates beyond a point.
-          More threads don’t always mean better performance, overhead dominates with 8 threads.
-          Optimal thread count depends on input size; 2–4 threads offer the best trade-off on Intel i7-3632QM.
-        </td>
+      <td>
+        <ul>
+          <li>2 threads: Modest speedup, peaks around 1.6x for large sizes ($\log_{2}(N) \ge 18$). Consistent scaling with increasing input.</li>
+          <li>4 threads: Speedup exceeds 2x from $\log_{2}(N) \approx 16$. Flatter scaling curve after that, reaching a maximum around 2.2x.</li>
+          <li>8 threads: Achieves the highest speedup (up to 2.75x) but is less stable. Sharp drop at $\log_{2}(N) = 14$ suggests overhead or thread contention. Gains taper off, indicating limited scalability beyond this point.</li>
+        </ul>
+        Speedup improves with input size for all thread counts. 8 threads offer the best speedup, but not proportionally to thread count.
+        Scaling is sublinear due to overhead, synchronization, and possibly thermal or hardware constraints.
+      </td>
+    </tr>
+    <tr>
+      <th>1D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/thinkpad/1D_fft_efficiency_vs_threads.png" alt="1D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>2 threads perform best, reaching up to 80% efficiency for large input sizes ($log_{2}(N) \ge 17$).</li>
+          <li>4 threads show moderate scaling, peaking near 55%, but efficiency drops slightly at higher sizes.</li>
+          <li>8 threads have poor efficiency (max ~35%), likely due to overhead, thread contention, or hyperthreading limits.</li>
+        </ul>
+        Efficiency improves with input size but saturates beyond a point.
+        More threads don’t always mean better performance, overhead dominates with 8 threads.
+        Optimal thread count depends on input size; 2–4 threads offer the best trade-off on Intel i7-3632QM.
+      </td>
     </tr>
 </table>
 
