@@ -848,7 +848,96 @@ We benchmarked the performance of our FFT implementation on a Lenovo ThinkPad T4
         Optimal thread count depends on input size; 2–4 threads offer the best trade-off on Intel i7-3632QM.
       </td>
     </tr>
+    <tr>
+        <th>2D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/thinkpad/2D_fft_speedup_vs_threads.png" alt="2D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      For small inputs ($\log_{2}(N) < 12$), all configurations show low speedup (<1x), parallelization overhead dominates.
+      Speedup increases with input size, especially from $\log_{2}(N) \approx 13$.
+      <ul>
+        <li>2 threads show modest speedup, maxing at ~1.1x.</li>
+        <li>4 threads achieve up to 1.85x, with more stable results than 8 threads.</li>
+        <li>8 threads yield the highest speedup, reaching over 2.1x, but with large variance (visible via error bars).</li>
+      </ul>
+      2D FFT benefits more from parallelization at large sizes, but scaling remains sublinear.
+      High variance for 8 threads suggests non-determinism, possibly from memory bandwidth saturation or thread scheduling variability.
+      Optimal thread count depends on balancing speedup gains against stability and resource contention.
+      </td>
+    </tr>
+    <tr>
+      <th>2D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/thinkpad/2D_fft_efficiency_vs_threads.png" alt="2D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+      Efficiency is low for small inputs ($\log_{2}(N) < 12$) due to high overhead relative to workload.
+      It steadily increases with input size across all thread counts.
+        <ul>
+          <li>2 threads maintain the highest efficiency throughout, reaching ~55% at the largest sizes.</li>
+          <li>4 threads follow closely, approaching ~45%.</li>
+          <li>8 threads lag behind, peaking at only ~25%, with wider variance.</li>
+        </ul>
+        Parallelization becomes worthwhile for larger 2D FFTs.
+        Efficiency decreases with more threads, reflecting increased overhead and possible memory bottlenecks.
+        For this hardware (Thinkpad T430), 2-4 threads offer a better efficiency-to-cost ratio than 8 threads.
+      </td>
+    </tr>
+    <tr>
+        <th>3D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/thinkpad/3D_fft_speedup_vs_threads.png" alt="3D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      Speedup is consistently below 1x for small inputs ($\log_{2}(N) < 17$), indicating parallel overhead dominates.
+      <ul>
+        <li>2 threads scale slowly, maxing at ~0.5x.</li>
+        <li>4 threads achieve a moderate peak of ~0.9x.</li>
+        <li>8 threads reach the highest speedup (~1.1x) at large sizes, but with high variance.</li>
+      </ul>
+      3D FFT is the hardest to parallelize efficiently on this hardware.
+      Even at large sizes, speedup remains limited, possibly due to a combination of factors:
+      <ul>
+        <li>Increased computational complexity of 3D FFTs.</li>
+        <li>Memory bandwidth limitations.</li>
+        <li>Overhead from managing more threads.</li>
+      </ul>
+      Parallelization is beneficial only for large volumes, and even then, gains are modest.
+      </td>
+    </tr>
+    <tr>
+      <th>3D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/thinkpad/3D_fft_efficiency_vs_threads.png" alt="3D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+      Efficiency is very low across all thread counts, especially for small input sizes ($\log_{2}(N) < 16$),
+      where it stays below 10%. Only at larger sizes ($\log_{2}(N) \ge 20$),
+      2 and 4 threads gradually reach ~25–35% efficiency; 8 threads consistently underperform, peaking at ~15%.
+      Furthermore, error bars suggest significant variability, especially with more threads. <br><br>
+      3D FFTs are the least efficient to parallelize in this benchmark.
+      The complex memory access patterns and increased communication overhead likely degrade performance.
+      Efficiency grows with size, but remains far from ideal.
+      For this workload and hardware, using 2-4 threads is more effective, while 8 threads yield diminishing returns. 
+      </td>
+    </tr>
 </table>
+
+To conclude, the benchmarks demonstrate that:
+- 1D FFT is the most parallel-friendly on this Intel i7-3632QM,
+  showing strong speedup and high efficiency, especially with 2-4 threads.
+- 2D FFT gains from parallelism for larger inputs, but memory usage and thread overhead limit its full potential.
+- 3D FFT suffers from poor cache locality and higher overhead,
+  making it the least efficient and least scalable among the three.
 
 
 
