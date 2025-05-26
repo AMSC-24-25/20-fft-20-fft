@@ -27,8 +27,8 @@ Only OpenMP, CMake 3.22 and C++20 are required.
     git clone --recursive-submodules https://github.com/AMSC-24-25/20-fft-20-fft.git
     # rename folder clone
     mv 20-fft-20-fft signal_processing && cd signal_processing
-    ./build-essentials.sh # to install the dependencies
-    ./build-examples.sh   # to build the examples
+    ./build-essentials.sh  # to install the dependencies
+    ./build-examples.sh    # to build the examples
     ./build-benchmarks.sh  # to build the benchmarks
     ```
 
@@ -152,12 +152,12 @@ ninja all
 
 Other useful presets:
 
-| Preset Name           | Description                                                        |
-|-----------------------|--------------------------------------------------------------------|
-| `ninja-dev`           | Build with examples (requires OpenCV and Matplot++)                |
-| `ninja-dev-benchmark` | Build with examples and benchmarks (requires Google Benchmark too) |
-| `make-dev`            | Same as `ninja-dev` but uses Makefiles instead of Ninja            |
-| `make-lib`            | Build library only with Makefiles                                  |
+| Preset Name           | Description                                             |
+|-----------------------|---------------------------------------------------------|
+| `ninja-dev`           | Build with examples (requires OpenCV and Matplot++)     |
+| `ninja-dev-benchmark` | Build with benchmarks (requires Google Benchmark too)   |
+| `make-dev`            | Same as `ninja-dev` but uses Makefiles instead of Ninja |
+| `make-lib`            | Build library only with Makefiles                       |
 
 The presets are defined in the [CMakePresets.json](CMakePresets.json) file.
 The external libraries required for `ninja-dev`, `ninja-dev-benchmark`, and `make-dev`
@@ -792,67 +792,10 @@ logarithmic scale (ranging from 0.001 ms to 1000 ms).
   The Parallel FFT consistently outperforms the Sequential FFT for larger signal lengths,
   demonstrating the scalability and efficiency of parallel processing for intensive computations.
 
-### Inverse FFT Performance
-
-And in the following figure, we show the execution time of the sequential and parallel versions of the inverse FFT algorithm:
-
-<img src="docs/_static/inverse_fft_performance.png">
-
-- For smaller signal lengths (up to around $10^2$), the Sequential Inverse FFT often performs slightly better,
-  similar to the FFT performance.
-  The overhead associated with managing parallel tasks can make the parallel version less efficient for small datasets.
-- As the signal length increases beyond $10^2$, the Parallel Inverse FFT starts to show its strength and efficiency.
-  The execution time for the parallel version becomes significantly lower than that of the sequential version
-  for larger datasets. This is due to the effective utilization of multiple cores to handle the increased workload.
-- The gap between Sequential Inverse FFT and Parallel Inverse FFT widens with increasing signal lengths.
-  This indicates that parallel processing significantly improves performance for large-scale inverse FFT computations.
-
-### Standard Deviation
-
-#### FFT
-
-The standard deviation of the execution time for the sequential and parallel versions of the FFT algorithm is shown in the following figure:
-
-<img src="docs/_static/std_fft_performance.png">
-
-- The error bars on the graph represent the standard deviation of the measured times.
-  They indicate the variability or consistency of the performance measurements. 
-  
-  Smaller error bars mean more consistent performance,
-  while larger error bars suggest more variability in the execution times.
-
-The graph highlights the point at which parallel processing begins to show a clear advantage over sequential processing.
-
-#### Inverse FFT
-
-The standard deviation of the execution time for the sequential and parallel versions of the inverse FFT algorithm
-is shown in the following figure:
-
-<img src="docs/_static/std_inverse_fft_performance.png">
-
-- Error bars indicate the standard deviation of execution times,
-  highlighting the variability in performance measurements.
-
-  Consistent performance is indicated by smaller error bars.
-- The smaller error bars indicate more consistent and reliable performance.
-  When the Parallel Inverse FFT shows smaller error bars for large signal lengths, it highlights its stable performance.
-
-- The larger error bars indicate greater variability.
-  If the Parallel Inverse FFT shows larger error bars, it may be subject to more variability due to system or
-  algorithmic factors.
 
 
 [OpenMP]: https://www.openmp.org/
-[POLIMI]: https://www.polimi.it/
-[CLion]: https://www.jetbrains.com/clion/
 [CK-FFT]: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
-[MOX Laboratory]: https://mox.polimi.it/
-[MK library]: https://github.com/pcafrica/mk
-[JSONSchemaValidator]: https://www.jsonschemavalidator.net/
-[matplotplusplus]: https://alandefreitas.github.io/matplotplusplus/
-[AbstractFileSignalSaver]: src/signal_processing/handlers/signal_saver/abstract-file-signal-saver.hpp
-[gnuplot]: http://gnuplot.info/
-[mt19937]: https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine
 [bit-reversal]: https://en.wikipedia.org/wiki/Bit-reversal_permutation
 [butterfly]: https://en.wikipedia.org/wiki/Butterfly_diagram
 [quantization]: https://en.wikipedia.org/wiki/Quantization_(image_processing)
