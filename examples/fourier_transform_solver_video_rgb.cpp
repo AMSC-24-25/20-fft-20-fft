@@ -8,7 +8,7 @@
  */
 
 #include <complex>
-#include <filesystem>
+#include <sys/stat.h>
 #include <iostream>
 #include <vector>
 
@@ -30,9 +30,10 @@ int main() {
                      << sp::utils::timestamp::createReadableTimestamp("%Y%m%d_%H%M%S")
                      << ".avi";
     // check if the output folder exists
-    if (!std::filesystem::exists("examples/output")) {
+    struct stat info;
+    if (stat("examples/output", &info) != 0 || !(info.st_mode & S_IFDIR)) {
         std::cerr << "Output folder does not exist. Creating it..." << std::endl;
-        std::filesystem::create_directory("examples/output");
+        mkdir("examples/output", 0755);
     }
     cv::VideoCapture cap(input_file);
     if (!cap.isOpened()) {

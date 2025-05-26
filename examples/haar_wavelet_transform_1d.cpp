@@ -8,8 +8,8 @@
 int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution power_dist(3, 6); // 2^3 = 8 ... 2^6 = 64
-    std::uniform_real_distribution val_dist(-10.0, 10.0);
+    std::uniform_int_distribution<> power_dist(3, 6); // 2^3 = 8 ... 2^6 = 64
+    std::uniform_real_distribution<> val_dist(-10.0, 10.0);
 
     int N = std::pow(2, power_dist(gen));
     std::vector<double> input(N);

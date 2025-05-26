@@ -237,13 +237,10 @@ int main() {
     const double *phase = new double(json_loaded->getPhase());
     const double *noise = new double(json_loaded->getNoise());
     const std::string *signal_domain = new std::string(json_loaded->getSignalDomain());
-    // get the seed if it exists, otherwise set it to nullopt
-    const std::optional<int> seed = json_loaded->hasSeed() ? std::optional(json_loaded->getSeed()) : std::nullopt;
     // prepare the signal saver and use the unique pointer to manage the memory
     const auto csv_signal_saver = std::make_unique<sp::saver::CsvSignalSaver>();
     // free unused memory
     delete loader;
-    delete json_loaded;
 
 
     // ================================================ Generate Signal ================================================
@@ -252,12 +249,16 @@ int main() {
     if (*signal_domain == "time") {
         // time domain
         printf("Generating time domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(
+            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
+        );
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     } else {
         // space domain
         printf("Generating space domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(
+            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
+        );
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     }
     // and save it to a file

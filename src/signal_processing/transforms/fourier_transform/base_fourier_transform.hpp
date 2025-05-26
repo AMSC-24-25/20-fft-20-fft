@@ -91,11 +91,11 @@ namespace sp::fft::solver
         void compute(
             std::vector<std::complex<double>> &input,
             const ComputationMode mode,
-            const std::optional<int> threads = std::nullopt
+            const int threads = omp_get_max_threads()
         ) {
             // check if the size of the input vector corresponds to the multiplication of each element of dims
             const size_t expected_size = std::accumulate(
-                dims.begin(), dims.end(), 1, std::multiplies()
+                dims.begin(), dims.end(), 1, std::multiplies<size_t>()
             );
             if (input.size() != expected_size) {
                 throw std::invalid_argument(
@@ -117,8 +117,8 @@ namespace sp::fft::solver
                 // save the number of threads before calling the OpenMP function
                 const int numThreads = omp_get_max_threads();
                 // if numberOfThreads is specified, set the number of threads
-                if (threads.has_value()) {
-                    omp_set_num_threads(threads.value());
+                if (threads > 0) {
+                    omp_set_num_threads(threads);
                 }
                 // compute the Fourier Transform using OpenMP
                 this->computeND(input, this->getOpenMPTransform());
@@ -146,7 +146,7 @@ namespace sp::fft::solver
             const std::vector<std::complex<double>> &input,
             std::vector<std::complex<double>> &output,
             const ComputationMode mode,
-            const std::optional<int> threads = std::nullopt
+            const int threads = omp_get_max_threads()
         ) {
             output = input;
             this->compute(output, mode, threads);

@@ -12,10 +12,10 @@ using json = nlohmann::json;
 namespace sp::config
 {
     const JsonFieldHandler &JSONConfigurationLoader::getConfigurationData() const {
-        if (configurationData.has_value()) {
-            return configurationData.value();
+        if (configurationData.getConfigurationLoaded().empty()) {
+            throw std::runtime_error("No configuration data was loaded.");
         }
-        throw std::runtime_error("No JSON configuration data loaded.");
+        return configurationData;
     }
 
     void JSONConfigurationLoader::loadConfigurationFromFile(const std::string &filePath) {
@@ -50,6 +50,6 @@ namespace sp::config
         fileStream.close();
         // print the actual configuration data;
         printf("The configuration data has been loaded from the file: %s.\n%s\n\n",
-            filePath.c_str(), configurationData->getConfigurationLoaded().dump(4).c_str());
+            filePath.c_str(), configurationData.getConfigurationLoaded().dump(4).c_str());
     }
 }

@@ -4,11 +4,12 @@
  *        by applying them to an image.
  */
 
+#include <chrono>
 #include <iostream>
 #include <cmath>
+#include <sys/stat.h>
 
 #include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
 
 #include "signal_processing/signal_processing.hpp"
 
@@ -36,9 +37,10 @@ int main() {
                      << sp::utils::timestamp::createReadableTimestamp("_%Y%m%d_%H%M%S")
                      << ".png";
     // check if the output folder exists
-    if (!std::filesystem::exists("examples/output")) {
+    struct stat info;
+    if (stat("examples/output", &info) != 0 || !(info.st_mode & S_IFDIR)) {
         std::cerr << "Output folder does not exist. Creating it..." << std::endl;
-        std::filesystem::create_directory("examples/output");
+        mkdir("examples/output", 0755);
     }
     // create the output file path
     const std::string filepath_out = filepath_out_oss.str();
@@ -74,10 +76,10 @@ int main() {
 
     const auto start_time = std::chrono::high_resolution_clock::now();
     sp::fft::solver::FastFourierTransform<2> solver(
-        std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
+        std::array<size_t, 2>{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
     sp::fft::solver::InverseFastFourierTransform<2> inverse_solver(
-        std::array{static_cast<size_t>(height), static_cast<size_t>(width)}
+        std::array<size_t, 2>{static_cast<size_t>(height), static_cast<size_t>(width)}
     );
     auto computation_mode = sp::fft::solver::ComputationMode::OPENMP;
     solver.compute(R, computation_mode);
@@ -102,9 +104,9 @@ int main() {
      */
     std::vector<unsigned char> output(width * height * 3);
     for (size_t i = 0; i < R.size(); ++i) {
-        output[i * 3 + 0] = static_cast<unsigned char>(std::clamp(std::real(R[i]), 0.0, 255.0));
-        output[i * 3 + 1] = static_cast<unsigned char>(std::clamp(std::real(G[i]), 0.0, 255.0));
-        output[i * 3 + 2] = static_cast<unsigned char>(std::clamp(std::real(B[i]), 0.0, 255.0));
+        output[i * 3 + 0] = static_cast<unsigned char>(R[i].real() > 255.0 ? 255 : (R[i].real() < 0.0 ? 0 : R[i].real()));
+        output[i * 3 + 1] = static_cast<unsigned char>(G[i].real() > 255.0 ? 255 : (G[i].real() < 0.0 ? 0 : G[i].real()));
+        output[i * 3 + 2] = static_cast<unsigned char>(B[i].real() > 255.0 ? 255 : (B[i].real() < 0.0 ? 0 : B[i].real()));
     }
     printf("Image converted back to unsigned char\n");
     // check if the image was saved successfully

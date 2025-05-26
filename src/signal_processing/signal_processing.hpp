@@ -37,6 +37,7 @@
 
 // utils
 #include <utils/bit_reversal.hpp>
+#include <utils/legacy_support.hpp>
 #include <utils/rle_compressor.hpp>
 #include <utils/timestamp.hpp>
 #include <utils/zigzag_scan.hpp>

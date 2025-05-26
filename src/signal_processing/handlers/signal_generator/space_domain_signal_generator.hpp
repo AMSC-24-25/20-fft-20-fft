@@ -9,7 +9,9 @@ namespace sp::signal_gen
 {
     class SpaceDomainSignalGenerator final : public BaseSignalGenerator {
     public:
-        explicit SpaceDomainSignalGenerator(const std::optional<int> seed = std::nullopt) : BaseSignalGenerator(seed) {}
+        explicit SpaceDomainSignalGenerator(const int seed) : BaseSignalGenerator(seed) {}
+
+        explicit SpaceDomainSignalGenerator() {}
 
         /**
          * Generate a random (thanks to noise) one-dimensional signal in the space domain.

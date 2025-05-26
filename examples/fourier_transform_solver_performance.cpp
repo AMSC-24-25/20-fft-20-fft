@@ -8,6 +8,7 @@
  *          performance of the FFT solver.
  */
 
+#include <chrono>
 #include <iostream>
 #include <cmath>
 #include <omp.h>
@@ -22,7 +23,7 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
     // prepare the vectors for the FFT
     std::vector<std::complex<double>> sequential_fft(signal_length);
     std::vector<std::complex<double>> parallel_fft(signal_length);
-    sp::fft::solver::FastFourierTransform<1> solver(std::array{static_cast<size_t>(signal_length)});
+    sp::fft::solver::FastFourierTransform<1> solver(std::array<size_t, 1>{static_cast<size_t>(signal_length)});
     // you can use the solver in two modes:
     // 1. in-place computation (default): the input vector is modified in place and
     //                                    the result is stored in the same vector
@@ -63,7 +64,7 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     std::vector<std::complex<double>> parallel_ifft(signal_length);
     // prepare the solver
     sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(
-        std::array{static_cast<size_t>(signal_length)}
+        std::array<size_t, 1>{static_cast<size_t>(signal_length)}
     );
     // sequential Inverse FFT
     const auto start_time_seq = std::chrono::high_resolution_clock::now();
@@ -111,28 +112,29 @@ int main() {
     const double *frequency = new double(json_loaded->getHzFrequency());
     const double *phase = new double(json_loaded->getPhase());
     const double *noise = new double(json_loaded->getNoise());
-    const std::string *signal_domain = new std::string(json_loaded->getSignalDomain());
-    // get the seed if it exists, otherwise set it to nullopt
-    const std::optional<int> seed = json_loaded->hasSeed() ? std::optional(json_loaded->getSeed()) : std::nullopt;
+    const std::string signal_domain = json_loaded->getSignalDomain();
     // prepare the signal saver and use the unique pointer to manage the memory
     const auto csv_signal_saver = std::make_unique<sp::saver::CsvSignalSaver>();
     // free unused memory
     delete loader;
-    delete json_loaded;
 
 
     // ================================================ Generate Signal ================================================
     // generate the signal
     std::vector<std::complex<double>> signal(signal_length);
-    if (*signal_domain == "time") {
+    if (signal_domain == "time") {
         // time domain
         printf("Generating time domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(
+            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
+        );
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     } else {
         // space domain
         printf("Generating space domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(seed);
+        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(
+            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
+        );
         signal = domain_signal_generator.generate1DSignal(signal_length, *frequency, *phase, *noise);
     }
     // uncomment the following line to save the generated signal to a file
@@ -147,8 +149,8 @@ int main() {
     // ====================================== Sequential vs. Parallel Inverse FFT ======================================
     printf("\n\nSequential vs. Parallel Inverse FFT\n");
     // pass the fft result as input
-    std::vector<std::complex<double>> fft_res(signal_length);
-    sp::fft::solver::FastFourierTransform<1> tmp_solver(std::array{static_cast<size_t>(signal_length)});
+    const std::vector<std::complex<double>> fft_res(signal_length);
+    sp::fft::solver::FastFourierTransform<1> tmp_solver(std::array<size_t, 1>{static_cast<size_t>(signal_length)});
     sequential_vs_parallel_inverse_fft(fft_res);
 
     return 0;

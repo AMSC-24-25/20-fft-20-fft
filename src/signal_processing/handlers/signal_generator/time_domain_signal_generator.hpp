@@ -9,7 +9,9 @@ namespace sp::signal_gen
 {
     class TimeDomainSignalGenerator final : public BaseSignalGenerator {
     public:
-        explicit TimeDomainSignalGenerator(const std::optional<int> seed = std::nullopt) : BaseSignalGenerator(seed) {}
+        explicit TimeDomainSignalGenerator(const int seed) : BaseSignalGenerator(seed) {}
+
+        explicit TimeDomainSignalGenerator() {}
 
         /**
          * Generate a random (thanks to noise) one-dimensional signal in the time domain.

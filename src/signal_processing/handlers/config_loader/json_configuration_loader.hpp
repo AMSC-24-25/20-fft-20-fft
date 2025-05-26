@@ -5,6 +5,7 @@
 
 #include "json_field_handler.hpp"
 #include "handlers/config_loader/base_configuration_loader.hpp"
+#include "utils/legacy_support.hpp"
 
 namespace sp::config
 {
@@ -12,7 +13,7 @@ namespace sp::config
     * JSONConfigurationLoader is a concrete class that implements the BaseConfigurationLoader interface.
     */
     class JSONConfigurationLoader final : public BaseConfigurationLoader {
-        std::optional<JsonFieldHandler> configurationData;
+        JsonFieldHandler configurationData = JsonFieldHandler(nlohmann::json::object_t());
 
     public:
         /**

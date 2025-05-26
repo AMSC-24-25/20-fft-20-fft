@@ -16,16 +16,16 @@ namespace sp::config
     };
 
     void JsonFieldHandler::validation() const {
-        // optional fields
-        const std::set optional_fields = {
-            fieldNames.at(Field::Seed),
+        const std::vector<std::string> required_fields = {
+            fieldNames.at(Field::SignalDomain),
+            fieldNames.at(Field::SignalLength),
+            fieldNames.at(Field::HzFrequency),
+            fieldNames.at(Field::Phase),
+            fieldNames.at(Field::Noise)
         };
-        for (const auto & [field, value] : fieldNames) {
-            if (
-                optional_fields.find(value) == optional_fields.end() &&
-                configurationLoaded.find(value) == configurationLoaded.end()
-            ) {
-                throw std::invalid_argument("Field not found: " + value);
+        for (const auto &field : required_fields) {
+            if (!configurationLoaded.contains(field)) {
+                throw std::invalid_argument("Field not found: " + field);
             }
         }
         // check allowed values for signal domain
@@ -68,7 +68,8 @@ namespace sp::config
         // note: find() returns an iterator to the element if found,
         //       otherwise it returns an iterator to the end of the container;
         //       it is a sentinel value
-        if (const auto field_name = fieldNames.find(field); field_name != fieldNames.end()) {
+        const auto field_name = fieldNames.find(field);
+        if (field_name != fieldNames.end()) {
             return field_name->second;
         }
         throw std::invalid_argument("Field not found");

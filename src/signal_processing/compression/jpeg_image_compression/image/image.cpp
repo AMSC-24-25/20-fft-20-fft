@@ -56,7 +56,7 @@ namespace sp::jpeg
 
         const size_t rows = this->img_matrix.size();
         const size_t cols = this->img_matrix[0].size();
-        std::vector<std::vector<double>> compressed = std::vector(rows, std::vector<double>(cols));
+        auto compressed = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
 
         // Create the constant matrix Q (quantization matrix) --> is a 8x8
         std::vector<std::vector<double>> Q = {

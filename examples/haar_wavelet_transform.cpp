@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -194,7 +195,8 @@ int main(){
     //prepare vector to save decompressed image
     for(int i = 0; i < h; i++)
         for(int j = 0; j < w; j++){
-            reconstructed[i][j] = std::clamp(reconstructed[i][j], 0.0, 255.0); //clamp values to [0, 255] range
+            //clamp values to [0, 255] range
+            reconstructed[i][j] = reconstructed[i][j] > 255.0 ? 255.0 : (reconstructed[i][j] < 0.0 ? 0.0 : reconstructed[i][j]);
             outputImage[j + i*w] = static_cast<unsigned char>(reconstructed[i][j]);
         }
 

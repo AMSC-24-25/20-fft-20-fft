@@ -1,9 +1,10 @@
 #ifndef BASE_SIGNAL_GENERATOR_HPP
 #define BASE_SIGNAL_GENERATOR_HPP
 
-#include <optional>
 #include <random>
 #include <complex>
+
+#include "utils/legacy_support.hpp"
 
 /**
  * Signal Generator module.
@@ -22,7 +23,7 @@ namespace sp::signal_gen
         /**
          * Seed for the random generator.
          */
-        std::optional<int> _seed;
+        utils::legacy::Optional<int> _seed;
         /**
          * Random engine for the random generator.
          * The Mersenne Twister is a general-purpose pseudorandom number generator (PRNG).
@@ -40,11 +41,17 @@ namespace sp::signal_gen
         /**
          * The signal generator needs a _seed, which is used for the random generator and is constant.
          *
-         * If the _seed is not provided, a random _seed is generated using std::random_device.
          * @param seed Seed for the random generator.
          */
-        explicit BaseSignalGenerator(const std::optional<int> seed = std::nullopt) : _seed(seed) {
-            _engine.seed(_seed ? *_seed : std::random_device()());
+        explicit BaseSignalGenerator(const int seed) : _seed(seed) {
+            _engine.seed(_seed.value());
+        }
+
+        /**
+         * A random seed is generated using the std::random_device.
+         */
+        explicit BaseSignalGenerator() {
+            _engine.seed(std::random_device()());
         }
 
         virtual ~BaseSignalGenerator() = default;

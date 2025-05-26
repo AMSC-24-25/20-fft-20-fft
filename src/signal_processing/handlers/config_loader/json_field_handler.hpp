@@ -52,7 +52,9 @@ namespace sp::config
      */
     explicit JsonFieldHandler(nlohmann::json json) : configurationLoaded(std::move(json)) {
       // validate the configuration data, throw an exception if it is not valid
-      validation();
+      if (!configurationLoaded.empty()) {
+        validation();
+      }
     }
     // use std::move to move the json object to the configurationLoaded field
     // to avoid copying (or deep copying) the json object
