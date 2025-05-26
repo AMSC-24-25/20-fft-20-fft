@@ -1,6 +1,9 @@
 from plot_performance import *
 
 
+_specs = "(Thinkpad, 1.20 GHz - 3.20 GHz)"
+
+
 def _one_d_benchmark(files):
     df_seq = load_benchmark(files["1D_Sequential"], "Sequential")
     df_omp_2 = load_benchmark(files["1D_OpenMP_2"], "OpenMP 2 threads")
@@ -89,7 +92,7 @@ def _one_d_benchmark(files):
     plot_speedup_vs_threads(
         df_seq,
         df_omp_dict,
-        "1D FFT Speedup vs Threads",
+        f"1D FFT Speedup vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/1D_fft_speedup_vs_threads.pdf",
             "./thinkpad/results/1D_fft_speedup_vs_threads.png"
@@ -98,7 +101,7 @@ def _one_d_benchmark(files):
     plot_efficiency_vs_threads(
         df_seq,
         df_omp_dict,
-        "2D FFT Efficiency vs Threads",
+        f"1D FFT Efficiency vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/1D_fft_efficiency_vs_threads.pdf",
             "./thinkpad/results/1D_fft_efficiency_vs_threads.png"
@@ -185,7 +188,7 @@ def _two_d_benchmark(files):
     plot_speedup_vs_threads(
         df_seq,
         df_omp_dict,
-        "2D FFT Speedup vs Threads",
+        f"2D FFT Speedup vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/2D_fft_speedup_vs_threads.pdf",
             "./thinkpad/results/2D_fft_speedup_vs_threads.png"
@@ -194,7 +197,7 @@ def _two_d_benchmark(files):
     plot_efficiency_vs_threads(
         df_seq,
         df_omp_dict,
-        "2D FFT Efficiency vs Threads",
+        f"2D FFT Efficiency vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/2D_fft_efficiency_vs_threads.pdf",
             "./thinkpad/results/2D_fft_efficiency_vs_threads.png"
@@ -281,7 +284,7 @@ def _three_d_benchmark(files):
     plot_speedup_vs_threads(
         df_seq,
         df_omp_dict,
-        "3D FFT Speedup vs Threads",
+        f"3D FFT Speedup vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/3D_fft_speedup_vs_threads.pdf",
             "./thinkpad/results/3D_fft_speedup_vs_threads.png"
@@ -290,7 +293,7 @@ def _three_d_benchmark(files):
     plot_efficiency_vs_threads(
         df_seq,
         df_omp_dict,
-        "3D FFT Efficiency vs Threads",
+        f"3D FFT Efficiency vs Threads {_specs}",
         output_files=[
             "./thinkpad/results/3D_fft_efficiency_vs_threads.pdf",
             "./thinkpad/results/3D_fft_efficiency_vs_threads.png"
