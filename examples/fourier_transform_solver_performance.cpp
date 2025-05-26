@@ -114,7 +114,7 @@ int main() {
     const double *noise = new double(json_loaded->getNoise());
     const std::string signal_domain = json_loaded->getSignalDomain();
     // prepare the signal saver and use the unique pointer to manage the memory
-    const auto csv_signal_saver = std::make_unique<sp::saver::CsvSignalSaver>();
+    const auto csv_signal_saver = sp::saver::CsvSignalSaver();
     // free unused memory
     delete loader;
 
