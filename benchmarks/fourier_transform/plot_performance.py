@@ -38,7 +38,7 @@ def plot_execution_time(df, title, output_files: list | None = None):
     The DataFrame should contain columns for size, time_ms, and label.
     :param df: DataFrame containing benchmark results with columns 'size', 'time_ms', and 'label'.
     :param title: Title for the plot.
-    :param output_file: Optional; if provided, the plot will be saved to this file.
+    :param output_files: Optional; if provided, the plot will be saved to this file.
     """
     plt.figure(figsize=(10, 5))
     for label, group in df.groupby("label"):
@@ -62,7 +62,7 @@ def plot_speedup(df_seq, df_omp, title, output_files: list | None = None):
     :param df_seq: DataFrame containing sequential benchmark results with columns 'size' and 'time_ms'.
     :param df_omp: DataFrame containing OpenMP benchmark results with columns 'size' and 'time_ms'.
     :param title: Title for the plot.
-    :param output_file: Optional; if provided, the plot will be saved to this file.
+    :param output_files: Optional; if provided, the plot will be saved to this file.
     """
     merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
     merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
@@ -259,96 +259,163 @@ def plot_efficiency_bar(df_seq, df_omp, num_threads, title, output_files: list |
     plt.show()
 
 
+def plot_efficiency_bar_binned(df_seq, df_omp, num_threads, title, output_files: list | None = None):
+    merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", "_omp"))
+    merged["speedup"] = merged["time_ms_seq"] / merged["time_ms_omp"]
+    merged["efficiency"] = merged["speedup"] / num_threads
+    merged["log2_size"] = np.log2(merged["size"]).astype(int)
+
+    # Aggregate by log2_size
+    binned = merged.groupby("log2_size").agg(
+        avg_efficiency=("efficiency", "mean"),
+        std_efficiency=("efficiency", "std"),
+        count=("efficiency", "count")
+    ).reset_index()
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(binned["log2_size"], binned["avg_efficiency"], yerr=binned["std_efficiency"],
+            color='skyblue', capsize=4)
+    plt.axhline(1.0, linestyle="--", color="red", label="100% Efficiency")
+    plt.xlabel("log2(Input Size)")
+    plt.ylabel("Average Efficiency (Speedup / Threads)")
+    plt.title(title)
+    plt.ylim(0, 1.0)
+    plt.grid(True)
+    plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
+
+def plot_multi_thread_speedup(df_all, baseline_label="Sequential", title="Speedup Across Threads", output_files=None):
+    """
+    Plot speedup curves for multiple OpenMP thread configurations against a baseline (e.g., Sequential).
+
+    :param df_all: DataFrame containing all runs, with columns 'size', 'time_ms', and 'label'.
+    :param baseline_label: Label used for the sequential baseline.
+    :param title: Plot title.
+    :param output_files: Optional list of output filenames to save.
+    """
+    # Separate baseline and parallel versions
+    df_base = df_all[df_all["label"] == baseline_label][["size", "time_ms"]].rename(columns={"time_ms": "time_ms_base"})
+
+    plt.figure(figsize=(12, 6))
+    for label, group in df_all[df_all["label"] != baseline_label].groupby("label"):
+        merged = pd.merge(df_base, group, on="size")
+        merged["speedup"] = merged["time_ms_base"] / merged["time_ms"]
+        merged_sorted = merged.sort_values("size")
+        plt.plot(merged_sorted["size"], merged_sorted["speedup"], marker='o', label=label)
+
+    plt.axhline(1.0, color='gray', linestyle='--')
+    plt.xlabel("Input Size")
+    plt.ylabel("Speedup (vs Sequential)")
+    plt.title(title)
+    plt.grid(True)
+    plt.legend(title="Threads")
+    plt.tight_layout()
+
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
+
+def plot_speedup_vs_threads(df_seq, df_omp_dict, title, output_files: list | None = None):
+    """
+    Compare binned average speedup for different thread counts on a single plot, with error bars.
+    """
+    plt.figure(figsize=(12, 6))
+    for threads, df_omp in sorted(df_omp_dict.items()):
+        merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", f"_omp_{threads}"))
+        merged["speedup"] = merged["time_ms_seq"] / merged[f"time_ms_omp_{threads}"]
+        merged["log2_size"] = np.log2(merged["size"]).astype(int)
+        binned = merged.groupby("log2_size").agg(
+            avg_speedup=("speedup", "mean"),
+            std_speedup=("speedup", "std"),
+            count=("speedup", "count")
+        ).reset_index()
+        plt.errorbar(
+            binned["log2_size"], binned["avg_speedup"], yerr=binned["std_speedup"],
+            marker='o', capsize=4, label=f"{threads} threads"
+        )
+    plt.axhline(1.0, color='gray', linestyle='--')
+    plt.xlabel("log2(Input Size)")
+    plt.ylabel("Average Speedup (Sequential / OpenMP)")
+    plt.title(title)
+    plt.grid(True)
+    plt.legend(title="Threads")
+    plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
+
+def plot_efficiency_vs_threads(df_seq, df_omp_dict, title, output_files: list | None = None):
+    """
+    Compare binned average efficiency for different thread counts on a single plot, with error bars.
+    """
+    plt.figure(figsize=(12, 6))
+    for threads, df_omp in sorted(df_omp_dict.items()):
+        merged = pd.merge(df_seq, df_omp, on="size", suffixes=("_seq", f"_omp_{threads}"))
+        merged["speedup"] = merged["time_ms_seq"] / merged[f"time_ms_omp_{threads}"]
+        merged["efficiency"] = merged["speedup"] / threads
+        merged["log2_size"] = np.log2(merged["size"]).astype(int)
+        binned = merged.groupby("log2_size").agg(
+            avg_efficiency=("efficiency", "mean"),
+            std_efficiency=("efficiency", "std"),
+            count=("efficiency", "count")
+        ).reset_index()
+        plt.errorbar(
+            binned["log2_size"], binned["avg_efficiency"], yerr=binned["std_efficiency"],
+            marker='o', capsize=4, label=f"{threads} threads"
+        )
+    plt.axhline(1.0, color='red', linestyle='--', label="100% Efficiency")
+    plt.xlabel("log2(Input Size)")
+    plt.ylabel("Average Efficiency (Speedup / Threads)")
+    plt.title(title)
+    plt.ylim(0, 1.0)
+    plt.grid(True)
+    plt.legend(title="Threads")
+    plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
+
+def plot_execution_time_binned(df, title, output_files: list | None = None):
+    """
+    Plot binned average execution time for different benchmarks.
+    Bins by log2(size) and shows mean and std per label.
+    """
+    df = df.copy()
+    df["log2_size"] = np.log2(df["size"]).astype(int)
+    binned = df.groupby(["label", "log2_size"]).agg(
+        avg_time_ms=("time_ms", "mean"),
+        std_time_ms=("time_ms", "std"),
+        count=("time_ms", "count")
+    ).reset_index()
+
+    plt.figure(figsize=(10, 5))
+    for label, group in binned.groupby("label"):
+        plt.errorbar(
+            group["log2_size"], group["avg_time_ms"], yerr=group["std_time_ms"],
+            marker='o', capsize=4, label=label
+        )
+    plt.xlabel("log2(Input Size)")
+    plt.ylabel("Average Execution Time (ms)")
+    plt.title(title)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    if output_files:
+        for output_file in output_files:
+            plt.savefig(output_file)
+    plt.show()
+
 
 if __name__ == "__main__":
-    specs = "Thinkpad, 8 threads, 1.20 GHz - 3.20 GHz"
-    files = {
-        "1D_Sequential": "./thinkpad/1D_results_sequential_2025-05-19_12-07-52.json",
-        "1D_OpenMP": "./thinkpad/1D_results_openmp_2025-05-18_17-13-24.json",
-        "2D_Sequential": "./thinkpad/2D_results_sequential_2025-05-19_12-08-23.json",
-        "2D_OpenMP": "./thinkpad/2D_results_openmp_2025-05-19_12-41-02.json",
-        "3D_Sequential": "./thinkpad/3D_results_sequential_2025-05-18_16-06-50.json",
-        "3D_OpenMP": "./thinkpad/3D_results_openmp_2025-05-19_22-47-15.json"
-    }
-
-    ### 1D FFT Performance Analysis
-
-    df_seq = load_benchmark(files["1D_Sequential"], "Sequential")
-    df_omp = load_benchmark(files["1D_OpenMP"], "OpenMP")
-    df_all = pd.concat([df_seq, df_omp])
-
-    plot_execution_time(
-        df_all,
-        f"1D FFT Execution Time ({specs})",
-        output_files=[
-            "./thinkpad/1D_fft_execution_time.pdf",
-            "./thinkpad/1D_fft_execution_time.png"
-        ]
-    )
-    plot_speedup_bar(
-        df_seq,
-        df_omp,
-        f"1D FFT Speedup Bar Chart ({specs})",
-        output_files=[
-            "./thinkpad/1D_fft_speedup_bar.pdf",
-            "./thinkpad/1D_fft_speedup_bar.png"
-        ]
-    )
-    plot_efficiency_bar(
-        df_seq,
-        df_omp,
-        num_threads=8,
-        title=f"1D FFT Parallel Efficiency with 8 threads ({specs})",
-        output_files=[
-            "./thinkpad/1D_fft_parallel_efficiency.pdf",
-            "./thinkpad/1D_fft_parallel_efficiency.png"
-        ]
-    )
-
-    #### 2D FFT Performance Analysis
-
-    df_seq_2 = load_benchmark(files["2D_Sequential"], "Sequential")
-    df_omp_2 = load_benchmark(files["2D_OpenMP"], "OpenMP")
-    df_all_2 = pd.concat([df_seq_2, df_omp_2])
-
-    plot_execution_time(
-        df_all_2,
-        f"2D FFT Execution Time ({specs})",
-        output_files=[
-            "./thinkpad/2D_fft_execution_time.pdf",
-            "./thinkpad/2D_fft_execution_time.png"
-        ]
-    )
-    plot_speedup_binned_with_counts(
-        df_seq_2,
-        df_omp_2,
-        f"2D FFT Speedup Bar Chart ({specs})",
-        output_files=[
-            "./thinkpad/2D_fft_speedup_binned_with_counts.pdf",
-            "./thinkpad/2D_fft_speedup_binned_with_counts.png"
-        ]
-    )
-
-    #### 3D FFT Performance Analysis
-
-    df_seq_3 = load_benchmark(files["3D_Sequential"], "Sequential")
-    df_omp_3 = load_benchmark(files["3D_OpenMP"], "OpenMP")
-    df_all_3 = pd.concat([df_seq_3, df_omp_3])
-
-    plot_execution_time(
-        df_all_3,
-        f"3D FFT Execution Time ({specs})",
-        output_files=[
-            "./thinkpad/3D_fft_execution_time.pdf",
-            "./thinkpad/3D_fft_execution_time.png"
-        ]
-    )
-    plot_speedup_binned_with_counts(
-        df_seq_3,
-        df_omp_3,
-        f"3D FFT Speedup Binned ({specs})",
-        output_files=[
-            "./thinkpad/3D_fft_speedup_binned_with_counts.pdf",
-            "./thinkpad/3D_fft_speedup_binned_with_counts.png"
-        ]
-    )
+    import thinkpad
+    thinkpad.main()
