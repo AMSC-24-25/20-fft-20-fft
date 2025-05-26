@@ -28,7 +28,8 @@ void sequential_vs_parallel_fft(const std::vector<std::complex<double>>& signal)
     // prepare the vectors for the FFT
     std::vector<std::complex<double>> sequential_fft(signal_length);
     std::vector<std::complex<double>> parallel_fft(signal_length);
-    sp::fft::solver::FastFourierTransform<1> solver(std::array{static_cast<size_t>(signal_length)});
+    std::array<size_t, 1> V1{static_cast<size_t>(signal_length)};
+    sp::fft::solver::FastFourierTransform<1> solver(V1);
     // you can use the solver in two modes:
     // 1. in-place computation (default): the input vector is modified in place and
     //                                    the result is stored in the same vector
@@ -71,9 +72,8 @@ void sequential_vs_parallel_inverse_fft(const std::vector<std::complex<double>>&
     std::vector<std::complex<double>> sequential_ifft(signal_length);
     std::vector<std::complex<double>> parallel_ifft(signal_length);
     // prepare the solver
-    sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(
-        std::array{static_cast<size_t>(signal_length)}
-    );
+    std::array<size_t, 1> V2{static_cast<size_t>(signal_length)};
+    sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(V2);
     // sequential Inverse FFT
     const auto start_time_seq = std::chrono::high_resolution_clock::now();
     inverse_solver.compute(
@@ -127,12 +127,10 @@ void plot_signal_fft_and_ifft(
     std::vector<std::complex<double>> fft_signal = signal;
     std::vector<std::complex<double>> inverse_fft_signal(signal_length);
     // prepare the solver
-    sp::fft::solver::FastFourierTransform<1> solver(
-        std::array{static_cast<size_t>(signal_length)}
-    );
-    sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(
-        std::array{static_cast<size_t>(signal_length)}
-    );
+    std::array<size_t, 1> V3{static_cast<size_t>(signal_length)};
+    sp::fft::solver::FastFourierTransform<1> solver(V3);
+    std::array<size_t, 1> V4{static_cast<size_t>(signal_length)};
+    sp::fft::solver::InverseFastFourierTransform<1> inverse_solver(V4);
     // compute the FFT
     // note: the solver is used in place, so the input vector is modified;
     //       the result of the FFT is then used to compute the inverse FFT;
@@ -274,7 +272,8 @@ int main() {
     printf("\n\nSequential vs. Parallel Inverse FFT\n");
     // pass the fft result as input
     std::vector<std::complex<double>> fft_res(signal_length);
-    sp::fft::solver::FastFourierTransform<1> tmp_solver(std::array{static_cast<size_t>(signal_length)});
+    std::array<size_t, 1> V5{static_cast<size_t>(signal_length)};
+    sp::fft::solver::FastFourierTransform<1> tmp_solver(V5);
     tmp_solver.compute(signal, fft_res, sp::fft::solver::ComputationMode::OPENMP);
     sequential_vs_parallel_inverse_fft(fft_res);
 
