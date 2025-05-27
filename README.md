@@ -1256,6 +1256,7 @@ We benchmarked the performance of our FFT implementation on a Dell Inspiron 14 P
       <td><img src="docs/_static/dell/3D_fft_efficiency_vs_threads.png" alt="3D FFT Efficiency"/></td>
     </tr>
     <tr>
+      <td>
       Efficiency is modest overall, as expected for 3D FFTs, which are the hardest to scale.
       <ul>
         <li>2 threads peak at ~45% efficiency, the best among all thread counts.</li>
@@ -1263,6 +1264,7 @@ We benchmarked the performance of our FFT implementation on a Dell Inspiron 14 P
         <li>8 threads max out at ~28%, while 16 threads settle around 17%, and 22 threads remain low (~13%) even at the largest input sizes.</li>
       </ul>
       While speedup results were excellent, the efficiency plot highlights diminishing returns as threads increase.
+      </td>
     </tr>
 </table>
 
