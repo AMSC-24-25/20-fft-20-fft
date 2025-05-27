@@ -417,5 +417,22 @@ def plot_execution_time_binned(df, title, output_files: list | None = None):
 
 
 if __name__ == "__main__":
-    import thinkpad
-    thinkpad.main()
+    import thinkpad, hp, dell
+    import tkinter as tk
+
+    def run_benchmark(selection):
+        root.destroy()
+        if selection == "Thinkpad":
+            thinkpad.main()
+        elif selection == "HP":
+            hp.main()
+        elif selection == "Dell":
+            dell.main()
+
+    root = tk.Tk()
+    root.title("Select Benchmark")
+    tk.Label(root, text="Which benchmark do you want to show?", font=("Arial", 14)).pack(pady=10)
+    for bench in ["Thinkpad", "HP", "Dell"]:
+        tk.Button(root, text=bench, width=20, font=("Arial", 12),
+                  command=lambda b=bench: run_benchmark(b)).pack(pady=5)
+    root.mainloop()

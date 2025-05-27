@@ -1,7 +1,7 @@
 from plot_performance import *
 
 
-_specs = "(Thinkpad, 1.20 GHz - 3.20 GHz)"
+_specs = "(Thinkpad, i7-3632QM CPU @ 2.20GHz)"
 
 
 def _one_d_benchmark(files):
@@ -303,7 +303,6 @@ def _three_d_benchmark(files):
 
 
 def main():
-    specs = "Thinkpad, 8 threads, 1.20 GHz - 3.20 GHz"
     files = {
         "1D_Sequential": "./thinkpad/thinkpad-1D_results_sequential_2025-05-19_12-07-52.json",
         "1D_OpenMP_8": "./thinkpad/thinkpad-1D_results_openmp_threads_8_2025-05-18_17-13-24.json",
