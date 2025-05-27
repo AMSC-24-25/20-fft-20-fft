@@ -4,7 +4,6 @@
 #include <vector>
 #include <numeric>
 #include <functional>
-#include <optional>
 #include <omp.h>
 
 namespace sp::fft::solver
@@ -256,7 +255,7 @@ namespace sp::fft::solver
             std::array<size_t, N> strides;
             // the last dimension's stride is always 1 because it represents the smallest step in memory
             strides[N - 1] = 1;
-            // iterate backward through the dimesions to compute the strides
+            // iterate backward through the dimensions to compute the strides
             for (int i = static_cast<int>(N) - 2; i >= 0; --i)
                 strides[i] = strides[i + 1] * dims[i + 1];
             return strides;
