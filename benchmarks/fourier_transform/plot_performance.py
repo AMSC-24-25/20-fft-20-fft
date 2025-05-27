@@ -340,11 +340,13 @@ def plot_speedup_vs_threads(df_seq, df_omp_dict, title, output_files: list | Non
             marker='o', capsize=4, label=f"{threads} threads"
         )
     plt.axhline(1.0, color='gray', linestyle='--')
-    plt.xlabel("log2(Input Size)")
-    plt.ylabel("Average Speedup (Sequential / OpenMP)")
-    plt.title(title)
+    plt.xlabel("log2(Input Size)", fontsize=16+2)
+    plt.ylabel("Average Speedup (Sequential / OpenMP)", fontsize=16+2)
+    plt.title(title, fontsize=18+2)
     plt.grid(True)
-    plt.legend(title="Threads")
+    plt.legend(title="Threads", fontsize=14+2, title_fontsize=15+2)
+    plt.xticks(fontsize=14+2)
+    plt.yticks(fontsize=14+2)
     plt.tight_layout()
     if output_files:
         for output_file in output_files:
@@ -372,12 +374,14 @@ def plot_efficiency_vs_threads(df_seq, df_omp_dict, title, output_files: list | 
             marker='o', capsize=4, label=f"{threads} threads"
         )
     plt.axhline(1.0, color='red', linestyle='--', label="100% Efficiency")
-    plt.xlabel("log2(Input Size)")
-    plt.ylabel("Average Efficiency (Speedup / Threads)")
-    plt.title(title)
+    plt.xlabel("log2(Input Size)", fontsize=16+2)
+    plt.ylabel("Average Efficiency (Speedup / Threads)", fontsize=16+2)
+    plt.title(title, fontsize=18+2)
     plt.ylim(0, 1.0)
     plt.grid(True)
-    plt.legend(title="Threads")
+    plt.legend(title="Threads", fontsize=14+2, title_fontsize=15+2)
+    plt.xticks(fontsize=14+2)
+    plt.yticks(fontsize=14+2)
     plt.tight_layout()
     if output_files:
         for output_file in output_files:

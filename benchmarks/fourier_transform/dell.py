@@ -1,7 +1,7 @@
 from plot_performance import *
 
 
-_specs = "(Dell Inspiron 14 Plus, Intel Ultra 7 155H, 700 MHz to 4.8 GHz)"
+_specs = "(Dell, Intel Ultra 7 155H, 700 MHz to 4.8 GHz)"
 
 
 def _one_d_benchmark(files):
