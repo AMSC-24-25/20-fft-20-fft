@@ -52,6 +52,9 @@ Only `OpenMP`, `CMake 3.22` and `C++ >= 11` are required to build the library.
   - [Haar Wavelet Transform (HWT)](#haar-wavelet-transform-hwt-1)
 - [Benchmark](#benchmark)
   - [FFT and Inverse FFT Performance](#fft-and-inverse-fft-performance)
+    - [ThinkPad T430](#thinkpad-t430)
+    - [HP Pavilion 15-cx0xxx](#hp-pavilion-15-cx0xxx)
+    - [Dell Inspiron 14 Plus](#dell-inspiron-14-plus)
 
 
 ---
@@ -793,7 +796,7 @@ computation modes.
 - The benchmarks were executed using the [Google Benchmark framework](https://github.com/google/benchmark),
   which provides reliable and statistically sound timing results.
 
-#### ThinkPad T430 Benchmarking Environment
+#### ThinkPad T430
 
 We benchmarked the performance of our FFT implementation on a Lenovo ThinkPad T430:
 - **CPU**: Intel(R) Core(TM) i7-3632QM CPU @ 2.20GHz
@@ -939,6 +942,361 @@ To conclude, the benchmarks demonstrate that:
 - 3D FFT suffers from poor cache locality and higher overhead,
   making it the least efficient and least scalable among the three.
 
+
+---
+
+
+#### HP Pavilion 15-cx0xxx
+
+We benchmarked the performance of our FFT implementation on an HP Pavilion 15-cx0xxx:
+- **CPU**: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
+  - Thread(s) per core:   2
+  - Core(s) per socket:   6
+  - Socket(s):            1
+  - Stepping:             10
+  - CPU(s) scaling MHz:   40%
+  - CPU max MHz:          4100.0000
+  - CPU min MHz:          800.0000
+  - Caches (sum of all):
+    - L1d: 192 KiB (6 instances)
+    - L1i: 192 KiB (6 instances)
+    - L2:  1.5 MiB (6 instances)
+    - L3:  9 MiB (1 instance)
+- **RAM**: 2 x 8 GB DDR4 2667 MHz
+- **OS**: Ubuntu 24.04 LTS
+
+
+<table>
+    <tr>
+        <th>1D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/hp/1D_fft_speedup_vs_threads.png" alt="1D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>2 threads: consistent growth, saturates around 1.55x, good baseline performance.</li>
+          <li>4 threads: achieves the best overall speedup, peaking just above 2.1x, with solid early scaling.</li>
+          <li>8 threads: slightly trails 4 threads; maxes around 2.1-2.2x, then flattens,
+              possibly hitting memory or cache bottlenecks.</li>
+          <li>12 threads: lags behind all others at small sizes, starts catching up only after $\log_{2}(N) \ge 16$,
+              and finally approaches 2x.</li>
+        </ul>
+        The i7-8750H scales best with 4–8 threads for 1D FFT workloads.
+        12 threads underperform due to hyperthreading limitations, physical cores are likely saturated beyond 6 threads.
+        Parallel overhead is more significant at small input sizes, especially with higher thread counts.
+      </td>
+    </tr>
+    <tr>
+      <th>1D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/hp/1D_fft_efficiency_vs_threads.png" alt="1D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>2 threads perform best, reaching up to ~78% efficiency, and maintaining it across large inputs.</li>
+          <li>4 threads achieve good efficiency (~53% max), with consistent scaling after $\log_{2}(N) \approx 12$.</li>
+          <li>8 threads stay below 30% efficiency, suggesting increasing overhead and resource contention.</li>
+          <li>12 threads peak at ~18%, showing the weakest efficiency due to hyperthreading saturation and memory bottlenecks.</li>
+        </ul>
+        This 6-core/12-thread CPU handles 1D FFTs most efficiently at 2-4 threads.
+        Beyond 6 threads, efficiency drops sharply due to shared core resources and diminishing returns.
+        Overall, efficiency trends are similar to the ThinkPad results,
+        but this CPU handles higher thread counts slightly better, thanks to higher core/thread availability.
+      </td>
+    </tr>
+    <tr>
+        <th>2D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/hp/2D_fft_speedup_vs_threads.png" alt="2D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      All configurations show increasing speedup with input size, starting around $\log_{2}(N) \approx 10$.
+      <ul>
+        <li>2 threads scale gradually, maxing at ~0.95x.</li>
+        <li>8 threads and 4 threads scale more stably, peaking near 1.8x and 1.55x, respectively.</li>
+        <li>12 threads outperform other configurations at large sizes, reaching up to ~2x speedup, but with large variance.</li>
+      </ul>
+      12 threads perform well for large 2D FFTs,
+      but variability increases due to likely cache pressure, memory contention, or thread migration.
+      8 threads appear to be a <i>sweet spot</i> between speedup and stability.
+      Scaling is sublinear, typical of 2D workloads, but overall better than on the ThinkPad.
+      </td>
+    </tr>
+    <tr>
+      <th>2D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/hp/2D_fft_efficiency_vs_threads.png" alt="2D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+        Efficiency grows steadily with input size across all thread counts.
+        <ul>
+          <li>2 threads achieve the highest efficiency (~0.5-0.7 at large sizes), with low variance.</li>
+          <li>4 threads also scale well, reaching ~0.6 efficiency, though with more variability.</li>
+          <li>8 threads and especially 12 threads have significantly lower efficiency (max ~0.25 and ~0.17, respectively),
+              reflecting diminishing returns from oversubscription.
+              Oversubscription occurs when the number of active threads in a process
+              exceeds the number of available logical cores in the system.
+              In other words,
+              adding more threads provides diminishing returns and may even harm performance beyond a certain point.</li>
+        </ul>
+        Higher thread counts introduce greater variability, likely from contention in memory access and shared hardware resources.
+        <br><br>
+        Best efficiency is achieved using 2-4 threads.
+        Efficiency drops substantially with 8 or more threads,
+        suggesting parallel overhead outweighs benefits on this CPU beyond 6 physical cores.
+        <br><br>
+        Compared to the ThinkPad, this system scales better with more threads,
+        but still struggles to maintain high efficiency at 12 threads.
+      </td>
+    </tr>
+    <tr>
+        <th>3D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/hp/3D_fft_speedup_vs_threads.png" alt="3D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      Speedup increases consistently with input size, but remains modest overall.
+      <ul>
+        <li>2 threads exhibit the lowest speedup (max ~0.35x), showing limited benefit from parallelization.</li>
+        <li>8 and 4 threads scale more gradually, peaking at ~0.65x and ~0.58x, respectively.</li>
+        <li>12 threads perform best for large inputs, reaching ~0.85x speedup, but with high variability.</li>
+      </ul>
+      3D FFT remains challenging to parallelize efficiently on this CPU.
+      The CPU scales better than the ThinkPad, especially at higher thread counts,
+      but still doesn’t exceed 1x speedup, meaning parallelization hasn’t yet outperformed sequential execution.
+      </td>
+    </tr>
+    <tr>
+      <th>3D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/hp/3D_fft_efficiency_vs_threads.png" alt="3D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+      Efficiency is low across all thread counts, even for large inputs.
+      <ul>
+        <li>2 threads provide the highest efficiency, gradually rising to ~18% at $\log_{2}(N) = 23$.</li>
+        <li>4 and 8 threads follow with efficiency peaking at ~15% and 10%, respectively.</li>
+        <li>12 threads perform the worst, peaking at ~7% efficiency, a clear sign of oversubscription and poor scalability.</li>
+      </ul>
+      Growth is linear but slow, and none of the configurations exceed 20% efficiency.
+      3D FFT is extremely inefficient to parallelize on this CPU under OpenMP.
+      Best results are achieved with fewer threads, confirming that hyperthreading and high parallelism do not help for this workload.
+      </td>
+    </tr>
+</table>
+
+In conclusion, the CPU scales well with 4 to 8 threads, depending on the dimensionality of the FFT.
+However, 12 threads (via Hyper-Threading) yield diminishing returns, often increasing variance and lowering efficiency.
+However, efficiency consistently improves with input size but never reaches ideal (100%) scaling,
+especially in higher-dimensional FFTs.
+
+Compared to the ThinkPad T430, the HP Pavilion 15-cx0xxx has a higher raw speed,
+especially for larger input sizes and 1D/2D FFTs.
+However, the ThinkPad is more efficient at low thread counts, while the HP offers higher parallel capacity.
+Finally, both devices remain inefficient with 3D FFTs, though the HP handles it slightly better.
+
+
+---
+
+
+#### Dell Inspiron 14 Plus
+
+We benchmarked the performance of our FFT implementation on a Dell Inspiron 14 Plus:
+- **CPU**: Intel(R) Core(TM) Ultra 7 155H CPU @ 1.40GHz (up to 4.80 GHz)
+  - Thread(s) per core:   2
+  - Core(s) per socket:   11
+  - Socket(s):            1
+  - Stepping:             4
+  - CPU max MHz:          4800.0000
+  - CPU min MHz:          700.0000
+  - Caches (sum of all):
+    - L1d: 528 KiB (11 instances)
+    - L1i: 704 KiB (11 instances)
+    - L2:  22 MiB (11 instances)
+    - L3:  24 MiB (1 instance)
+- **RAM**: 2 x 16 GB [LPDDR5X](https://semiconductor.samsung.com/dram/lpddr/lpddr5x/) 6.400 MT/s integrated memory
+- **OS**: Windows 11 with WSL2 (Ubuntu 24.04 LTS)
+
+
+<table>
+    <tr>
+        <th>1D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/dell/1D_fft_speedup_vs_threads.png" alt="1D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+        Nearly <b>3.9x with 16 threads</b> at the largest input sizes, very high speedup.
+        <ul>
+          <li>2-8 threads show strong and consistent speedup curves, with 8 threads peaking ~3.6x,
+              indicating very effective utilization of physical cores.</li>
+          <li>16 threads start slow but scale rapidly, overtaking 8 threads at large sizes.</li>
+          <li>22 threads perform poorly on small inputs, but improve significantly at the end, reaching ~1.6x speedup,
+              still much lower than 16 threads.</li>
+        </ul>
+        All configurations suffer from low speedup below $\log_{2}(N) = 13$,
+        typical of small workloads being dominated by overhead.
+        <br><br>
+        As expected, the Ultra 7 155H demonstrates impressive scalability, particularly with 8-16 threads.
+        This likely corresponds to its performance and efficiency core hybrid layout.
+        This CPU demonstrates real parallel potential with large FFT workloads.
+        This is perhaps also expected given the high number of physical cores (11) and large L3 cache (24 MiB).
+      </td>
+    </tr>
+    <tr>
+      <th>1D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/dell/1D_fft_efficiency_vs_threads.png" alt="1D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>2 threads achieve exceptional efficiency, peaking at ~92%, near-perfect scaling.</li>
+          <li>4 threads follow with a strong peak of ~73%, indicating very good per-core utilization.</li>
+          <li>8 threads maintain decent scaling, reaching ~47% efficiency.</li>
+          <li>16 threads drop to around 27%, still respectable given how far it’s stretching the thread pool.</li>
+          <li>22 threads show very low efficiency (<10%), confirming oversubscription and SMT (Simultaneous Multi-Threading) overhead.</li>
+        </ul>
+        The efficiency increases gradually with input size across all thread counts,
+        as larger workloads help amortize overhead.
+        This CPU exhibits exceptional scaling up to 4-8 threads.
+      </td>
+    </tr>
+    <tr>
+        <th>2D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/dell/2D_fft_speedup_vs_threads.png" alt="2D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      Error bars indicate increased variability at higher thread counts (especially 22T),
+      likely due to scheduling complexity, memory contention, and thread imbalance.
+      <ul>
+        <li>2 threads perform modestly, maxing near 1.4x, consistent with Thinkpad/HP FFT benchmarks.</li>
+        <li>4 threads are solid but limited, peaking at ~2.7x, with little gain beyond mid-sized inputs.</li>
+        <li>8 threads scale well, achieving ~3.6x speedup with good stability.</li>
+        <li>16 threads consistently provide the <b>highest speedup</b>, peaking at ~5.0x on large input sizes.</li>
+        <li>22 threads start slowly but ramp up very rapidly from $\log_{2}(N) = 18$,
+            eventually approaching 5.4x, the highest speedup recorded here.</li>
+      </ul>
+      This CPU handles large 2D FFTs extremely well, especially with 16-22 threads.
+      22 threads, despite low early performance, scale aggressively for large inputs,
+      suitable for throughput-intensive batch processing.
+      However, variability and efficiency loss at high thread counts means 16 threads might be a safer
+      balance between performance and stability for most workloads.
+      </td>
+    </tr>
+    <tr>
+      <th>2D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/dell/2D_fft_efficiency_vs_threads.png" alt="2D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      <td>
+      Across all thread counts, efficiency steadily increases with input size, as expected.
+        <ul>
+          <li>2 threads and 4 threads show very high efficiency, peaking around: ~77% for 2 threads,
+              ~100% for 4 threads at the largest input size (possibly benefiting from L3 cache and thread affinity)</li>
+          <li>8 threads also perform well, reaching ~60% efficiency, excellent for this level of parallelism.</li>
+          <li>16 threads top out at ~32%, which is still reasonable given the total core count.</li>
+          <li>22 threads peak at ~20%, but with noticeable variance,
+              suggesting oversubscription and scheduler-induced instability.</li>
+        </ul>
+        The CPU demonstrates outstanding scaling and resource utilization for 2D FFTs, especially up to 8 threads.
+        Thread efficiency remains strong up to 16 threads,
+        validating the strength of the hybrid architecture and large L3 cache.
+        22 threads should be reserved for massive workloads where raw speedup is more important than efficiency.
+        As previous benchmarks have shown,
+        few CPUs in the laptop class achieve this level of 2D FFT efficiency with low or medium thread counts.
+      </td>
+    </tr>
+    <tr>
+        <th>3D FFT Speedup</th>
+    </tr>
+    <tr>
+        <td><img src="docs/_static/dell/3D_fft_speedup_vs_threads.png" alt="3D FFT Speedup"/></td>
+    </tr>
+    <tr>
+      <td>
+      All configurations show steady improvement with input size, crucial for workloads with significant data volume.
+      High thread counts (16T, 22T) begin to pay off only after $\log_{2}(N) \ge 18$,
+      where the computation-to-overhead ratio becomes favorable.
+      <ul>
+        <li>4 threads and 2 threads offer moderate gains, peaking at ~1.6x and 0.9x, respectively.</li>
+        <li>8 threads perform solidly, reaching ~2.4x speedup at large input sizes.</li>
+        <li>16 threads show the <b>strongest and most consistent scaling</b>, peaking at ~3.3x speedup at $\log_{2}(N) \approx 23$.</li>
+        <li>22 threads start slow but <b>scale aggressively</b>, reaching nearly 3.5x, the highest recorded in this 3D benchmark.</li>
+      </ul>
+      The Ultra 7 155H demonstrates excellent scalability even in 3D FFTs, traditionally the most difficult to parallelize.
+      16 threads appear to offer the best performance/stability trade-off.
+      Finally, 22 threads are viable for very large inputs where raw throughput is critical,
+      though they bring higher variance due to contention, synchronization, and core heterogeneity.
+      </td>
+    </tr>
+    <tr>
+      <th>3D FFT Efficiency</th>
+    </tr>
+    <tr>
+      <td><img src="docs/_static/dell/3D_fft_efficiency_vs_threads.png" alt="3D FFT Efficiency"/></td>
+    </tr>
+    <tr>
+      Efficiency is modest overall, as expected for 3D FFTs, which are the hardest to scale.
+      <ul>
+        <li>2 threads peak at ~45% efficiency, the best among all thread counts.</li>
+        <li>4 threads follow closely, approaching ~43%, showing great scaling at low concurrency.</li>
+        <li>8 threads max out at ~28%, while 16 threads settle around 17%, and 22 threads remain low (~13%) even at the largest input sizes.</li>
+      </ul>
+      While speedup results were excellent, the efficiency plot highlights diminishing returns as threads increase.
+    </tr>
+</table>
+
+This hardware demonstrates excellent scaling, particularly for 1D and 2D FFTs. It even achieved strong 3D FFT throughput.
+The best results are obtained with 8 to 16 threads, where a balance between raw speed and stability is maintained.
+Using 22 threads provides a significant speed boost for very large data sets, but it results in diminished per-thread
+efficiency and increased variability.
+
+In conclusion, **Dell leads in scalability and peak performance**, HP offers a balanced middle ground, and the ThinkPad,
+though limited in raw computing power, excels at small, efficient workloads.
+Each system demonstrates the direct impact of core count, cache size, and architectural design on the success
+of FFT parallelization.
+
+#### Reflections on the FFT Algorithm
+
+- $$\color{green}\textbf{Highly scalable in 1D}$$:
+  The Cooley-Tukey radix-2 algorithm used here parallelizes well in 1D.
+  With proper workload size and cache locality, it can achieve near-linear speedup,
+  particularly when each thread has sufficient independent work to avoid contention.
+
+- $$\color{red}\textbf{Diminishing returns with thread count}$$:
+  As thread count grows beyond physical cores, **synchronization**, **false sharing**, and **cache thrashing**
+  begin to erode efficiency, particularly visible in 3D FFTs and with 22-thread runs.
+
+- $$\color{red}\textbf{3D FFTs are much harder to scale}$$:
+  The increase in data dimensionality introduces more complex memory access and greater working set sizes.
+
+- $$\color{red}\textbf{Sequential bottlenecks remain}$$:
+  Some stages inherently require coordination or are not fully parallelizable with "simple" loop-level OpenMP.
+
+
+The FFT algorithm itself is **inherently parallel**, especially in its **divide-and-conquer form** like Cooley-Tukey.
+However, the **real-world scalability** depends heavily on: input size, dimensionality, hardware cache structure,
+and the balance between thread granularity and workload size.
 
 
 [OpenMP]: https://www.openmp.org/
