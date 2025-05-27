@@ -842,7 +842,7 @@ We benchmarked the performance of our FFT implementation on a Lenovo ThinkPad T4
     <tr>
       <td>
         <ul>
-          <li>2 threads perform best, reaching up to 80% efficiency for large input sizes ($log_{2}(N) \ge 17$).</li>
+          <li>2 threads perform best, reaching up to 80% efficiency for large input sizes ($\log_{2}(N) \ge 17$).</li>
           <li>4 threads show moderate scaling, peaking near 55%, but efficiency drops slightly at higher sizes.</li>
           <li>8 threads have poor efficiency (max ~35%), likely due to overhead, thread contention, or hyperthreading limits.</li>
         </ul>
@@ -1212,7 +1212,7 @@ We benchmarked the performance of our FFT implementation on a Dell Inspiron 14 P
       Across all thread counts, efficiency steadily increases with input size, as expected.
         <ul>
           <li>2 threads and 4 threads show very high efficiency, peaking around: ~77% for 2 threads,
-              ~100% for 4 threads at the largest input size (possibly benefiting from L3 cache and thread affinity)</li>
+              ~100% for 4 threads at the largest input size (possibly benefiting from L3 cache and thread affinity).</li>
           <li>8 threads also perform well, reaching ~60% efficiency, excellent for this level of parallelism.</li>
           <li>16 threads top out at ~32%, which is still reasonable given the total core count.</li>
           <li>22 threads peak at ~20%, but with noticeable variance,
