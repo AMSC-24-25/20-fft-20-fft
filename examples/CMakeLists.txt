@@ -125,3 +125,13 @@ target_link_libraries(
         PRIVATE matplot
         PRIVATE signal_processing
 )
+# 1D DCT example to compare performance of different DCT libraries
+add_executable(
+        example-dct_solver_performance
+        dct_solver_performance.cpp
+)
+target_link_libraries(
+        example-dct_solver_performance
+        PRIVATE signal_processing
+        PRIVATE matplot
+)
