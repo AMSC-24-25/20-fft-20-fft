@@ -1,10 +1,6 @@
 #include <iostream>
 #include <vector>
 
-#include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
-#include "matplot/matplot.h"
-
 #include "signal_processing/signal_processing.hpp"
 
 /**
@@ -31,6 +27,8 @@ void print_matrix(const std::vector<std::vector<double>>& mat) {
 
 // ZIGZAG TEST
 void zigzag_demo(){
+    std::cout<<"\n================================================= ZIGZAG demo ================================================="<<std::endl;
+
     std::vector<std::vector<double>> matrix = {
         {1,1,1,4,5,6,7,0},
         {1,1,1,12,13,14,0,16},
@@ -42,32 +40,41 @@ void zigzag_demo(){
         {0,58,59,60,61,62,63,64}
     };
 
+    std::cout<<"\nInput matrix to ZigZag scan: "<<std::endl;
+    print_matrix(matrix);
+
     std::vector<double> zz = sp::utils::zigzag::ZigZagScan::scan(matrix);
-    std::cout<<"\nOutput ZigZag scan: ";
+    std::cout<<"\nOutput ZigZag scan: "<<std::endl;
     print_vector(zz);
 
-    std::cout<<"\n\nOutput inverse ZigZag scan: "<<std::endl;
+    std::cout<<"\nOutput inverse ZigZag scan: "<<std::endl;
     std::vector<std::vector<double>> reverse_zz = sp::utils::zigzag::ZigZagScan::inverse_scan(zz,8,8);
     print_matrix(reverse_zz);
 }
 
 // RLE_COMPRESSOR TEST
-void rle_demo(){
+void rle_compression_demo(){
+    std::cout<<"\n================================================= RLE COMPRESSION demo ================================================="<<std::endl;
+
     std::vector<double> vector = {2, 0, 0, 0, 0, 34, 17, 45, 45, 45, 12, 7, 9, 9, 9, 9, 9, 9, 5};
+    std::cout << "\nIutput vector for RLE compression: "<<std::endl;
+    print_vector(vector);
+
     std::vector<std::pair<int, int>> rle_vector = sp::utils::rle::RLECompressor::compress(vector);
-    std::cout << "Output RLE compression: "<<std::endl;
+    std::cout << "\nOutput RLE compression: "<<std::endl;
     for(int i=0; i<rle_vector.size(); ++i){
         std::cout<<rle_vector[i].first<<" "<<rle_vector[i].second<<std::endl;
     }
 
     std::vector<double> rle_reverse = sp::utils::rle::RLECompressor::decompress(rle_vector);
-    std::cout << "Output RLE compression: "<<std::endl;
+    std::cout << "\nOutput RLE compression: "<<std::endl;
     print_vector(rle_reverse);
 }
 
 // DCT TEST
 void simple_dct_demo(){
-    std::cout<<"\nSimple DCT example "<<std::endl;
+    std::cout<<"\n================================================= Simple DCT example ================================================="<<std::endl;
+
     std::vector<double> vect = {1,2,3,4};
     std::cout<<"Input vector: ";
     print_vector(vect);
@@ -87,6 +94,8 @@ void simple_dct_demo(){
 }
 
 void jpeg_compression_demo(){
+    std::cout<<"\n================================================= JPEG COMPRESSION demo ================================================="<<std::endl;
+
     // Create an Image object contining the image from image_path and save it as png
     const char* image_path = "examples/resources/dog-bw.png";
     sp::jpeg::Image image = sp::jpeg::Image(image_path);
@@ -110,178 +119,11 @@ void jpeg_compression_demo(){
     decompressed.save_as_png(path);
 }
 
-void dct_demo(){
-    // ============================================= Configuration Loading =============================================
-    // get the file path from environment variable
-    if (getenv(ENV_FILE_PATH) == nullptr) {
-        std::cerr << "Warning: Environment variable " << ENV_FILE_PATH << " is not set. "
-                                                                          "Using default configuration file path.\n";
-        // if the environment variable is not set, use the default configuration file path
-        setenv(ENV_FILE_PATH, "resources/sample-config.json", 0);
-    }
-    const std::string filePath = getenv(ENV_FILE_PATH);
-
-    // load the configuration from the file
-    const auto loader = new sp::config::JSONConfigurationLoader();
-    loader->loadConfigurationFromFile(filePath);
-    const auto json_loaded = new sp::config::JsonFieldHandler(loader->getConfigurationData());
-    // free unused memory
-    delete loader;
-    // get the simulation parameters
-    const int signal_length = json_loaded->getSignalLength();
-    const double *frequency = new double(json_loaded->getHzFrequency());
-    const double *phase = new double(json_loaded->getPhase());
-    const double *noise = new double(json_loaded->getNoise());
-    const std::string *signal_domain = new std::string(json_loaded->getSignalDomain());
-    // prepare the signal saver and use the unique pointer to manage the memory
-    const auto csv_signal_saver = std::make_unique<sp::saver::CsvSignalSaver>();
-    // free unused memory
-
-
-    // ================================================ Generate Signal ================================================
-    // generate the signal
-    std::vector<double> signal(signal_length);
-    if (*signal_domain == "time") {
-        // time domain
-        printf("Generating time domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::TimeDomainSignalGenerator domain_signal_generator(
-            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
-        );
-        signal = domain_signal_generator.generateReal1DSignal(signal_length, *frequency, *phase, *noise);
-    } else {
-        // space domain
-        printf("Generating space domain signal of length: %d.\n", signal_length);
-        sp::signal_gen::SpaceDomainSignalGenerator domain_signal_generator(
-            json_loaded->hasSeed() ? json_loaded->getSeed() : 0
-        );
-        signal = domain_signal_generator.generateReal1DSignal(signal_length, *frequency, *phase, *noise);
-    }
-    // free unused memory
-    delete frequency;
-    delete phase;
-    delete noise;
-    delete signal_domain;
-    // and save it to a file
-    csv_signal_saver->saveToFile(signal, "examples/output/dct/input_signal_dct");
-    // since the transformation is in-place, we need to keep a copy of the original signal
-    std::vector<double> original_signal = signal;
-    std::vector<double> sequential_dct_input(signal_length);
-    std::vector<double> parallel_dct_input(signal_length);
-    std::vector<double> parallel_idct_input(signal_length);
-    std::vector<double> sequential_idct_input(signal_length);
-    for (size_t i = 0; i < signal_length; ++i) {
-        original_signal[i] = signal[i];
-        sequential_dct_input[i] = signal[i];
-        parallel_dct_input[i] = signal[i];
-        parallel_idct_input[i] = signal[i];
-        sequential_idct_input[i] = signal[i];
-    }
-
-    const sp::dct::solver::ComputationMode sequential = sp::dct::solver::ComputationMode::SEQUENTIAL;
-    const sp::dct::solver::ComputationMode parallel = sp::dct::solver::ComputationMode::OPENMP;
-
-    sp::dct::solver::DiscreteCosineTransform* dct_solver = new sp::dct::solver::DiscreteCosineTransform();
-    sp::dct::solver::InverseDiscreteCosineTransform* idct_solver = new sp::dct::solver::InverseDiscreteCosineTransform();
-
-    // ================================================ Sequential DCT ================================================
-    printf("\n\nDCT\n");
-    const sp::dct::solver::ComputationMode cm = sp::dct::solver::ComputationMode::SEQUENTIAL;
-    std::vector<double> sequential_dct_output(signal_length);
-    dct_solver->compute(sequential_dct_input, sequential_dct_output, sequential);
-    csv_signal_saver->saveToFile(sequential_dct_output, "examples/output/dct/dct_signal");
-
-    // ================================================= Parallel FFT =================================================
-    printf("\n\nParallel - DCT\n");
-    std::vector<double> parallel_dct_output(signal_length);
-    dct_solver->compute(parallel_dct_input, parallel_dct_output, parallel);
-    csv_signal_saver->saveToFile(parallel_dct_output, "examples/output/dct/parallel_dct_signal");
-
-    // ============================================ Sequential Inverse FFT ============================================
-    printf("\n\nSequential - Inverse DCT\n");
-    // Prepare the input of the IDCT by computing the DCT
-    dct_solver->compute(sequential_idct_input, sequential);
-
-    std::vector<double> sequential_idct_output(signal_length);
-    // use the DCT result as input
-    idct_solver->compute(sequential_idct_input, sequential_idct_output, sequential);
-    csv_signal_saver->saveToFile(sequential_idct_output, "examples/output/dct/seq_inverse_dct_signal");
-
-    // ============================================= Parallel Inverse FFT =============================================
-    printf("\n\nParallel - Inverse DCT\n");
-    // Prepare the input of the IDCT by computing the DCT
-    dct_solver->compute(parallel_idct_input, parallel);
-
-    std::vector<double> parallel_idct_output(signal_length);
-    // use the DCT result as input
-    idct_solver->compute(parallel_idct_input, parallel_idct_output, parallel);
-    csv_signal_saver->saveToFile(parallel_idct_output, "examples/output/dct/parallel_inverse_dct_signal");
-
-    // free the memory
-    delete dct_solver;
-    delete idct_solver;
-
-
-
-    // =================================================== Plotting ===================================================
-
-    // linear space for x-axis
-    std::vector<double> x = matplot::linspace(0, signal_length - 1, signal_length);
-
-    // create the plot for magnitude comparison
-    auto magnitude_figure = matplot::figure();
-    // title of the window
-    magnitude_figure->name("Magnitude 1D DCT Signal Comparison");
-    // title of the plot
-    magnitude_figure->title("Magnitude Comparison");
-    // size of the window (width, height)
-    magnitude_figure->size(1300, 800);
-    // position of the window (x, y)
-    magnitude_figure->x_position(0);
-    magnitude_figure->y_position(0);
-    // plot
-    magnitude_figure->add_subplot(3,1,0);
-    matplot::plot(x, original_signal);
-    matplot::title("Original Signal");
-    magnitude_figure->add_subplot(3,1,1);
-    matplot::plot(x, sequential_dct_output);
-    matplot::title("Sequential DCT");
-    magnitude_figure->add_subplot(3,1,2);
-    matplot::plot(x, parallel_dct_output);
-    matplot::title("Parallel DCT");
-    // show the plot and block the execution
-    magnitude_figure->show();
-
-    // create the plot for original signal comparison
-    auto comparison_idct_figure = matplot::figure();
-    // title of the window
-    comparison_idct_figure->name("Plot 1D FFT Signal Comparison");
-    // title of the plot
-    comparison_idct_figure->title("Original Signal vs. Inverse FFT Signal");
-    // size of the window (width, height)
-    comparison_idct_figure->size(1200, 800);
-    // position of the window (x, y)
-    comparison_idct_figure->x_position(0);
-    comparison_idct_figure->y_position(0);
-    // plot
-    comparison_idct_figure->add_subplot(3,1,0);
-    matplot::plot(x, original_signal);
-    matplot::title("Original Signal");
-    comparison_idct_figure->add_subplot(3,1,1);
-    matplot::plot(x, sequential_idct_output);
-    matplot::title("Sequential IDCT");
-    comparison_idct_figure->add_subplot(3,1,2);
-    matplot::plot(x, parallel_idct_output);
-    matplot::title("Parallel IDCT");
-    // show the plot and block the execution
-    comparison_idct_figure->show();
-}
-
 int main() {
     //simple_dct_demo();
-    //zigzag_demo();
-    //rle_compression_demo();
+    zigzag_demo();
+    rle_compression_demo();
     jpeg_compression_demo();
-    dct_demo();
 
     return 0;
 }
