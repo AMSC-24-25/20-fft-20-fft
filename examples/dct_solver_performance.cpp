@@ -90,7 +90,7 @@ void sequential_vs_parallel_inverse_dct(const std::vector<double>& sequential_dc
         std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count()
     );
     printf(
-        "With %d threads (CPU), the speedup is: %d\n\n",
+        "With %d threads (CPU), the speedup is: %ld\n\n",
         omp_get_max_threads(),
         (std::chrono::duration_cast<std::chrono::milliseconds>(end_time_seq - start_time_seq).count()) /
             (std::chrono::duration_cast<std::chrono::milliseconds>(end_time_par - start_time_par).count())
