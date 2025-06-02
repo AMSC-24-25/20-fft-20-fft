@@ -202,22 +202,25 @@ int main() {
     // title of the plot
     magnitude_figure->title("Magnitude Comparison");
     // size of the window (width, height)
-    magnitude_figure->size(1300, 700);
+    magnitude_figure->size(1300, 900);
     // position of the window (x, y)
     magnitude_figure->x_position(0);
     magnitude_figure->y_position(0);
     // plot
-    magnitude_figure->add_subplot(3,1,0);
+    auto plot = magnitude_figure->add_subplot(6,1,1);
+    plot->height(0.17);
     matplot::plot(t, signal);
     matplot::title("Original Signal");
     matplot::ylabel("Amplitude");
     matplot::xlabel("Time [s]");
-    magnitude_figure->add_subplot(3,1,1);
+    plot = magnitude_figure->add_subplot(6,1,3);
+    plot->height(0.17);
     matplot::plot(scaled_freq, sequential_dct);
     matplot::title("Sequential DCT");
     matplot::ylabel("Magnitude");
     matplot::xlabel("Frequency [Hz]");
-    magnitude_figure->add_subplot(3,1,2);
+    plot = magnitude_figure->add_subplot(6,1,5);
+    plot->height(0.17);
     matplot::plot(scaled_freq, parallel_dct);
     matplot::title("Parallel DCT");
     matplot::ylabel("Magnitude");
@@ -232,22 +235,25 @@ int main() {
     // title of the plot
     comparison_idct_figure->title("Original Signal vs. Inverse FFT Signal");
     // size of the window (width, height)
-    comparison_idct_figure->size(1300, 700);
+    comparison_idct_figure->size(1300, 900);
     // position of the window (x, y)
     comparison_idct_figure->x_position(0);
     comparison_idct_figure->y_position(0);
     // plot
-    comparison_idct_figure->add_subplot(3,1,0);
+    plot = comparison_idct_figure->add_subplot(3,1,0);
+    plot->height(0.17);
     matplot::plot(t, signal);
     matplot::title("Original Signal");
     matplot::xlabel("Time [s]");
     matplot::ylabel("Amplitude");
-    comparison_idct_figure->add_subplot(3,1,1);
+    plot = comparison_idct_figure->add_subplot(3,1,1);
+    plot->height(0.17);
     matplot::plot(t, sequential_idct);
     matplot::title("Sequential IDCT");
     matplot::xlabel("Time [s]");
     matplot::ylabel("Amplitude");
-    comparison_idct_figure->add_subplot(3,1,2);
+    plot = comparison_idct_figure->add_subplot(3,1,2);
+    plot->height(0.17);
     matplot::plot(t, parallel_idct);
     matplot::title("Parallel IDCT");
     matplot::xlabel("Time [s]");
