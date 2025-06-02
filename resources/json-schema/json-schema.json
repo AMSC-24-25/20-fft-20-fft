@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FFT JSON Schema",
+  "description": "JSON Schema for the FFT configuration file.",
+  "type": "object",
+  "properties": {
+    "signal_length": {
+      "description": "The length of the signal (vector) to generate. The values inside the vector will be generated randomly. Must be a power of two.",
+      "type": "integer",
+      "minimum": 2
+    },
+    "signal_domain": {
+      "description": "The domain of the signal (vector) to generate.",
+      "type": "string",
+      "enum": ["time", "space"]
+    },
+    "hz_frequency": {
+      "description": "Represents the frequency of the signal's oscillations. It refers to the number of cycles per second (hertz) in the time domain, and it indicates spatial frequency (or the number of cycles per unit distance) in the spatial domain.",
+      "type": "number"
+    },
+    "phase": {
+      "description": "Phase shift of the signal (vector) to generate. It represents the initial angle of the sine or cosine function at time t = 0, or the shift of the signal waveform.",
+      "type": "number"
+    },
+    "noise": {
+      "description": "The standard deviation of the Gaussian noise to be added to the signal (vector). Used to simulate real data and random fluctuations.",
+      "type": "number",
+      "minimum": 0
+    },
+    "seed": {
+      "description": "The optional seed to use for the generation of the signal (vector). If not provided, a random seed will be used. It can be used to reproduce the same signal (vector) multiple times.",
+      "type": "integer"
+    }
+  },
+  "required": ["signal_length", "signal_domain", "hz_frequency", "phase", "noise"],
+  "additionalProperties": false
+}

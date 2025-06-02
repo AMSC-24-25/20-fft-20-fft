@@ -1,0 +1,7 @@
+{
+  "signal_domain": "time",
+  "signal_length": 2048,
+  "hz_frequency": 1,
+  "phase": 0,
+  "noise": 5
+}

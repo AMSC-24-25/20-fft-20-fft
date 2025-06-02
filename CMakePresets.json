@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base-ninja",
+      "displayName": "Base Preset using Ninja",
+      "description": "Base preset for all builds with Ninja generator",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "base-make",
+      "displayName": "Base Preset using Make (Ninja is preferred, consider using it)",
+      "description": "Base preset for all builds with Make generator",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+          "CMAKE_CXX_STANDARD": "20",
+          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "ninja-dev-benchmark",
+      "displayName": "Build the signal processing library with examples and benchmark (required packages: opencv, matplot++, google benchmark)",
+      "description": "Development build with example programs and benchmark",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_EXAMPLES": "OFF",
+        "BUILD_BENCHMARKS": "ON"
+      }
+    },
+    {
+      "name": "ninja-lib",
+      "displayName": "Build the signal processing library with Ninja (fastest, recommended)",
+      "inherits": "base-ninja",
+      "description": "Build only the FFT library in a clean way (no examples)",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "OFF",
+        "BUILD_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "ninja-dev",
+      "displayName": "Build the signal processing library with examples (required packages: opencv and matplot++)",
+      "inherits": "base-ninja",
+      "description": "Development build with example programs",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "ON",
+        "BUILD_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "make-lib",
+      "displayName": "Build the signal processing library with Make (Ninja is preferred, consider using it)",
+      "inherits": "base-make",
+      "description": "Build only the FFT library in a clean way (no examples)",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "OFF",
+        "BUILD_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "make-dev",
+      "displayName": "Build the signal processing library with examples (Ninja is preferred, consider using it; required packages: opencv and matplot++)",
+      "inherits": "base-make",
+      "description": "Development build with example programs",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_EXAMPLES": "ON",
+        "BUILD_BENCHMARKS": "OFF"
+      }
+    }
+  ]
+}
