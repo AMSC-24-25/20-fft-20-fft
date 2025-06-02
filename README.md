@@ -1296,19 +1296,19 @@ of FFT parallelization.
 
 #### Reflections on the FFT Algorithm
 
-- $$\color{green}\textbf{Highly scalable in 1D}$$:
+- ✅ **Highly scalable in 1D**:
   The Cooley-Tukey radix-2 algorithm used here parallelizes well in 1D.
   With proper workload size and cache locality, it can achieve near-linear speedup,
   particularly when each thread has sufficient independent work to avoid contention.
 
-- $$\color{red}\textbf{Diminishing returns with thread count}$$:
+- ❌ **Diminishing returns with thread count**:
   As thread count grows beyond physical cores, **synchronization**, **false sharing**, and **cache thrashing**
   begin to erode efficiency, particularly visible in 3D FFTs and with 22-thread runs.
 
-- $$\color{red}\textbf{3D FFTs are much harder to scale}$$:
+- ❌ **3D FFTs are much harder to scale**:
   The increase in data dimensionality introduces more complex memory access and greater working set sizes.
 
-- $$\color{red}\textbf{Sequential bottlenecks remain}$$:
+- ❌ **Sequential bottlenecks remain**:
   Some stages inherently require coordination or are not fully parallelizable with "simple" loop-level OpenMP.
 
 
