@@ -176,6 +176,22 @@ can be installed using the corresponding scripts:
 These scripts will install the dependencies required for the examples and benchmarks, respectively.
 However, they also build the examples and benchmarks. You will find the examples and benchmarks in the build folder.
 
+> [!WARNING]
+> If you are using WSL (Windows Subsystem for Linux), the `sh` scripts may not work due to
+> [end-of-line issues](https://en.wikipedia.org/wiki/Newline#Issues_with_different_newline_formats).
+>
+> This is because Windows uses `CRLF` (Carriage Return + Line Feed) as the end-of-line character,
+> whereas Linux uses `LF` (Line Feed) only.
+>
+> For this reason, we recommend converting the end-of-line characters to Unix format using
+> the [following command](https://dos2unix.sourceforge.io/):
+> ```bash
+> # install dos2unix
+> sudo apt update && sudo apt install dos2unix
+> # convert all sh scripts to Unix format
+> dos2unix clean-all.sh build-*.sh
+> ```
+
 
 ---
 
